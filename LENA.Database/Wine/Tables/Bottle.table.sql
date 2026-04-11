@@ -1,0 +1,28 @@
+CREATE TABLE [Wine].[Bottle] (
+    [BottleID] INT IDENTITY(1,1) NOT NULL,
+    [BottleNumber] INT NULL,
+    [TypeID] INT NOT NULL,
+    [CountryID] INT NOT NULL,
+    [RegionID] INT NOT NULL,
+    [VintageYear] INT NOT NULL,
+    [Vineyard] NVARCHAR(200) NULL,
+    [GrapeVariety] NVARCHAR(100) NULL,
+    [ABV] DECIMAL(5,2) NULL,
+    [BottleSize] NVARCHAR(20) DEFAULT '750ml' NOT NULL,
+    [Quantity] INT DEFAULT 1 NOT NULL,
+    [PurchaseDate] DATETIME2 NOT NULL,
+    [PurchasePrice] DECIMAL(10,2) NULL,
+    [StorageTemp] DECIMAL(5,1) NULL,
+    [Location] NVARCHAR(100) NULL,
+    [Notes] NVARCHAR(500) NULL,
+    [IsFavorite] BIT DEFAULT 0 NOT NULL,
+    [CreatedBy] NVARCHAR(100) NOT NULL,
+    [CreateDate] DATETIME2 NOT NULL,
+    [LastUpdatedBy] NVARCHAR(100) NULL,
+    [LastUpdatedDate] DATETIME2 NULL,
+    CONSTRAINT [PK_Bottle] PRIMARY KEY CLUSTERED ([BottleID] ASC),
+    CONSTRAINT [FK_Bottle_Type] FOREIGN KEY ([TypeID]) REFERENCES [Wine].[Type] ([TypeID]),
+    CONSTRAINT [FK_Bottle_Country] FOREIGN KEY ([CountryID]) REFERENCES [Wine].[Country] ([CountryID]),
+    CONSTRAINT [FK_Bottle_Region] FOREIGN KEY ([RegionID]) REFERENCES [Wine].[Region] ([RegionID])
+);
+GO
