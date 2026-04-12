@@ -1,0 +1,19 @@
+using LENA.Domain.Entity.Common;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace LENA.Domain.Entity.Wine
+{
+    public class Region : AuditableEntity
+    {
+        public int RegionID { get; set; }
+        public string RegionName { get; set; }
+        public string? Description { get; set; }
+        public bool IsActive { get; set; } = true;
+
+        // Navigation property
+        public Country? Country { get; set; }
+        public ICollection<Bottle> Bottles { get; set; } = new List<Bottle>();
+    }
+}
