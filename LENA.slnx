@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="LENA.Application/LENA.Application.csproj" Id="14a10e84-9a79-4d1b-8aa3-c404218aa4b0" />
   <Project Path="LENA.Database/LENA.Database.sqlproj" Id="156c637d-8f44-4516-b292-67fab53b7d71">
     <Build />
     <Deploy />
