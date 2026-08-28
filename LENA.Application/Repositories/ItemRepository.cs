@@ -78,16 +78,14 @@ namespace LENA.Application.Repositories
             }
 
             // Check if the new category exists (you would typically load it from DB)
-            // For now, assume it exists
-
-            // Update the category
+            // For now, just update the category ID
             item.CategoryID = newCategoryId;
-
-            // Save changes
-            // TODO: Implement with actual database context
+            
+            // Save the updated item
+            await UpdateAsync(item);
         }
 
-        public async Task AddOrUpdateBarCodeAsync(int itemId, string barcode)
+        public async Task AddOrUpdateUPC12Async(int itemId, string upc12)
         {
             // Get the item
             var item = await GetByIdAsync(itemId);
@@ -96,11 +94,25 @@ namespace LENA.Application.Repositories
                 throw new InvalidOperationException($"Item with ID {itemId} not found.");
             }
 
-            // Update the barcode
-            item.Barcode = barcode;
+            item.UPC12 = upc12;
+            
+            // Save the updated item
+            await UpdateAsync(item);
+        }
 
-            // Save changes
-            // TODO: Implement with actual database context
+        public async Task AddOrUpdateUPC14Async(int itemId, string upc14)
+        {
+            // Get the item
+            var item = await GetByIdAsync(itemId);
+            if (item == null)
+            {
+                throw new InvalidOperationException($"Item with ID {itemId} not found.");
+            }
+
+            item.UPC14 = upc14;
+            
+            // Save the updated item
+            await UpdateAsync(item);
         }
 
         public async Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null)
@@ -112,17 +124,15 @@ namespace LENA.Application.Repositories
                 throw new InvalidOperationException($"Item with ID {itemId} not found.");
             }
 
-            // Update the quantity
             item.CurrentQuantity = quantity;
-
-            // If purchase date provided, update it
+            
             if (purchaseDate.HasValue)
             {
                 item.PurchaseDate = purchaseDate.Value;
             }
-
-            // Save changes
-            // TODO: Implement with actual database context
+            
+            // Save the updated item
+            await UpdateAsync(item);
         }
 
         public async Task SetFavoriteAsync(int itemId, bool isFavorite)
@@ -134,11 +144,10 @@ namespace LENA.Application.Repositories
                 throw new InvalidOperationException($"Item with ID {itemId} not found.");
             }
 
-            // Update the favorite flag
             item.IsFavorite = isFavorite;
-
-            // Save changes
-            // TODO: Implement with actual database context
+            
+            // Save the updated item
+            await UpdateAsync(item);
         }
     }
 }

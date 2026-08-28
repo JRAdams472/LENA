@@ -10,8 +10,11 @@ namespace LENA.Application.Contracts.Persistence
         // Change the category of an existing item
         Task ChangeItemCategoryAsync(int itemId, int newCategoryId);
 
-        // Add or update only the barcode for an existing item
-        Task AddOrUpdateBarCodeAsync(int itemId, string barcode);
+        // Add or update only the UPC 12 for an existing item
+        Task AddOrUpdateUPC12Async(int itemId, string upc12);
+
+        // Add or update only the UPC 14 for an existing item
+        Task AddOrUpdateUPC14Async(int itemId, string upc14);
 
         // Change the quantity of an existing item (with optional purchase date)
         Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null);

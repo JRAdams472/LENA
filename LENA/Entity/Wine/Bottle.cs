@@ -14,8 +14,12 @@ namespace LENA.Domain.Entity.Wine
         public int RegionID { get; set; }
         public int VintageYear { get; set; }
         public string? Vineyard { get; set; }
-        public string? GrapeVariety { get; set; }
         public decimal? ABV { get; set; }
+        public int? Acidity { get; set; }           // Numeric scale 1–5 (Low to Crisp)
+        public int? TanninLevel { get; set; }       // Numeric scale 1–5 (None to High)
+        public int? Body { get; set; }              // Numeric scale 1–5 (Light to Full)
+        public int? Sweetness { get; set; }         // Numeric scale 1–5 (Bone-Dry to Sweet)
+        public bool? OakIntegration { get; set; }   // Boolean flag for oak aging
         public string BottleSize { get; set; } = "750ml";
         public int Quantity { get; set; } = 1;
         public DateTime PurchaseDate { get; set; }
@@ -30,5 +34,7 @@ namespace LENA.Domain.Entity.Wine
         public Country? Country { get; set; }
         public Region? Region { get; set; }
         public Vintage? Vintage { get; set; }
+        public ICollection<BottleGrapeVariety> BottleGrapeVarieties { get; set; } = new List<BottleGrapeVariety>();
+        public ICollection<BottleFlavorProfile> BottleFlavorProfiles { get; set; } = new List<BottleFlavorProfile>();
     }
 }
