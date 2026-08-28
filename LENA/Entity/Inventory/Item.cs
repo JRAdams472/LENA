@@ -21,7 +21,9 @@ namespace LENA.Domain.Entity.Inventory
         public string? Notes { get; set; }
         public bool IsFavorite { get; set; } = false;
 
-        // Navigation property
+        // Navigation properties
         public Category? Category { get; set; }
+        public ICollection<FoodNutrient>? FoodNutrients { get; set; }
+        public ICollection<FoodFlavor>? FoodFlavors { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 using LENA.Application.Contracts.Persistence;
-using LENA.Domain.Entity.Wine;
+using LENA.Domain.Entity.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Text;

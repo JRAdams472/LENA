@@ -7,69 +7,21 @@ using System.Threading.Tasks;
 
 namespace LENA.Application.Repositories
 {
-    public class ItemRepository : IItemRepository
+    public class ItemRepository : BaseWineRepository<Item>, IItemRepository
     {
-        // This would typically have a context/dependency injected
-        // For SQL-based persistence, this would use the database context
-        // or direct SQL queries against the Inventory tables
-
-        private readonly IItemRepository _delegate; // Placeholder for actual DB context
-
-        public ItemRepository()
-        {
-            // In production, this would be initialized with a database context
-            // e.g., _context = new ApplicationDbContext();
-        }
-
-        public async Task<List<Item>> ListAllAsync()
-        {
-            // TODO: Implement with actual database context
-            // Example: return await _context.Items.ToListAsync();
-            return new List<Item>();
-        }
-
-        public async Task<Item> CreateAsync(Item entity)
-        {
-            // TODO: Implement with actual database context
-            // Example: await _context.Items.AddAsync(entity);
-            // Example: await _context.SaveChangesAsync();
-            // Example: return entity;
-            return entity;
-        }
-
-        public async Task<Item> GetByIdAsync(int id)
-        {
-            // TODO: Implement with actual database context
-            // Example: return await _context.Items.FindAsync(id);
-            return null;
-        }
+        // This repository would typically use a database context or direct SQL queries
+        // For now, it's using the base implementation which throws NotImplementedException
 
         public async Task<Item> GetByNameAsync(string name)
         {
             // TODO: Implement with actual database context
             // Example: return await _context.Items.FirstOrDefaultAsync(x => x.Name == name);
-            return null;
-        }
-
-        public async Task<Item> UpdateAsync(Item entity)
-        {
-            // TODO: Implement with actual database context
-            // Example: _context.Items.Update(entity);
-            // Example: await _context.SaveChangesAsync();
-            // Example: return entity;
-            return entity;
-        }
-
-        public async Task<Item> DeleteAsync(Item entity)
-        {
-            // TODO: Implement with actual database context
-            // Example: _context.Items.Remove(entity);
-            // Example: await _context.SaveChangesAsync();
-            return entity;
+            throw new NotImplementedException();
         }
 
         public async Task ChangeItemCategoryAsync(int itemId, int newCategoryId)
         {
+            // This would be implemented with actual database access
             // Get the item
             var item = await GetByIdAsync(itemId);
             if (item == null)
@@ -87,6 +39,7 @@ namespace LENA.Application.Repositories
 
         public async Task AddOrUpdateUPC12Async(int itemId, string upc12)
         {
+            // This would be implemented with actual database access
             // Get the item
             var item = await GetByIdAsync(itemId);
             if (item == null)
@@ -102,6 +55,7 @@ namespace LENA.Application.Repositories
 
         public async Task AddOrUpdateUPC14Async(int itemId, string upc14)
         {
+            // This would be implemented with actual database access
             // Get the item
             var item = await GetByIdAsync(itemId);
             if (item == null)
@@ -117,6 +71,7 @@ namespace LENA.Application.Repositories
 
         public async Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null)
         {
+            // This would be implemented with actual database access
             // Get the item
             var item = await GetByIdAsync(itemId);
             if (item == null)
@@ -126,17 +81,18 @@ namespace LENA.Application.Repositories
 
             item.CurrentQuantity = quantity;
             
+            // Save the updated item
             if (purchaseDate.HasValue)
             {
                 item.PurchaseDate = purchaseDate.Value;
             }
             
-            // Save the updated item
             await UpdateAsync(item);
         }
 
         public async Task SetFavoriteAsync(int itemId, bool isFavorite)
         {
+            // This would be implemented with actual database access
             // Get the item
             var item = await GetByIdAsync(itemId);
             if (item == null)

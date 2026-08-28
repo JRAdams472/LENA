@@ -8,16 +8,23 @@ using System.Threading.Tasks;
 
 namespace LENA.Application.Repositories
 {
-    public class FlavorProfileRepository : BaseWineRepository<FlavorProfile>, IFlavorProfileRepository
+    public class FoodFlavorRepository : BaseWineRepository<FoodFlavor>, IFoodFlavorRepository
     {
-        public async Task<FlavorProfile> GetByNameAsync(string name)
+        public async Task<IEnumerable<FoodFlavor>> GetByFoodIdAsync(int foodId)
         {
             // This would typically be implemented with database access
             // For now, returning a placeholder implementation
             throw new NotImplementedException();
         }
 
-        public async Task<IReadOnlyList<FlavorProfile>> GetAllActiveAsync()
+        public async Task<IEnumerable<FoodFlavor>> GetByFlavorIdAsync(int flavorId)
+        {
+            // This would typically be implemented with database access
+            // For now, returning a placeholder implementation
+            throw new NotImplementedException();
+        }
+
+        public async Task<FoodFlavor> GetByFoodAndFlavorIdAsync(int foodId, int flavorId)
         {
             // This would typically be implemented with database access
             // For now, returning a placeholder implementation
