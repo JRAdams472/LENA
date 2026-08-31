@@ -6,6 +6,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import Alert from "@mui/material/Alert";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
@@ -21,6 +22,7 @@ interface CrudDialogProps {
   title: string;
   fields: FieldDef[];
   values: Record<string, unknown>;
+  error?: Error | null;
   onClose: () => void;
   onSave: (values: Record<string, unknown>) => void;
 }
@@ -30,6 +32,7 @@ export default function CrudDialog({
   title,
   fields,
   values,
+  error,
   onClose,
   onSave,
 }: CrudDialogProps) {
@@ -47,6 +50,11 @@ export default function CrudDialog({
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error.message}
+          </Alert>
+        )}
         {fields.map((field) => {
           const type = field.type ?? "text";
           const val = form[field.key];

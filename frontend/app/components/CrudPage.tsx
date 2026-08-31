@@ -49,6 +49,8 @@ export default function CrudPage({
   const [isCreate, setIsCreate] = useState(false);
   const [activeOnly, setActiveOnly] = useState(false);
   const [filterId, setFilterId] = useState<string>("");
+  const [dialogError, setDialogError] = useState<Error | null>(null);
+  const [tableError, setTableError] = useState<Error | null>(null);
 
   const listQuery = useQuery<any[]>({
     queryKey: [...queryKey, activeOnly, filterId],
@@ -67,17 +69,31 @@ export default function CrudPage({
 
   const createMutation = useMutation({
     mutationFn: createFn,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: () => {
+      setDialogError(null);
+      setDialogOpen(false);
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onError: (err: unknown) => setDialogError(err as Error),
   });
 
   const updateMutation = useMutation({
     mutationFn: updateFn,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: () => {
+      setDialogError(null);
+      setDialogOpen(false);
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onError: (err: unknown) => setDialogError(err as Error),
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteFn,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: () => {
+      setTableError(null);
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onError: (err: unknown) => setTableError(err as Error),
   });
 
   const rows = listQuery.data ?? [];
@@ -85,16 +101,19 @@ export default function CrudPage({
   const handleCreate = () => {
     setIsCreate(true);
     setDialogData({});
+    setDialogError(null);
     setDialogOpen(true);
   };
 
   const handleEdit = (row: any) => {
     setIsCreate(false);
+    setDialogError(null);
     setDialogData(prepareForEdit ? prepareForEdit(row) : { ...row });
     setDialogOpen(true);
   };
 
   const handleDelete = (row: any) => {
+    setTableError(null);
     if (window.confirm(`Delete this ${title.toLowerCase()}?`)) {
       deleteMutation.mutate(row);
     }
@@ -106,6 +125,10 @@ export default function CrudPage({
     } else {
       updateMutation.mutate(values);
     }
+  };
+
+  const handleClose = () => {
+    setDialogError(null);
     setDialogOpen(false);
   };
 
@@ -146,7 +169,7 @@ export default function CrudPage({
         title={title}
         rows={rows}
         isLoading={listQuery.isLoading}
-        error={listQuery.error as Error | null}
+        error={tableError || (listQuery.error as Error | null)}
         onCreate={handleCreate}
         onEdit={handleEdit}
         onDelete={handleDelete}
@@ -157,7 +180,8 @@ export default function CrudPage({
         title={isCreate ? `Create ${title}` : `Edit ${title}`}
         fields={fields}
         values={dialogData}
-        onClose={() => setDialogOpen(false)}
+        error={dialogError}
+        onClose={handleClose}
         onSave={handleSave}
       />
     </Box>
