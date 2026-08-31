@@ -1,0 +1,13 @@
+services:
+  lena-api:
+    build:
+      context: .
+      dockerfile: LENA.API/Dockerfile
+    ports:
+      - "5059:8080"
+    environment:
+      # Keep the API on plain HTTP inside the container.
+      # Program.cs only calls UseHttpsRedirection() when not in Development;
+      # with no HTTPS URL configured the middleware will not redirect.
+      # TLS should be terminated upstream by a reverse proxy.
+      - ASPNETCORE_URLS=http://+:8080

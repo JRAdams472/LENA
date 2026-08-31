@@ -1,0 +1,19 @@
+# Build outputs
+**/bin/
+**/obj/
+**/*.user
+**/.vs/
+**/.vscode/
+
+# Source control
+.git/
+.gitignore
+
+# Not used by the API image
+frontend/
+LENA.Database/
+
+# Docker metadata
+Dockerfile*
+docker-compose*
+.dockerignore
