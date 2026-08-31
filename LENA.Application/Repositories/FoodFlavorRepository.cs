@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using System.Data;
@@ -11,7 +11,7 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public override async Task<IReadOnlyList<FoodFlavor>> ListAllAsync()
+        public override async Task<IReadOnlyList<FoodFlavor>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<FoodFlavor>)await connection.QueryAsync<FoodFlavor>(
@@ -19,7 +19,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<FoodFlavor?> GetByIdAsync(int id)
+        public override async Task<FoodFlavor?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<FoodFlavor>(
@@ -28,12 +28,12 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<FoodFlavor?> GetByNameAsync(string name)
+        public override async Task<FoodFlavor?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             return await Task.FromResult<FoodFlavor?>(null);
         }
 
-        public override async Task<FoodFlavor> CreateAsync(FoodFlavor entity)
+        public override async Task<FoodFlavor> CreateAsync(FoodFlavor entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -43,7 +43,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<FoodFlavor> UpdateAsync(FoodFlavor entity)
+        public override async Task<FoodFlavor> UpdateAsync(FoodFlavor entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -53,7 +53,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<FoodFlavor> DeleteAsync(FoodFlavor entity)
+        public override async Task<FoodFlavor> DeleteAsync(FoodFlavor entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -63,7 +63,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public async Task<IEnumerable<FoodFlavor>> GetByFoodIdAsync(int foodId)
+        public async Task<IEnumerable<FoodFlavor>> GetByFoodIdAsync(int foodId, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryAsync<FoodFlavor>(
@@ -72,7 +72,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<FoodFlavor>> GetByFlavorIdAsync(int flavorId)
+        public async Task<IEnumerable<FoodFlavor>> GetByFlavorIdAsync(int flavorId, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryAsync<FoodFlavor>(
@@ -81,7 +81,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<FoodFlavor?> GetByFoodAndFlavorIdAsync(int foodId, int flavorId)
+        public async Task<FoodFlavor?> GetByFoodAndFlavorIdAsync(int foodId, int flavorId, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<FoodFlavor>(

@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 
@@ -12,11 +12,11 @@ namespace LENA.Application.Features.Wine.Regions.Commands
             public DeleteRegionCommandHandler(IRegionRepository regionRepository) => _regionRepository = regionRepository;
             public async Task<Region?> Handle(DeleteRegionCommand request, CancellationToken cancellationToken)
             {
-                var region = await _regionRepository.GetByIdAsync(request.RegionId);
+                var region = await _regionRepository.GetByIdAsync(request.RegionId, cancellationToken);
                 if (region == null)
                     return null;
     
-                return await _regionRepository.DeleteAsync(region);
+                return await _regionRepository.DeleteAsync(region, cancellationToken);
             }
         }
 }

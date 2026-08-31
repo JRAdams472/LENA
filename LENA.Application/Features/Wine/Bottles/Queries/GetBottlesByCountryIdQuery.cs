@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 
@@ -11,6 +11,6 @@ namespace LENA.Application.Features.Wine.Bottles.Queries
             private readonly IBottleRepository _bottleRepository;
             public GetBottlesByCountryIdQueryHandler(IBottleRepository bottleRepository) => _bottleRepository = bottleRepository;
             public async Task<IReadOnlyList<Bottle>> Handle(GetBottlesByCountryIdQuery request, CancellationToken cancellationToken)
-                => await _bottleRepository.GetAllByCountryIdAsync(request.CountryId);
+                => await _bottleRepository.GetAllByCountryIdAsync(request.CountryId, cancellationToken);
         }
 }

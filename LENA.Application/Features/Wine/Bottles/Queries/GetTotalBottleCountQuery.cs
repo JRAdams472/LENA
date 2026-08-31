@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using MediatR;
 
 namespace LENA.Application.Features.Wine.Bottles.Queries
@@ -10,6 +10,6 @@ namespace LENA.Application.Features.Wine.Bottles.Queries
             private readonly IBottleRepository _bottleRepository;
             public GetTotalBottleCountQueryHandler(IBottleRepository bottleRepository) => _bottleRepository = bottleRepository;
             public async Task<int> Handle(GetTotalBottleCountQuery request, CancellationToken cancellationToken)
-                => await _bottleRepository.GetTotalBottleCountAsync();
+                => await _bottleRepository.GetTotalBottleCountAsync(cancellationToken);
         }
 }

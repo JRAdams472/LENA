@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using System.Data;
@@ -11,7 +11,7 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public override async Task<IReadOnlyList<FoodNutrient>> ListAllAsync()
+        public override async Task<IReadOnlyList<FoodNutrient>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<FoodNutrient>)await connection.QueryAsync<FoodNutrient>(
@@ -19,7 +19,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<FoodNutrient?> GetByIdAsync(int id)
+        public override async Task<FoodNutrient?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<FoodNutrient>(
@@ -28,12 +28,12 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<FoodNutrient?> GetByNameAsync(string name)
+        public override async Task<FoodNutrient?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             return await Task.FromResult<FoodNutrient?>(null);
         }
 
-        public override async Task<FoodNutrient> CreateAsync(FoodNutrient entity)
+        public override async Task<FoodNutrient> CreateAsync(FoodNutrient entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -43,7 +43,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<FoodNutrient> UpdateAsync(FoodNutrient entity)
+        public override async Task<FoodNutrient> UpdateAsync(FoodNutrient entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -53,7 +53,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<FoodNutrient> DeleteAsync(FoodNutrient entity)
+        public override async Task<FoodNutrient> DeleteAsync(FoodNutrient entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -63,7 +63,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public async Task<IEnumerable<FoodNutrient>> GetByFoodIdAsync(int foodId)
+        public async Task<IEnumerable<FoodNutrient>> GetByFoodIdAsync(int foodId, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryAsync<FoodNutrient>(
@@ -72,7 +72,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<FoodNutrient>> GetByNutrientIdAsync(int nutrientId)
+        public async Task<IEnumerable<FoodNutrient>> GetByNutrientIdAsync(int nutrientId, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryAsync<FoodNutrient>(
@@ -81,7 +81,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<FoodNutrient?> GetByFoodAndNutrientIdAsync(int foodId, int nutrientId)
+        public async Task<FoodNutrient?> GetByFoodAndNutrientIdAsync(int foodId, int nutrientId, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<FoodNutrient>(

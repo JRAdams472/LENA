@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
 
@@ -11,6 +11,6 @@ namespace LENA.Application.Features.Inventory.NutrientTypes.Queries
             private readonly INutrientTypeRepository _nutrientTypeRepository;
             public GetNutrientTypesQueryHandler(INutrientTypeRepository nutrientTypeRepository) => _nutrientTypeRepository = nutrientTypeRepository;
             public async Task<IReadOnlyList<NutrientType>> Handle(GetNutrientTypesQuery request, CancellationToken cancellationToken)
-                => await _nutrientTypeRepository.ListAllAsync();
+                => await _nutrientTypeRepository.ListAllAsync(cancellationToken);
         }
 }

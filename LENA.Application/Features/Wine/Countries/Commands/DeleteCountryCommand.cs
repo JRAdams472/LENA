@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 
@@ -17,11 +17,11 @@ namespace LENA.Application.Features.Wine.Countries.Commands
 
         public async Task<Country?> Handle(DeleteCountryCommand request, CancellationToken cancellationToken)
         {
-            var country = await _countryRepository.GetByIdAsync(request.CountryId);
+            var country = await _countryRepository.GetByIdAsync(request.CountryId, cancellationToken);
             if (country == null)
                 return null;
 
-            return await _countryRepository.DeleteAsync(country);
+            return await _countryRepository.DeleteAsync(country, cancellationToken);
         }
     }
 }

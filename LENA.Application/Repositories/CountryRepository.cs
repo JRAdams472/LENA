@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using System.Data;
@@ -11,7 +11,7 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public async Task<Country?> GetByISOCodeAsync(string isoCode)
+        public async Task<Country?> GetByISOCodeAsync(string isoCode, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<Country>(
@@ -20,7 +20,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IReadOnlyList<Country>> GetAllActiveAsync()
+        public async Task<IReadOnlyList<Country>> GetAllActiveAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<Country>)await connection.QueryAsync<Country>(
@@ -28,7 +28,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<Country> CreateAsync(Country entity)
+        public override async Task<Country> CreateAsync(Country entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var id = await connection.QuerySingleAsync<int>(
@@ -39,7 +39,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Country?> GetByIdAsync(int id)
+        public override async Task<Country?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<Country>(
@@ -48,7 +48,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<IReadOnlyList<Country>> ListAllAsync()
+        public override async Task<IReadOnlyList<Country>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<Country>)await connection.QueryAsync<Country>(
@@ -56,7 +56,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<Country> UpdateAsync(Country entity)
+        public override async Task<Country> UpdateAsync(Country entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -66,7 +66,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Country> DeleteAsync(Country entity)
+        public override async Task<Country> DeleteAsync(Country entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -76,7 +76,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Country?> GetByNameAsync(string name)
+        public override async Task<Country?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<Country>(

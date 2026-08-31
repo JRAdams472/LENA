@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using System.Data;
@@ -11,7 +11,7 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public override async Task<IReadOnlyList<Item>> ListAllAsync()
+        public override async Task<IReadOnlyList<Item>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<Item>)await connection.QueryAsync<Item>(
@@ -19,7 +19,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<Item?> GetByIdAsync(int id)
+        public override async Task<Item?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<Item>(
@@ -28,7 +28,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<Item?> GetByNameAsync(string name)
+        public override async Task<Item?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<Item>(
@@ -37,7 +37,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<Item> CreateAsync(Item entity)
+        public override async Task<Item> CreateAsync(Item entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var id = await connection.QuerySingleAsync<int>(
@@ -48,7 +48,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Item> UpdateAsync(Item entity)
+        public override async Task<Item> UpdateAsync(Item entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -58,7 +58,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Item> DeleteAsync(Item entity)
+        public override async Task<Item> DeleteAsync(Item entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -68,7 +68,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public async Task ChangeItemCategoryAsync(int itemId, int newCategoryId)
+        public async Task ChangeItemCategoryAsync(int itemId, int newCategoryId, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -77,7 +77,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task AddOrUpdateUPC12Async(int itemId, string upc12)
+        public async Task AddOrUpdateUPC12Async(int itemId, string upc12, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -86,7 +86,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task AddOrUpdateUPC14Async(int itemId, string upc14)
+        public async Task AddOrUpdateUPC14Async(int itemId, string upc14, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -95,7 +95,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null)
+        public async Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -104,7 +104,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task SetFavoriteAsync(int itemId, bool isFavorite)
+        public async Task SetFavoriteAsync(int itemId, bool isFavorite, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(

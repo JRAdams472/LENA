@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using LENA.Application.Contracts.Persistence;
 using System.Data;
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
@@ -11,7 +11,7 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public override async Task<TypeEntity> CreateAsync(TypeEntity entity)
+        public override async Task<TypeEntity> CreateAsync(TypeEntity entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var id = await connection.QuerySingleAsync<int>(
@@ -22,7 +22,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<TypeEntity?> GetByIdAsync(int id)
+        public override async Task<TypeEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<TypeEntity>(
@@ -31,7 +31,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<IReadOnlyList<TypeEntity>> ListAllAsync()
+        public override async Task<IReadOnlyList<TypeEntity>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<TypeEntity>)await connection.QueryAsync<TypeEntity>(
@@ -39,7 +39,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<TypeEntity> UpdateAsync(TypeEntity entity)
+        public override async Task<TypeEntity> UpdateAsync(TypeEntity entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -49,7 +49,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<TypeEntity> DeleteAsync(TypeEntity entitey)
+        public override async Task<TypeEntity> DeleteAsync(TypeEntity entitey, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -59,7 +59,7 @@ namespace LENA.Application.Repositories
             return entitey;
         }
 
-        public override async Task<TypeEntity?> GetByNameAsync(string name)
+        public override async Task<TypeEntity?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<TypeEntity>(

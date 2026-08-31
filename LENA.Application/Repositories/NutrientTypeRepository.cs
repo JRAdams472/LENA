@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using System.Data;
@@ -11,7 +11,7 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public override async Task<IReadOnlyList<NutrientType>> ListAllAsync()
+        public override async Task<IReadOnlyList<NutrientType>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<NutrientType>)await connection.QueryAsync<NutrientType>(
@@ -19,7 +19,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<NutrientType?> GetByIdAsync(int id)
+        public override async Task<NutrientType?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<NutrientType>(
@@ -28,7 +28,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<NutrientType?> GetByNameAsync(string name)
+        public override async Task<NutrientType?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<NutrientType>(
@@ -37,7 +37,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<NutrientType> CreateAsync(NutrientType entity)
+        public override async Task<NutrientType> CreateAsync(NutrientType entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var id = await connection.QuerySingleAsync<int>(
@@ -48,7 +48,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<NutrientType> UpdateAsync(NutrientType entity)
+        public override async Task<NutrientType> UpdateAsync(NutrientType entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -58,7 +58,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<NutrientType> DeleteAsync(NutrientType entity)
+        public override async Task<NutrientType> DeleteAsync(NutrientType entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(

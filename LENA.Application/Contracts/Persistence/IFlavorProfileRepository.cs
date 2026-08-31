@@ -4,6 +4,6 @@ namespace LENA.Application.Contracts.Persistence
 {
     public interface IFlavorProfileRepository : IAsyncRepository<FlavorProfile>
     {
-        Task<IReadOnlyList<FlavorProfile>> GetAllActiveAsync();
+        Task<IReadOnlyList<FlavorProfile>> GetAllActiveAsync(CancellationToken cancellationToken = default);
     }
 }

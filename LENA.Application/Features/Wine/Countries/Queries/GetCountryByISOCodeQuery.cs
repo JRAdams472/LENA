@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 
@@ -11,6 +11,6 @@ namespace LENA.Application.Features.Wine.Countries.Queries
             private readonly ICountryRepository _countryRepository;
             public GetCountryByISOCodeQueryHandler(ICountryRepository countryRepository) => _countryRepository = countryRepository;
             public async Task<Country?> Handle(GetCountryByISOCodeQuery request, CancellationToken cancellationToken)
-                => await _countryRepository.GetByISOCodeAsync(request.ISOCode);
+                => await _countryRepository.GetByISOCodeAsync(request.ISOCode, cancellationToken);
         }
 }

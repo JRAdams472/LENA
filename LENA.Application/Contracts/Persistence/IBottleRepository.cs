@@ -4,12 +4,12 @@ namespace LENA.Application.Contracts.Persistence
 {
     public interface IBottleRepository : IAsyncRepository<Bottle>
     {
-        Task<IReadOnlyList<Bottle>> GetAllByCountryIdAsync(int countryId);
-        Task<IReadOnlyList<Bottle>> GetAllByRegionIdAsync(int regionId);
-        Task<IReadOnlyList<Bottle>> GetAllByTypeIdAsync(int typeId);
-        Task<IReadOnlyList<Bottle>> GetAllByVintageYearAsync(int vintageYear);
-        Task<IReadOnlyList<Bottle>> GetFavoritesAsync();
-        Task<IReadOnlyList<Bottle>> SearchBottlesAsync(string searchTerm);
-        Task<int> GetTotalBottleCountAsync();
+        Task<IReadOnlyList<Bottle>> GetAllByCountryIdAsync(int countryId, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<Bottle>> GetAllByRegionIdAsync(int regionId, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<Bottle>> GetAllByTypeIdAsync(int typeId, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<Bottle>> GetAllByVintageYearAsync(int vintageYear, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<Bottle>> GetFavoritesAsync(CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<Bottle>> SearchBottlesAsync(string searchTerm, CancellationToken cancellationToken = default);
+        Task<int> GetTotalBottleCountAsync(CancellationToken cancellationToken = default);
     }
 }

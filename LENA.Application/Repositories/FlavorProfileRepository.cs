@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using System.Data;
@@ -11,7 +11,7 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public override async Task<IReadOnlyList<FlavorProfile>> ListAllAsync()
+        public override async Task<IReadOnlyList<FlavorProfile>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<FlavorProfile>)await connection.QueryAsync<FlavorProfile>(
@@ -19,7 +19,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<FlavorProfile?> GetByIdAsync(int id)
+        public override async Task<FlavorProfile?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<FlavorProfile>(
@@ -28,7 +28,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<FlavorProfile?> GetByNameAsync(string name)
+        public override async Task<FlavorProfile?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<FlavorProfile>(
@@ -37,7 +37,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<FlavorProfile> CreateAsync(FlavorProfile entity)
+        public override async Task<FlavorProfile> CreateAsync(FlavorProfile entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var id = await connection.QuerySingleAsync<int>(
@@ -48,7 +48,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<FlavorProfile> UpdateAsync(FlavorProfile entity)
+        public override async Task<FlavorProfile> UpdateAsync(FlavorProfile entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -58,7 +58,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<FlavorProfile> DeleteAsync(FlavorProfile entity)
+        public override async Task<FlavorProfile> DeleteAsync(FlavorProfile entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -68,7 +68,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public async Task<IReadOnlyList<FlavorProfile>> GetAllActiveAsync()
+        public async Task<IReadOnlyList<FlavorProfile>> GetAllActiveAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<FlavorProfile>)await connection.QueryAsync<FlavorProfile>(

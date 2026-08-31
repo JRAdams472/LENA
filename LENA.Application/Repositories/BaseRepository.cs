@@ -11,11 +11,11 @@ namespace LENA.Application.Repositories
             _connectionFactory = connectionFactory;
         }
 
-        public abstract Task<T> CreateAsync(T entity);
-        public abstract Task<T?> GetByIdAsync(int Id);
-        public abstract Task<T?> GetByNameAsync(string Name);
-        public abstract Task<T> UpdateAsync(T entity);
-        public abstract Task<T> DeleteAsync(T entitey);
-        public abstract Task<IReadOnlyList<T>> ListAllAsync();
+        public abstract Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default);
+        public abstract Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        public abstract Task<T?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+        public abstract Task<T> UpdateAsync(T entity, CancellationToken cancellationToken = default);
+        public abstract Task<T> DeleteAsync(T entity, CancellationToken cancellationToken = default);
+        public abstract Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default);
     }
 }

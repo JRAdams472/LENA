@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 
@@ -17,11 +17,11 @@ namespace LENA.Application.Features.Wine.Bottles.Commands
 
         public async Task<Bottle?> Handle(DeleteBottleCommand request, CancellationToken cancellationToken)
         {
-            var bottle = await _bottleRepository.GetByIdAsync(request.BottleId);
+            var bottle = await _bottleRepository.GetByIdAsync(request.BottleId, cancellationToken);
             if (bottle == null)
                 return null;
 
-            return await _bottleRepository.DeleteAsync(bottle);
+            return await _bottleRepository.DeleteAsync(bottle, cancellationToken);
         }
     }
 }

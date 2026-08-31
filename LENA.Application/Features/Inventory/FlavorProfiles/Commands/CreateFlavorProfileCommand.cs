@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
 
@@ -11,6 +11,6 @@ namespace LENA.Application.Features.Inventory.FlavorProfiles.Commands
             private readonly IFlavorProfileRepository _flavorProfileRepository;
             public CreateFlavorProfileCommandHandler(IFlavorProfileRepository flavorProfileRepository) => _flavorProfileRepository = flavorProfileRepository;
             public async Task<FlavorProfile> Handle(CreateFlavorProfileCommand request, CancellationToken cancellationToken)
-                => await _flavorProfileRepository.CreateAsync(request.FlavorProfile);
+                => await _flavorProfileRepository.CreateAsync(request.FlavorProfile, cancellationToken);
         }
 }

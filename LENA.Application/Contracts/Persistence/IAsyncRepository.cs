@@ -2,11 +2,11 @@
 {
     public interface IAsyncRepository<T> where T : class
     {
-        Task<T> CreateAsync(T entity);
-        Task<T?> GetByIdAsync(int Id);
-        Task<T?> GetByNameAsync(string Name);
-        Task<T> UpdateAsync(T entity);
-        Task<T> DeleteAsync(T entitey);
-        Task<IReadOnlyList<T>> ListAllAsync();
+        Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default);
+        Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<T?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<T> UpdateAsync(T entity, CancellationToken cancellationToken = default);
+        Task<T> DeleteAsync(T entity, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default);
     }
 }

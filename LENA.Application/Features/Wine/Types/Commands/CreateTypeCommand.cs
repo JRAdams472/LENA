@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using MediatR;
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
@@ -11,6 +11,6 @@ namespace LENA.Application.Features.Wine.Types.Commands
             private readonly ITypeRepository _typeRepository;
             public CreateTypeCommandHandler(ITypeRepository typeRepository) => _typeRepository = typeRepository;
             public async Task<TypeEntity> Handle(CreateTypeCommand request, CancellationToken cancellationToken)
-                => await _typeRepository.CreateAsync(request.Type);
+                => await _typeRepository.CreateAsync(request.Type, cancellationToken);
         }
 }

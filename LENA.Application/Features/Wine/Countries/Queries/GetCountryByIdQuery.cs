@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 
@@ -17,7 +17,7 @@ namespace LENA.Application.Features.Wine.Countries.Queries
 
         public async Task<Country?> Handle(GetCountryByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _countryRepository.GetByIdAsync(request.CountryId);
+            return await _countryRepository.GetByIdAsync(request.CountryId, cancellationToken);
         }
     }
 }

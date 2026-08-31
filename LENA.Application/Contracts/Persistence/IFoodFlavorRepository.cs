@@ -4,8 +4,8 @@ namespace LENA.Application.Contracts.Persistence
 {
     public interface IFoodFlavorRepository : IAsyncRepository<FoodFlavor>
     {
-        Task<IEnumerable<FoodFlavor>> GetByFoodIdAsync(int foodId);
-        Task<IEnumerable<FoodFlavor>> GetByFlavorIdAsync(int flavorId);
-        Task<FoodFlavor?> GetByFoodAndFlavorIdAsync(int foodId, int flavorId);
+        Task<IEnumerable<FoodFlavor>> GetByFoodIdAsync(int foodId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<FoodFlavor>> GetByFlavorIdAsync(int flavorId, CancellationToken cancellationToken = default);
+        Task<FoodFlavor?> GetByFoodAndFlavorIdAsync(int foodId, int flavorId, CancellationToken cancellationToken = default);
     }
 }

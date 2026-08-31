@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using System.Data;
@@ -11,7 +11,7 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public async Task<IReadOnlyList<Bottle>> GetAllByCountryIdAsync(int countryId)
+        public async Task<IReadOnlyList<Bottle>> GetAllByCountryIdAsync(int countryId, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
@@ -20,7 +20,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IReadOnlyList<Bottle>> GetAllByRegionIdAsync(int regionId)
+        public async Task<IReadOnlyList<Bottle>> GetAllByRegionIdAsync(int regionId, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
@@ -29,7 +29,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IReadOnlyList<Bottle>> GetAllByTypeIdAsync(int typeId)
+        public async Task<IReadOnlyList<Bottle>> GetAllByTypeIdAsync(int typeId, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
@@ -38,7 +38,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IReadOnlyList<Bottle>> GetAllByVintageYearAsync(int vintageYear)
+        public async Task<IReadOnlyList<Bottle>> GetAllByVintageYearAsync(int vintageYear, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
@@ -47,7 +47,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IReadOnlyList<Bottle>> GetFavoritesAsync()
+        public async Task<IReadOnlyList<Bottle>> GetFavoritesAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
@@ -55,7 +55,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IReadOnlyList<Bottle>> SearchBottlesAsync(string searchTerm)
+        public async Task<IReadOnlyList<Bottle>> SearchBottlesAsync(string searchTerm, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
@@ -64,7 +64,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<int> GetTotalBottleCountAsync()
+        public async Task<int> GetTotalBottleCountAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QuerySingleAsync<int>(
@@ -72,7 +72,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<Bottle> CreateAsync(Bottle entity)
+        public override async Task<Bottle> CreateAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var id = await connection.QuerySingleAsync<int>(
@@ -83,7 +83,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Bottle?> GetByIdAsync(int id)
+        public override async Task<Bottle?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<Bottle>(
@@ -92,7 +92,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<IReadOnlyList<Bottle>> ListAllAsync()
+        public override async Task<IReadOnlyList<Bottle>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
@@ -100,7 +100,7 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public override async Task<Bottle> UpdateAsync(Bottle entity)
+        public override async Task<Bottle> UpdateAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -110,7 +110,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Bottle> DeleteAsync(Bottle entity)
+        public override async Task<Bottle> DeleteAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -120,7 +120,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Bottle?> GetByNameAsync(string name)
+        public override async Task<Bottle?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<Bottle>(

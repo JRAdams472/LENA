@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using MediatR;
 
 namespace LENA.Application.Features.Inventory.Items.Commands
@@ -10,6 +10,6 @@ namespace LENA.Application.Features.Inventory.Items.Commands
             private readonly IItemRepository _itemRepository;
             public SetItemFavoriteCommandHandler(IItemRepository itemRepository) => _itemRepository = itemRepository;
             public async Task Handle(SetItemFavoriteCommand request, CancellationToken cancellationToken)
-                => await _itemRepository.SetFavoriteAsync(request.ItemId, request.IsFavorite);
+                => await _itemRepository.SetFavoriteAsync(request.ItemId, request.IsFavorite, cancellationToken);
         }
 }

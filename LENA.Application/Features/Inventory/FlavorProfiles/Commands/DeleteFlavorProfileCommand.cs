@@ -1,4 +1,4 @@
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
 
@@ -12,11 +12,11 @@ namespace LENA.Application.Features.Inventory.FlavorProfiles.Commands
             public DeleteFlavorProfileCommandHandler(IFlavorProfileRepository flavorProfileRepository) => _flavorProfileRepository = flavorProfileRepository;
             public async Task<FlavorProfile?> Handle(DeleteFlavorProfileCommand request, CancellationToken cancellationToken)
             {
-                var flavorProfile = await _flavorProfileRepository.GetByIdAsync(request.FlavorId);
+                var flavorProfile = await _flavorProfileRepository.GetByIdAsync(request.FlavorId, cancellationToken);
                 if (flavorProfile == null)
                     return null;
     
-                return await _flavorProfileRepository.DeleteAsync(flavorProfile);
+                return await _flavorProfileRepository.DeleteAsync(flavorProfile, cancellationToken);
             }
         }
 }
