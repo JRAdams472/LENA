@@ -3,7 +3,7 @@ using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,11 +11,8 @@ namespace LENA.Application.Repositories
 {
     public class RegionRepository : BaseWineRepository<Region>, IRegionRepository
     {
-        private readonly IDbConnectionFactory _connectionFactory;
-
-        public RegionRepository(IDbConnectionFactory connectionFactory)
+        public RegionRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
-            _connectionFactory = connectionFactory;
         }
 
         public async Task<IReadOnlyList<Region>> GetAllByCountryIdAsync(int countryId)
@@ -25,7 +22,7 @@ namespace LENA.Application.Repositories
             return (IReadOnlyList<Region>)await connection.QueryAsync<Region>(sql, new { CountryId = countryId });
         }
 
-        public async Task<Region> GetByNameAndCountryIdAsync(string name, int countryId)
+        public async Task<Region?> GetByNameAndCountryIdAsync(string name, int countryId)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = "SELECT * FROM [Wine].[Region] WHERE RegionName = @Name AND CountryID = @CountryId";
@@ -45,7 +42,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Region> GetByIdAsync(int id)
+        public override async Task<Region?> GetByIdAsync(int id)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = "SELECT * FROM [Wine].[Region] WHERE RegionID = @Id";
@@ -79,11 +76,26 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Region> GetByNameAsync(string name)
+        public override async Task<Region?> GetByNameAsync(string name)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = "SELECT * FROM [Wine].[Region] WHERE RegionName = @Name";
             return await connection.QueryFirstOrDefaultAsync<Region>(sql, new { Name = name });
+        }
+
+        public async Task<IReadOnlyList<Region>> GetAllByRegionIdAsync(int regionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IReadOnlyList<Region>> GetAllByTypeIdAsync(int typeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IReadOnlyList<Region>> GetAllByVintageYearAsync(int vintageYear)
+        {
+            throw new NotImplementedException();
         }
     }
 }

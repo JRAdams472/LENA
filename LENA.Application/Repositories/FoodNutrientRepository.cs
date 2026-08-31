@@ -3,7 +3,7 @@ using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,11 +11,8 @@ namespace LENA.Application.Repositories
 {
     public class FoodNutrientRepository : BaseWineRepository<FoodNutrient>, IFoodNutrientRepository
     {
-        private readonly IDbConnectionFactory _connectionFactory;
-
-        public FoodNutrientRepository(IDbConnectionFactory connectionFactory)
+        public FoodNutrientRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
-            _connectionFactory = connectionFactory;
         }
 
         public async Task<IEnumerable<FoodNutrient>> GetByFoodIdAsync(int foodId)
@@ -38,7 +35,7 @@ namespace LENA.Application.Repositories
             return await connection.QueryAsync<FoodNutrient>(sql, new { NutrientId = nutrientId });
         }
 
-        public async Task<FoodNutrient> GetByFoodAndNutrientIdAsync(int foodId, int nutrientId)
+        public async Task<FoodNutrient?> GetByFoodAndNutrientIdAsync(int foodId, int nutrientId)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = @"SELECT fn.*, nt.nutrient_name, nt.unit_of_measure

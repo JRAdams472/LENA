@@ -1,4 +1,4 @@
-using LENA.Domain.Entity.Wine;
+using LENA.Domain.Entity.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +9,6 @@ namespace LENA.Application.Contracts.Persistence
 {
     public interface INutrientTypeRepository : IAsyncRepository<NutrientType>
     {
-        Task<NutrientType> GetByNameAsync(string name);
+        Task<NutrientType?> GetByNameAsync(string name);
     }
 }

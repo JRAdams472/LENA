@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace LENA.Domain.Entity.Inventory
 {
-    public class FlavorProfile : AuditableEntity
+    public class FoodNutrient : AuditableEntity
     {
-        public int FlavorId { get; set; }
-        public string FlavorName { get; set; }
+        public int FoodId { get; set; }
+        public int NutrientId { get; set; }
+        public decimal AmountPerServing { get; set; }
         
         // Navigation properties
-        public ICollection<FoodFlavor>? FoodFlavors { get; set; }
+        public NutrientType? NutrientType { get; set; }
     }
 }

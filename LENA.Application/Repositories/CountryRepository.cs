@@ -3,7 +3,7 @@ using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,14 +11,11 @@ namespace LENA.Application.Repositories
 {
     public class CountryRepository : BaseWineRepository<Country>, ICountryRepository
     {
-        private readonly IDbConnectionFactory _connectionFactory;
-
-        public CountryRepository(IDbConnectionFactory connectionFactory)
+        public CountryRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
-            _connectionFactory = connectionFactory;
         }
 
-        public async Task<Country> GetByISOCodeAsync(string isoCode)
+        public async Task<Country?> GetByISOCodeAsync(string isoCode)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = "SELECT * FROM [Wine].[Country] WHERE ISOCode = @ISOCode";
@@ -45,7 +42,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Country> GetByIdAsync(int id)
+        public override async Task<Country?> GetByIdAsync(int id)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = "SELECT * FROM [Wine].[Country] WHERE CountryID = @Id";
@@ -79,11 +76,31 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Country> GetByNameAsync(string name)
+        public override async Task<Country?> GetByNameAsync(string name)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = "SELECT * FROM [Wine].[Country] WHERE CountryName = @Name";
             return await connection.QueryFirstOrDefaultAsync<Country>(sql, new { Name = name });
+        }
+
+        public async Task<IReadOnlyList<Country>> GetAllByCountryIdAsync(int countryId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IReadOnlyList<Country>> GetAllByRegionIdAsync(int regionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IReadOnlyList<Country>> GetAllByTypeIdAsync(int typeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IReadOnlyList<Country>> GetAllByVintageYearAsync(int vintageYear)
+        {
+            throw new NotImplementedException();
         }
     }
 }

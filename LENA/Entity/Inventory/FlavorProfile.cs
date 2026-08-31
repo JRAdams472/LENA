@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LENA.Domain.Entity.Wine
+namespace LENA.Domain.Entity.Inventory
 {
     public class FlavorProfile : AuditableEntity
     {

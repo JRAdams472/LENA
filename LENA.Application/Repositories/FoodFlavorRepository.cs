@@ -10,6 +10,10 @@ namespace LENA.Application.Repositories
 {
     public class FoodFlavorRepository : BaseWineRepository<FoodFlavor>, IFoodFlavorRepository
     {
+        public FoodFlavorRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
+        {
+        }
+
         public async Task<IEnumerable<FoodFlavor>> GetByFoodIdAsync(int foodId)
         {
             // This would typically be implemented with database access

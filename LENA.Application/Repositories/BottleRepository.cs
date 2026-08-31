@@ -3,7 +3,7 @@ using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,11 +11,8 @@ namespace LENA.Application.Repositories
 {
     public class BottleRepository : BaseWineRepository<Bottle>, IBottleRepository
     {
-        private readonly IDbConnectionFactory _connectionFactory;
-
-        public BottleRepository(IDbConnectionFactory connectionFactory)
+        public BottleRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
-            _connectionFactory = connectionFactory;
         }
 
         public async Task<IReadOnlyList<Bottle>> GetAllByCountryIdAsync(int countryId)
@@ -87,7 +84,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Bottle> GetByIdAsync(int id)
+        public override async Task<Bottle?> GetByIdAsync(int id)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = "SELECT * FROM [Wine].[Bottle] WHERE BottleID = @Id";
@@ -124,7 +121,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Bottle> GetByNameAsync(string name)
+        public override async Task<Bottle?> GetByNameAsync(string name)
         {
             // Bottle entities don't have a name field in the database schema, so we'll search by vineyard
             using var connection = await _connectionFactory.CreateConnectionAsync();

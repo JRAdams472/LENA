@@ -1,12 +1,12 @@
-using LENA.Domain.Entity.Wine;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.Contracts.Persistence
 {
-    public interface ITypeRepository : IWineRepository<Type>
+    public interface ITypeRepository : IWineRepository<TypeEntity>
     {
-        Task<Type> GetByNameAsync(string name);
+        Task<TypeEntity?> GetByNameAsync(string name);
     }
 }

@@ -9,15 +9,12 @@ namespace LENA.Application.Repositories
 {
     public class ItemRepository : BaseWineRepository<Item>, IItemRepository
     {
-        // This repository would typically use a database context or direct SQL queries
-        // For now, it's using the base implementation which throws NotImplementedException
-
-        public async Task<Item> GetByNameAsync(string name)
+        public ItemRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
-            // TODO: Implement with actual database context
-            // Example: return await _context.Items.FirstOrDefaultAsync(x => x.Name == name);
-            throw new NotImplementedException();
         }
+
+        // This repository would typically use a database context or direct SQL queries
+        // For now, it's using the base implementation
 
         public async Task ChangeItemCategoryAsync(int itemId, int newCategoryId)
         {

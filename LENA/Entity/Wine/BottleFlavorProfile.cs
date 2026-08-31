@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LENA.Domain.Entity.Wine
 {
-    public class FlavorProfile : AuditableEntity
+    public class BottleFlavorProfile : AuditableEntity
     {
         public int FlavorProfileID { get; set; }
         public string FlavorProfileName { get; set; }

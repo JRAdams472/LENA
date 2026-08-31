@@ -1,4 +1,4 @@
-using LENA.Domain.Entity.Wine;
+using LENA.Domain.Entity.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,6 @@ namespace LENA.Application.Contracts.Persistence
     {
         Task<IEnumerable<FoodNutrient>> GetByFoodIdAsync(int foodId);
         Task<IEnumerable<FoodNutrient>> GetByNutrientIdAsync(int nutrientId);
-        Task<FoodNutrient> GetByFoodAndNutrientIdAsync(int foodId, int nutrientId);
+        Task<FoodNutrient?> GetByFoodAndNutrientIdAsync(int foodId, int nutrientId);
     }
 }
