@@ -17,7 +17,15 @@ namespace LENA.Application.Repositories
 
         public override async Task<Country> CreateAsync(Country entity, CancellationToken cancellationToken = default)
         {
-            entity.CountryID = await QuerySingleAsync<int>("[Wine].[usp_Country_Create]", entity, cancellationToken);
+            entity.CountryID = await QuerySingleAsync<int>("[Wine].[usp_Country_Create]", new
+            {
+                entity.CountryName,
+                entity.ISOCode,
+                entity.Description,
+                entity.IsActive,
+                entity.CreatedBy,
+                entity.CreateDate
+            }, cancellationToken);
             return entity;
         }
 
@@ -29,7 +37,16 @@ namespace LENA.Application.Repositories
 
         public override async Task<Country> UpdateAsync(Country entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Wine].[usp_Country_Update]", entity, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Wine].[usp_Country_Update]", new
+            {
+                entity.CountryID,
+                entity.CountryName,
+                entity.ISOCode,
+                entity.Description,
+                entity.IsActive,
+                entity.LastUpdatedBy,
+                entity.LastUpdatedDate
+            }, nameof(Country), entity.CountryID, cancellationToken);
             return entity;
         }
 

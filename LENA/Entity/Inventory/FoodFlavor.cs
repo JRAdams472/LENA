@@ -7,7 +7,7 @@ using LENA.Domain.Entity.Common;
 
 namespace LENA.Domain.Entity.Inventory
 {
-    public class FoodFlavor : AuditableEntity
+    public class FoodFlavor
     {
         public int FoodId { get; set; }
         public int FlavorId { get; set; }

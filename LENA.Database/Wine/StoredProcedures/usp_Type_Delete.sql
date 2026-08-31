@@ -2,5 +2,9 @@
     @TypeID INT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     DELETE FROM [Wine].[Type] WHERE TypeID = @TypeID;
+
+    SELECT @@ROWCOUNT;
 END

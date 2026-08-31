@@ -1,10 +1,15 @@
+using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Common;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 
 namespace LENA.Application.Features.Wine.Countries.Commands
 {
-    public record UpdateCountryCommand(Country Country) : IRequest<Country>;
+    public record UpdateCountryCommand(Country Country) : IRequest<Country>, IUpdateCommand
+    {
+        public AuditableEntity AuditableEntity => Country;
+    }
 
     public class UpdateCountryCommandHandler : IRequestHandler<UpdateCountryCommand, Country>
     {

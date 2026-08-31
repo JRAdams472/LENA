@@ -34,7 +34,7 @@ namespace LENA.Domain.Entity.Wine
         public Country? Country { get; set; }
         public Region? Region { get; set; }
         public Vintage? Vintage { get; set; }
-        public ICollection<BottleGrapeVariety> BottleGrapeVarieties { get; set; } = new List<BottleGrapeVariety>();
-        public ICollection<BottleFlavorProfile> BottleFlavorProfiles { get; set; } = new List<BottleFlavorProfile>();
+        public ICollection<BottleGrapeVariety>? BottleGrapeVarieties { get; set; }
+        public ICollection<BottleFlavorProfile>? BottleFlavorProfiles { get; set; }
     }
 }

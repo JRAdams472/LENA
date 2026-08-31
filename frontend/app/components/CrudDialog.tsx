@@ -11,23 +11,23 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 
-export interface FieldDef {
-  key: string;
+export interface FieldDef<T = Record<string, unknown>> {
+  key: Extract<keyof T, string>;
   label: string;
   type?: "text" | "number" | "boolean" | "date";
 }
 
-interface CrudDialogProps {
+interface CrudDialogProps<T> {
   open: boolean;
   title: string;
-  fields: FieldDef[];
+  fields: FieldDef<T>[];
   values: Record<string, unknown>;
   error?: Error | null;
   onClose: () => void;
   onSave: (values: Record<string, unknown>) => void;
 }
 
-export default function CrudDialog({
+export default function CrudDialog<T = Record<string, unknown>>({
   open,
   title,
   fields,
@@ -35,7 +35,7 @@ export default function CrudDialog({
   error,
   onClose,
   onSave,
-}: CrudDialogProps) {
+}: CrudDialogProps<T>) {
   const [form, setForm] = useState<Record<string, unknown>>(() => ({
     ...values,
   }));

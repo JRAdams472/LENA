@@ -11,7 +11,14 @@ namespace LENA.Application.Repositories
 
         public override async Task<TypeEntity> CreateAsync(TypeEntity entity, CancellationToken cancellationToken = default)
         {
-            entity.TypeID = await QuerySingleAsync<int>("[Wine].[usp_Type_Create]", entity, cancellationToken);
+            entity.TypeID = await QuerySingleAsync<int>("[Wine].[usp_Type_Create]", new
+            {
+                entity.TypeName,
+                entity.Description,
+                entity.IsActive,
+                entity.CreatedBy,
+                entity.CreateDate
+            }, cancellationToken);
             return entity;
         }
 
@@ -23,7 +30,15 @@ namespace LENA.Application.Repositories
 
         public override async Task<TypeEntity> UpdateAsync(TypeEntity entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Wine].[usp_Type_Update]", entity, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Wine].[usp_Type_Update]", new
+            {
+                entity.TypeID,
+                entity.TypeName,
+                entity.Description,
+                entity.IsActive,
+                entity.LastUpdatedBy,
+                entity.LastUpdatedDate
+            }, nameof(TypeEntity), entity.TypeID, cancellationToken);
             return entity;
         }
 

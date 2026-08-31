@@ -3,7 +3,7 @@ using LENA.Domain.Entity.Inventory;
 
 namespace LENA.Domain.Entity.Recipe
 {
-    public class RecipeItem : AuditableEntity
+    public class RecipeItem
     {
         public int RecipeID { get; set; }
         public int ItemID { get; set; }

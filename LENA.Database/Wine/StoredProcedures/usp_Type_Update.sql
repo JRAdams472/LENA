@@ -7,8 +7,12 @@
     @LastUpdatedDate DATETIME2 = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     UPDATE [Wine].[Type]
     SET TypeName = @TypeName, Description = @Description, IsActive = @IsActive,
         LastUpdatedBy = @LastUpdatedBy, LastUpdatedDate = @LastUpdatedDate
     WHERE TypeID = @TypeID;
+
+    SELECT @@ROWCOUNT;
 END

@@ -7,10 +7,10 @@ using LENA.Domain.Entity.Common;
 
 namespace LENA.Domain.Entity.Inventory
 {
-    public class NutrientType : AuditableEntity
+    public class NutrientType
     {
         public int NutrientId { get; set; }
-        public string NutrientName { get; set; }
-        public string UnitOfMeasure { get; set; }
+        public required string NutrientName { get; set; }
+        public required string UnitOfMeasure { get; set; }
     }
 }

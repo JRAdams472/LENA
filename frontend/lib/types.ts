@@ -12,13 +12,14 @@ export interface Category extends AuditableEntity {
   isActive: boolean;
 }
 
-export interface FlavorProfile extends AuditableEntity {
+export interface FlavorProfile {
   flavorId: number;
   flavorName: string;
-  foodFlavors: FoodFlavor[] | null;
+  isActive: boolean;
+  foodFlavors?: FoodFlavor[] | null;
 }
 
-export interface FoodFlavor extends AuditableEntity {
+export interface FoodFlavor {
   foodId: number;
   flavorId: number;
   intensityScore: number;
@@ -26,7 +27,7 @@ export interface FoodFlavor extends AuditableEntity {
   flavorProfile: FlavorProfile | null;
 }
 
-export interface FoodNutrient extends AuditableEntity {
+export interface FoodNutrient {
   foodId: number;
   nutrientId: number;
   amountPerServing: number;
@@ -60,7 +61,7 @@ export interface Item extends AuditableEntity {
   foodFlavors: FoodFlavor[] | null;
 }
 
-export interface NutrientType extends AuditableEntity {
+export interface NutrientType {
   nutrientId: number;
   nutrientName: string;
   unitOfMeasure: string;
@@ -132,10 +133,11 @@ export interface GrapeVariety extends AuditableEntity {
 export interface Region extends AuditableEntity {
   regionID: number;
   regionName: string;
+  countryID: number;
   description: string | null;
   isActive: boolean;
-  country: Country | null;
-  bottles: Bottle[];
+  country?: Country | null;
+  bottles?: Bottle[];
 }
 
 export interface WineType extends AuditableEntity {
@@ -162,18 +164,18 @@ export interface Recipe extends AuditableEntity {
   prepTimeMinutes: number | null;
   cookTimeMinutes: number | null;
   isActive: boolean;
-  recipeItems: RecipeItem[];
-  recipeSteps: RecipeStep[];
+  recipeItems?: RecipeItem[];
+  recipeSteps?: RecipeStep[];
 }
 
-export interface RecipeItem extends AuditableEntity {
+export interface RecipeItem {
   recipeID: number;
   itemID: number;
   quantity: number;
   unitOfMeasure: string | null;
   notes: string | null;
-  recipe: Recipe | null;
-  item: Item | null;
+  recipe?: Recipe | null;
+  item?: Item | null;
 }
 
 export interface RecipeStep extends AuditableEntity {
@@ -181,5 +183,5 @@ export interface RecipeStep extends AuditableEntity {
   recipeID: number;
   stepNumber: number;
   instruction: string;
-  recipe: Recipe | null;
+  recipe?: Recipe | null;
 }

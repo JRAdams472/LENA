@@ -12,7 +12,6 @@ export default function FlavorProfilesPage() {
       activeOnlyFn={api.getActiveFlavorProfiles}
       fields={[
         { key: "flavorName", label: "Flavor Name" },
-        { key: "description", label: "Description" },
         { key: "isActive", label: "Active", type: "boolean" },
       ]}
       createFn={(row) => api.createFlavorProfile(asEntity(row))}

@@ -1,10 +1,15 @@
+using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Common;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 
 namespace LENA.Application.Features.Wine.Vintages.Commands
 {
-    public record UpdateVintageCommand(Vintage Vintage) : IRequest<Vintage>;
+    public record UpdateVintageCommand(Vintage Vintage) : IRequest<Vintage>, IUpdateCommand
+    {
+        public AuditableEntity AuditableEntity => Vintage;
+    }
 
     public class UpdateVintageCommandHandler : IRequestHandler<UpdateVintageCommand, Vintage>
     {
