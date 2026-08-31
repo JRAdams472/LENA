@@ -5,6 +5,9 @@
   <PropertyGroup>
     <Name>LENA.Database</Name>
     <SkipCheckForNewSDKVersion>true</SkipCheckForNewSDKVersion>
+    <!-- The build host, not the output: a sqlproj emits a dacpac. Pinned so NuGet restore and
+         build agree under both Visual Studio's full-framework MSBuild and `dotnet build`. -->
+    <TargetFramework>net472</TargetFramework>
     <ProjectGuid>{156c637d-8f44-4516-b292-67fab53b7d71}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql170DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
