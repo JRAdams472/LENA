@@ -1,7 +1,7 @@
 "use client";
 
 import CrudPage from "@/app/components/CrudPage";
-import { api } from "@/lib/api";
+import { api, asEntity } from "@/lib/api";
 
 export default function FoodFlavorsPage() {
   return (
@@ -14,16 +14,16 @@ export default function FoodFlavorsPage() {
         { key: "flavorId", label: "Flavor ID", type: "number" },
         { key: "intensityScore", label: "Intensity Score", type: "number" },
       ]}
-      createFn={(row) => api.createFoodFlavor(row as any)}
+      createFn={(row) => api.createFoodFlavor(asEntity(row))}
       updateFn={(row) =>
         api.updateFoodFlavor(
           row.foodId as number,
           row.flavorId as number,
-          row as any
+          asEntity(row)
         )
       }
       deleteFn={(row) =>
-        api.deleteFoodFlavor(row.foodId as number, row.flavorId as number)
+        api.deleteFoodFlavor(row.foodId, row.flavorId)
       }
     />
   );

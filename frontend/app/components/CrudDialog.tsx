@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -36,11 +36,15 @@ export default function CrudDialog({
   onClose,
   onSave,
 }: CrudDialogProps) {
-  const [form, setForm] = useState<Record<string, unknown>>({});
+  const [form, setForm] = useState<Record<string, unknown>>(() => ({
+    ...values,
+  }));
+  const [source, setSource] = useState({ values, open });
 
-  useEffect(() => {
+  if (source.values !== values || source.open !== open) {
+    setSource({ values, open });
     setForm({ ...values });
-  }, [values, open]);
+  }
 
   const setValue = (key: string, value: unknown) => {
     setForm((prev) => ({ ...prev, [key]: value }));

@@ -10,9 +10,6 @@ import {
   FoodFlavor,
   FoodNutrient,
   NutrientType,
-  GrapeVariety,
-  BottleGrapeVariety,
-  BottleFlavorProfile,
   Recipe,
   RecipeItem,
   RecipeStep,
@@ -56,6 +53,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   }
 
   throw new ApiError(res.status, "Expected JSON response");
+}
+
+export function asEntity<T>(row: Record<string, unknown>): T {
+  return row as unknown as T;
 }
 
 export const api = {

@@ -1,7 +1,7 @@
 "use client";
 
 import CrudPage from "@/app/components/CrudPage";
-import { api } from "@/lib/api";
+import { api, asEntity } from "@/lib/api";
 
 export default function RegionsPage() {
   return (
@@ -24,11 +24,11 @@ export default function RegionsPage() {
         { key: "countryID", label: "Country ID", type: "number" },
         { key: "isActive", label: "Active", type: "boolean" },
       ]}
-      createFn={(row) => api.createRegion(row as any)}
+      createFn={(row) => api.createRegion(asEntity(row))}
       updateFn={(row) =>
-        api.updateRegion(row.regionID as number, row as any)
+        api.updateRegion(row.regionID as number, asEntity(row))
       }
-      deleteFn={(row) => api.deleteRegion(row.regionID as number)}
+      deleteFn={(row) => api.deleteRegion(row.regionID)}
     />
   );
 }

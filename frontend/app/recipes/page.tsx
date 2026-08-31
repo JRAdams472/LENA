@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, asEntity } from "@/lib/api";
 import DataTable from "@/app/components/DataTable";
 import CrudDialog, { FieldDef } from "@/app/components/CrudDialog";
 import { Recipe } from "@/lib/types";
@@ -44,13 +44,13 @@ export default function RecipesPage() {
 
   const createMutation = useMutation({
     mutationFn: (row: Record<string, unknown>) =>
-      api.createRecipe(row as unknown as Parameters<typeof api.createRecipe>[0]),
+      api.createRecipe(asEntity(row)),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["recipes"] }),
   });
 
   const updateMutation = useMutation({
     mutationFn: (row: Record<string, unknown>) =>
-      api.updateRecipe(row.recipeID as number, row as Partial<Recipe>),
+      api.updateRecipe(row.recipeID as number, asEntity(row)),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["recipes"] }),
   });
 
