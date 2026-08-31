@@ -86,11 +86,11 @@ export const api = {
 
   // Inventory reference data
   getCategories: () => request<Category[]>("/api/Item/categories"),
-  getFlavorProfiles: () => request<FlavorProfile[]>("/api/Item/flavorProfiles"),
-  getFoodFlavors: () => request<FoodFlavor[]>("/api/Item/foodFlavors"),
-  getFoodNutrients: () => request<FoodNutrient[]>("/api/Item/foodNutrients"),
+  getFlavorProfiles: () => request<FlavorProfile[]>("/api/Item/flavorprofiles"),
+  getFoodFlavors: () => request<FoodFlavor[]>("/api/Item/foodflavors"),
+  getFoodNutrients: () => request<FoodNutrient[]>("/api/Item/foodnutrients"),
   getInStock: () => request<InStock[]>("/api/Item/inStock"),
-  getNutrientTypes: () => request<NutrientType[]>("/api/Item/nutrientTypes"),
+  getNutrientTypes: () => request<NutrientType[]>("/api/Item/nutrienttypes"),
 
   // Wine
   getBottles: () => request<Bottle[]>("/api/Wine/bottles"),
