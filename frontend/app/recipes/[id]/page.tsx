@@ -6,7 +6,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -32,6 +34,7 @@ export default function RecipeDetailPage() {
   const [itemId, setItemId] = useState<number | "">("");
   const [portion, setPortion] = useState("");
   const [unit, setUnit] = useState("");
+  const [isOptional, setIsOptional] = useState(false);
 
   const [stepNumber, setStepNumber] = useState("");
   const [instruction, setInstruction] = useState("");
@@ -70,11 +73,13 @@ export default function RecipeDetailPage() {
       itemId: number;
       portion: number;
       unit: string | null;
+      isOptional: boolean;
     }) => api.addRecipeItem(recipeId, payload),
     onSuccess: () => {
       setItemId("");
       setPortion("");
       setUnit("");
+      setIsOptional(false);
       return invalidateItems();
     },
   });
@@ -125,6 +130,7 @@ export default function RecipeDetailPage() {
       itemId: Number(itemId),
       portion: Number(portion),
       unit: unit === "" ? null : unit,
+      isOptional,
     });
   };
 
@@ -227,6 +233,15 @@ export default function RecipeDetailPage() {
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
           />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isOptional}
+                onChange={(e) => setIsOptional(e.target.checked)}
+              />
+            }
+            label="Optional"
+          />
           <Button
             variant="contained"
             onClick={handleAddItem}
@@ -266,6 +281,7 @@ export default function RecipeDetailPage() {
                   <TableCell>Item</TableCell>
                   <TableCell>Portion</TableCell>
                   <TableCell>Unit</TableCell>
+                  <TableCell>Optional</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -275,6 +291,7 @@ export default function RecipeDetailPage() {
                     <TableCell>{itemName(recipeItem.itemID)}</TableCell>
                     <TableCell>{recipeItem.quantity}</TableCell>
                     <TableCell>{recipeItem.unitOfMeasure ?? ""}</TableCell>
+                    <TableCell>{recipeItem.isOptional ? "Yes" : "No"}</TableCell>
                     <TableCell>
                       <Button
                         size="small"

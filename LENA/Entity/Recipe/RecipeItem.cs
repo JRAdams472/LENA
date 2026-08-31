@@ -10,6 +10,7 @@ namespace LENA.Domain.Entity.Recipe
         public decimal Quantity { get; set; }
         public string? UnitOfMeasure { get; set; }
         public string? Notes { get; set; }
+        public bool IsOptional { get; set; }
 
         public Recipe? Recipe { get; set; }
         public Item? Item { get; set; }

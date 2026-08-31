@@ -70,7 +70,8 @@ namespace LENA.Application.Repositories
                 recipeItem.ItemID,
                 recipeItem.Quantity,
                 recipeItem.UnitOfMeasure,
-                recipeItem.Notes
+                recipeItem.Notes,
+                recipeItem.IsOptional
             }, cancellationToken);
 
         public async Task RemoveRecipeItemAsync(int recipeId, int itemId, CancellationToken cancellationToken = default)

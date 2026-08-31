@@ -80,7 +80,8 @@ namespace LENA.API.Controllers
                 RecipeID = id,
                 ItemID = request.ItemId,
                 Quantity = request.Portion,
-                UnitOfMeasure = request.Unit
+                UnitOfMeasure = request.Unit,
+                IsOptional = request.IsOptional
             };
 
             var created = await _mediator.Send(new AddOrUpdateRecipeItemCommand(recipeItem));
@@ -138,6 +139,6 @@ namespace LENA.API.Controllers
         }
     }
 
-    public record RecipeItemRequest(int ItemId, decimal Portion, string? Unit);
+    public record RecipeItemRequest(int ItemId, decimal Portion, string? Unit, bool IsOptional);
     public record RecipeStepRequest(int StepNumber, string Instruction);
 }

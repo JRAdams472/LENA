@@ -193,7 +193,7 @@ export const api = {
   deleteRecipe: (id: number) => request<Recipe | null>(`/api/Recipe/recipes/${id}`, { method: "DELETE" }),
 
   getRecipeItems: (recipeId: number) => request<RecipeItem[]>(`/api/Recipe/recipes/${recipeId}/items`),
-  addRecipeItem: (recipeId: number, item: { itemId: number; portion: number; unit: string | null }) =>
+  addRecipeItem: (recipeId: number, item: { itemId: number; portion: number; unit: string | null; isOptional: boolean }) =>
     request<RecipeItem>(`/api/Recipe/recipes/${recipeId}/items`, { method: "POST", body: JSON.stringify(item) }),
   removeRecipeItem: (recipeId: number, itemId: number) =>
     request<void>(`/api/Recipe/recipes/${recipeId}/items/${itemId}`, { method: "DELETE" }),

@@ -174,6 +174,7 @@ export interface RecipeItem {
   quantity: number;
   unitOfMeasure: string | null;
   notes: string | null;
+  isOptional: boolean;
   recipe?: Recipe | null;
   item?: Item | null;
 }
