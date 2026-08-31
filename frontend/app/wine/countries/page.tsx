@@ -1,14 +1,26 @@
 "use client";
 
-import EntityListPage from "@/app/components/EntityListPage";
+import CrudPage from "@/app/components/CrudPage";
 import { api } from "@/lib/api";
 
 export default function CountriesPage() {
   return (
-    <EntityListPage
+    <CrudPage
       title="Countries"
       queryKey={["countries"]}
-      queryFn={api.getCountries}
+      listFn={api.getCountries}
+      activeOnlyFn={api.getActiveCountries}
+      fields={[
+        { key: "countryName", label: "Country Name" },
+        { key: "isoCode", label: "ISO Code" },
+        { key: "description", label: "Description" },
+        { key: "isActive", label: "Active", type: "boolean" },
+      ]}
+      createFn={(row) => api.createCountry(row as any)}
+      updateFn={(row) =>
+        api.updateCountry(row.countryID as number, row as any)
+      }
+      deleteFn={(row) => api.deleteCountry(row.countryID as number)}
     />
   );
 }

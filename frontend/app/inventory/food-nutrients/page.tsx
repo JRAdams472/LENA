@@ -1,14 +1,28 @@
 "use client";
 
-import EntityListPage from "@/app/components/EntityListPage";
+import CrudPage from "@/app/components/CrudPage";
 import { api } from "@/lib/api";
 
 export default function FoodNutrientsPage() {
   return (
-    <EntityListPage
+    <CrudPage
       title="Food Nutrients"
       queryKey={["food-nutrients"]}
-      queryFn={api.getFoodNutrients}
+      listFn={api.getFoodNutrients}
+      fields={[
+        { key: "foodId", label: "Food ID", type: "number" },
+        { key: "nutrientId", label: "Nutrient ID", type: "number" },
+        { key: "amountPerServing", label: "Amount per Serving", type: "number" },
+      ]}
+      createFn={(row) => api.createFoodNutrient(row as any)}
+      updateFn={(row) =>
+        api.updateFoodNutrient(
+          row.foodId as number,
+          row.nutrientId as number,
+          row as any
+        )
+      }
+      deleteFn={(row) => api.deleteFoodNutrient(row.foodId as number)}
     />
   );
 }
