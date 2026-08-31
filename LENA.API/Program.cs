@@ -37,10 +37,13 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddControllers();
 
+builder.Services.AddValidatorsFromAssembly(typeof(LENA.Application.Features.Wine.Bottles.Commands.CreateBottleCommand).Assembly);
+
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(LENA.Application.Features.Wine.Bottles.Commands.CreateBottleCommand).Assembly);
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.LoggingBehavior<,>));
+    cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.ValidationBehavior<,>));
 });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

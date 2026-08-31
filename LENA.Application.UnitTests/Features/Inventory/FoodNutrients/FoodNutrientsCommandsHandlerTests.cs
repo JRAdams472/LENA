@@ -34,9 +34,9 @@ namespace LENA.Application.UnitTests.Features.Inventory.FoodNutrients
     public async Task DeleteFoodNutrientCommand_Should_Call_DeleteAsync()
     {
         // Arrange
-        var request = new DeleteFoodNutrientCommand(1);
+        var request = new DeleteFoodNutrientCommand(1, 2);
         var mockRepo = new Mock<IFoodNutrientRepository>();
-        mockRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new FoodNutrient());
+        mockRepo.Setup(r => r.GetByFoodAndNutrientIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new FoodNutrient());
         mockRepo.Setup(r => r.DeleteAsync(It.IsAny<FoodNutrient>())).ReturnsAsync(new FoodNutrient());
         var handler = new DeleteFoodNutrientCommandHandler(mockRepo.Object);
 
