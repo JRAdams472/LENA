@@ -7,5 +7,6 @@
   </Project>
   <Project Path="LENA/LENA.Domain.csproj" />
   <Folder Name="/LENA/" />
+  <Project Path="LENA.API.UnitTests/LENA.API.UnitTests.csproj" />
   <Project Path="LENA.API/LENA.API.csproj" />
 </Solution>
