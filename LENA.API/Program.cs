@@ -1,3 +1,4 @@
+using FluentValidation;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Repositories;
 using Serilog;
