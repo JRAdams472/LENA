@@ -1,11 +1,19 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace LENA.API.ExceptionHandling
 {
     public class GlobalExceptionHandler : IExceptionHandler
     {
+        private readonly ILogger<GlobalExceptionHandler> _logger;
+
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+        {
+            _logger = logger;
+        }
+
         public async ValueTask<bool> TryHandleAsync(
             HttpContext httpContext,
             Exception exception,
@@ -30,9 +38,10 @@ namespace LENA.API.ExceptionHandling
             }
             else
             {
+                _logger.LogError(exception, "Unhandled exception at {Path}", httpContext.Request.Path);
                 problemDetails.Status = StatusCodes.Status500InternalServerError;
                 problemDetails.Title = "An unexpected error occurred";
-                problemDetails.Detail = exception.Message;
+                problemDetails.Detail = "An internal error occurred. Please try again later.";
             }
 
             httpContext.Response.StatusCode = problemDetails.Status.Value;
