@@ -39,8 +39,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        - NEXT_PUBLIC_API_BASE_URL=http://localhost
     container_name: lena-ui
     ports:
       - "3000:3000"
