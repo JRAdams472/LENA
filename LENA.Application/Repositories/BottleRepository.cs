@@ -58,10 +58,12 @@ namespace LENA.Application.Repositories
         public async Task<IReadOnlyList<Bottle>> SearchBottlesAsync(string searchTerm, CancellationToken cancellationToken = default)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
+            var command = new CommandDefinition(
                 "[Wine].[usp_Bottle_SearchBottles]",
-                new { SearchTerm = $"%{searchTerm}%" },
-                commandType: CommandType.StoredProcedure);
+                new { SearchTerm = searchTerm },
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: cancellationToken);
+            return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(command);
         }
 
         public async Task<int> GetTotalBottleCountAsync(CancellationToken cancellationToken = default)
