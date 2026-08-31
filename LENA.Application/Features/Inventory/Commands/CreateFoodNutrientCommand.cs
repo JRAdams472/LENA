@@ -1,0 +1,21 @@
+using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Inventory;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace LENA.Application.Features.Inventory.Commands
+{
+    public record CreateFoodNutrientCommand(FoodNutrient FoodNutrient) : IRequest<FoodNutrient>;
+
+        public class CreateFoodNutrientCommandHandler : IRequestHandler<CreateFoodNutrientCommand, FoodNutrient>
+        {
+            private readonly IFoodNutrientRepository _foodNutrientRepository;
+            public CreateFoodNutrientCommandHandler(IFoodNutrientRepository foodNutrientRepository) => _foodNutrientRepository = foodNutrientRepository;
+            public async Task<FoodNutrient> Handle(CreateFoodNutrientCommand request, CancellationToken cancellationToken)
+                => await _foodNutrientRepository.CreateAsync(request.FoodNutrient);
+        }
+}

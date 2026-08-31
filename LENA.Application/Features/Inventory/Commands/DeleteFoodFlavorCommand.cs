@@ -1,0 +1,27 @@
+using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Inventory;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace LENA.Application.Features.Inventory.Commands
+{
+    public record DeleteFoodFlavorCommand(int FoodFlavorId) : IRequest<FoodFlavor?>;
+
+        public class DeleteFoodFlavorCommandHandler : IRequestHandler<DeleteFoodFlavorCommand, FoodFlavor?>
+        {
+            private readonly IFoodFlavorRepository _foodFlavorRepository;
+            public DeleteFoodFlavorCommandHandler(IFoodFlavorRepository foodFlavorRepository) => _foodFlavorRepository = foodFlavorRepository;
+            public async Task<FoodFlavor?> Handle(DeleteFoodFlavorCommand request, CancellationToken cancellationToken)
+            {
+                var foodFlavor = await _foodFlavorRepository.GetByIdAsync(request.FoodFlavorId);
+                if (foodFlavor == null)
+                    return null;
+    
+                return await _foodFlavorRepository.DeleteAsync(foodFlavor);
+            }
+        }
+}

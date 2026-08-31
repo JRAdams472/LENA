@@ -1,4 +1,5 @@
-using LENA.Application.Features.Inventory;
+using LENA.Application.Features.Inventory.Commands;
+using LENA.Application.Features.Inventory.Queries;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

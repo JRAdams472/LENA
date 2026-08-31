@@ -1,0 +1,28 @@
+using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Inventory;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
+
+namespace LENA.Application.Features.Inventory.Commands
+{
+    public record DeleteNutrientTypeCommand(int NutrientTypeId) : IRequest<NutrientType?>;
+
+        public class DeleteNutrientTypeCommandHandler : IRequestHandler<DeleteNutrientTypeCommand, NutrientType?>
+        {
+            private readonly INutrientTypeRepository _nutrientTypeRepository;
+            public DeleteNutrientTypeCommandHandler(INutrientTypeRepository nutrientTypeRepository) => _nutrientTypeRepository = nutrientTypeRepository;
+            public async Task<NutrientType?> Handle(DeleteNutrientTypeCommand request, CancellationToken cancellationToken)
+            {
+                var nutrientType = await _nutrientTypeRepository.GetByIdAsync(request.NutrientTypeId);
+                if (nutrientType == null)
+                    return null;
+    
+                return await _nutrientTypeRepository.DeleteAsync(nutrientType);
+            }
+        }
+}

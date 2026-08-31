@@ -1,0 +1,21 @@
+using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Inventory;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
+
+namespace LENA.Application.Features.Inventory.Commands
+{
+    public record AddOrUpdateItemUPC14Command(int ItemId, string UPC14) : IRequest;
+
+        public class AddOrUpdateItemUPC14CommandHandler : IRequestHandler<AddOrUpdateItemUPC14Command>
+        {
+            private readonly IItemRepository _itemRepository;
+            public AddOrUpdateItemUPC14CommandHandler(IItemRepository itemRepository) => _itemRepository = itemRepository;
+            public async Task Handle(AddOrUpdateItemUPC14Command request, CancellationToken cancellationToken)
+                => await _itemRepository.AddOrUpdateUPC14Async(request.ItemId, request.UPC14);
+        }
+}

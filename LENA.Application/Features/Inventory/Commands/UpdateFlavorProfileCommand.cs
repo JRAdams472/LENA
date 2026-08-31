@@ -1,0 +1,22 @@
+using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Inventory;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
+
+namespace LENA.Application.Features.Inventory.Commands
+{
+    public record UpdateFlavorProfileCommand(FlavorProfile FlavorProfile) : IRequest<FlavorProfile>;
+
+        public class UpdateFlavorProfileCommandHandler : IRequestHandler<UpdateFlavorProfileCommand, FlavorProfile>
+        {
+            private readonly IFlavorProfileRepository _flavorProfileRepository;
+            public UpdateFlavorProfileCommandHandler(IFlavorProfileRepository flavorProfileRepository) => _flavorProfileRepository = flavorProfileRepository;
+            public async Task<FlavorProfile> Handle(UpdateFlavorProfileCommand request, CancellationToken cancellationToken)
+                => await _flavorProfileRepository.UpdateAsync(request.FlavorProfile);
+        }
+}
