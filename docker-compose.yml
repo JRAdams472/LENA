@@ -30,7 +30,7 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Server=db;Database=LENA;User Id=sa;Password=P@ssw0rd!;TrustServerCertificate=True;
-      - Cors__AllowedOrigins__0=http://localhost:3000
+      - Cors__AllowedOrigins__0=http://localhost
     depends_on:
       db:
         condition: service_healthy
@@ -40,12 +40,29 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_API_BASE_URL=http://localhost:5059
+        - NEXT_PUBLIC_API_BASE_URL=http://localhost
     container_name: lena-ui
     ports:
       - "3000:3000"
     depends_on:
       - api
 
+  caddy:
+    image: caddy:2-alpine
+    container_name: lena-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - ui
+
 volumes:
   mssql_data:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,27 @@
+# Local / development: listen on plain HTTP port 80.
+# The browser sees one origin (http://localhost) and Caddy forwards
+# API calls to the api container and everything else to the ui container.
+http://localhost {
+    handle /api/* {
+        reverse_proxy api:8080
+    }
+
+    handle {
+        reverse_proxy ui:3000
+    }
+}
+
+# Production: replace http://localhost with your real domain.
+# Caddy automatically provisions and renews Let's Encrypt certificates
+# when the host is publicly reachable on ports 80/443 and DNS points
+# the domain at this server.
+#
+# lena.example.com {
+#     handle /api/* {
+#         reverse_proxy api:8080
+#     }
+#
+#     handle {
+#         reverse_proxy ui:3000
+#     }
+# }
