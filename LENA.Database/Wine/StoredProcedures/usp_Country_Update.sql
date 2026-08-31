@@ -8,8 +8,12 @@
     @LastUpdatedDate DATETIME2 = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     UPDATE [Wine].[Country]
     SET CountryName = @CountryName, ISOCode = @ISOCode, Description = @Description, IsActive = @IsActive,
         LastUpdatedBy = @LastUpdatedBy, LastUpdatedDate = @LastUpdatedDate
     WHERE CountryID = @CountryID;
+
+    SELECT @@ROWCOUNT;
 END

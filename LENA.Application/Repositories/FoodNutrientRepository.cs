@@ -20,13 +20,23 @@ namespace LENA.Application.Repositories
 
         public override async Task<FoodNutrient> CreateAsync(FoodNutrient entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Inventory].[usp_FoodNutrient_Create]", entity, cancellationToken);
+            await ExecuteCommandAsync("[Inventory].[usp_FoodNutrient_Create]", new
+            {
+                entity.FoodId,
+                entity.NutrientId,
+                entity.AmountPerServing
+            }, cancellationToken);
             return entity;
         }
 
         public override async Task<FoodNutrient> UpdateAsync(FoodNutrient entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Inventory].[usp_FoodNutrient_Update]", entity, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Inventory].[usp_FoodNutrient_Update]", new
+            {
+                entity.FoodId,
+                entity.NutrientId,
+                entity.AmountPerServing
+            }, nameof(FoodNutrient), new { entity.FoodId, entity.NutrientId }, cancellationToken);
             return entity;
         }
 

@@ -19,10 +19,10 @@ namespace LENA.Application.Repositories
             _connectionString = connectionString;
         }
 
-        public async Task<DbConnection> CreateConnectionAsync()
+        public async Task<DbConnection> CreateConnectionAsync(CancellationToken cancellationToken = default)
         {
             var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
             return connection;
         }
     }

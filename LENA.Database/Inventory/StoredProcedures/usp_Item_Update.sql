@@ -16,6 +16,8 @@
     @LastUpdatedDate DATETIME2 = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     UPDATE [Inventory].[Item]
     SET [Name] = @Name, [Brand] = @Brand, [UPC12] = @UPC12, [UPC14] = @UPC14,
         [CategoryID] = @CategoryID, [Unit] = @Unit, [CurrentQuantity] = @CurrentQuantity,
@@ -23,4 +25,6 @@ BEGIN
         [Notes] = @Notes, [IsFavorite] = @IsFavorite,
         [LastUpdatedBy] = @LastUpdatedBy, [LastUpdatedDate] = @LastUpdatedDate
     WHERE [ItemID] = @ItemID;
+
+    SELECT @@ROWCOUNT;
 END

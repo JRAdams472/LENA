@@ -11,7 +11,14 @@ namespace LENA.Application.Repositories
 
         public override async Task<Vintage> CreateAsync(Vintage entity, CancellationToken cancellationToken = default)
         {
-            entity.VintageID = await QuerySingleAsync<int>("[Wine].[usp_Vintage_Create]", entity, cancellationToken);
+            entity.VintageID = await QuerySingleAsync<int>("[Wine].[usp_Vintage_Create]", new
+            {
+                entity.Year,
+                entity.Description,
+                entity.IsActive,
+                entity.CreatedBy,
+                entity.CreateDate
+            }, cancellationToken);
             return entity;
         }
 
@@ -23,7 +30,15 @@ namespace LENA.Application.Repositories
 
         public override async Task<Vintage> UpdateAsync(Vintage entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Wine].[usp_Vintage_Update]", entity, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Wine].[usp_Vintage_Update]", new
+            {
+                entity.VintageID,
+                entity.Year,
+                entity.Description,
+                entity.IsActive,
+                entity.LastUpdatedBy,
+                entity.LastUpdatedDate
+            }, nameof(Vintage), entity.VintageID, cancellationToken);
             return entity;
         }
 

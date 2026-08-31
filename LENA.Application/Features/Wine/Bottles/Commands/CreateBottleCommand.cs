@@ -1,10 +1,15 @@
+using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Common;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 
 namespace LENA.Application.Features.Wine.Bottles.Commands
 {
-    public record CreateBottleCommand(Bottle Bottle) : IRequest<Bottle>;
+    public record CreateBottleCommand(Bottle Bottle) : IRequest<Bottle>, ICreateCommand
+    {
+        public AuditableEntity AuditableEntity => Bottle;
+    }
 
     public class CreateBottleCommandHandler : IRequestHandler<CreateBottleCommand, Bottle>
     {

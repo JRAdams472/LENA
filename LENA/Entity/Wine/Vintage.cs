@@ -13,6 +13,6 @@ namespace LENA.Domain.Entity.Wine
         public bool IsActive { get; set; } = true;
 
         // Navigation property
-        public ICollection<Bottle> Bottles { get; set; } = new List<Bottle>();
+        public ICollection<Bottle>? Bottles { get; set; }
     }
 }

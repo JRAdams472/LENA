@@ -20,13 +20,22 @@ namespace LENA.Application.Repositories
 
         public override async Task<FlavorProfile> CreateAsync(FlavorProfile entity, CancellationToken cancellationToken = default)
         {
-            entity.FlavorId = await QuerySingleAsync<int>("[Inventory].[usp_FlavorProfile_Create]", entity, cancellationToken);
+            entity.FlavorId = await QuerySingleAsync<int>("[Inventory].[usp_FlavorProfile_Create]", new
+            {
+                entity.FlavorName,
+                entity.IsActive
+            }, cancellationToken);
             return entity;
         }
 
         public override async Task<FlavorProfile> UpdateAsync(FlavorProfile entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Inventory].[usp_FlavorProfile_Update]", entity, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Inventory].[usp_FlavorProfile_Update]", new
+            {
+                entity.FlavorId,
+                entity.FlavorName,
+                entity.IsActive
+            }, nameof(FlavorProfile), entity.FlavorId, cancellationToken);
             return entity;
         }
 

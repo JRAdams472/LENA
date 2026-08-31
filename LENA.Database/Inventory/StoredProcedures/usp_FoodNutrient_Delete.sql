@@ -3,5 +3,9 @@
     @NutrientId INT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     DELETE FROM [Inventory].[food_nutrients] WHERE food_id = @FoodId AND nutrient_id = @NutrientId;
+
+    SELECT @@ROWCOUNT;
 END

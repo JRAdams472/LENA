@@ -10,7 +10,7 @@ import DataTable from "@/app/components/DataTable";
 import CrudDialog, { FieldDef } from "@/app/components/CrudDialog";
 import { Recipe } from "@/lib/types";
 
-const recipeFields: FieldDef[] = [
+const recipeFields: FieldDef<Recipe>[] = [
   { key: "recipeName", label: "Name" },
   { key: "description", label: "Description" },
   { key: "servings", label: "Servings", type: "number" },

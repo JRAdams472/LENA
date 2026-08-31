@@ -1,10 +1,15 @@
+using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Common;
 using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
 using MediatR;
 
 namespace LENA.Application.Features.Recipe.Recipes.Commands
 {
-    public record CreateRecipeCommand(RecipeEntity Recipe) : IRequest<RecipeEntity>;
+    public record CreateRecipeCommand(RecipeEntity Recipe) : IRequest<RecipeEntity>, ICreateCommand
+    {
+        public AuditableEntity AuditableEntity => Recipe;
+    }
 
     public class CreateRecipeCommandHandler : IRequestHandler<CreateRecipeCommand, RecipeEntity>
     {

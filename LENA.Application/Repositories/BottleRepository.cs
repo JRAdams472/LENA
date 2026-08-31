@@ -32,7 +32,26 @@ namespace LENA.Application.Repositories
 
         public override async Task<Bottle> CreateAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
-            entity.BottleID = await QuerySingleAsync<int>("[Wine].[usp_Bottle_Create]", entity, cancellationToken);
+            entity.BottleID = await QuerySingleAsync<int>("[Wine].[usp_Bottle_Create]", new
+            {
+                entity.BottleNumber,
+                entity.TypeID,
+                entity.CountryID,
+                entity.RegionID,
+                entity.VintageYear,
+                entity.Vineyard,
+                entity.ABV,
+                entity.BottleSize,
+                entity.Quantity,
+                entity.PurchaseDate,
+                entity.PurchasePrice,
+                entity.StorageTemp,
+                entity.Location,
+                entity.Notes,
+                entity.IsFavorite,
+                entity.CreatedBy,
+                entity.CreateDate
+            }, cancellationToken);
             return entity;
         }
 
@@ -44,7 +63,27 @@ namespace LENA.Application.Repositories
 
         public override async Task<Bottle> UpdateAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Wine].[usp_Bottle_Update]", entity, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Wine].[usp_Bottle_Update]", new
+            {
+                entity.BottleID,
+                entity.BottleNumber,
+                entity.TypeID,
+                entity.CountryID,
+                entity.RegionID,
+                entity.VintageYear,
+                entity.Vineyard,
+                entity.ABV,
+                entity.BottleSize,
+                entity.Quantity,
+                entity.PurchaseDate,
+                entity.PurchasePrice,
+                entity.StorageTemp,
+                entity.Location,
+                entity.Notes,
+                entity.IsFavorite,
+                entity.LastUpdatedBy,
+                entity.LastUpdatedDate
+            }, nameof(Bottle), entity.BottleID, cancellationToken);
             return entity;
         }
 

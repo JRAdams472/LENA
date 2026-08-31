@@ -10,6 +10,6 @@ namespace LENA.Application.Contracts.Persistence
         Task RemoveRecipeItemAsync(int recipeId, int itemId, CancellationToken cancellationToken = default);
         Task<RecipeStep> AddStepAsync(RecipeStep recipeStep, CancellationToken cancellationToken = default);
         Task<RecipeStep> UpdateStepAsync(RecipeStep recipeStep, CancellationToken cancellationToken = default);
-        Task DeleteStepAsync(int recipeStepId, CancellationToken cancellationToken = default);
+        Task DeleteStepAsync(int recipeStepId, int recipeId, CancellationToken cancellationToken = default);
     }
 }

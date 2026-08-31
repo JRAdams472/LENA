@@ -1,4 +1,5 @@
 using FluentValidation;
+using LENA.Application.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,13 @@ namespace LENA.API.ExceptionHandling
                 problemDetails.Title = "Validation failed";
                 problemDetails.Detail = string.Join("; ", validationException.Errors.Select(e => e.ErrorMessage));
             }
-            else if (exception is ArgumentException or InvalidOperationException)
+            else if (exception is NotFoundException notFoundException)
+            {
+                problemDetails.Status = StatusCodes.Status404NotFound;
+                problemDetails.Title = "Resource not found";
+                problemDetails.Detail = notFoundException.Message;
+            }
+            else if (exception is ArgumentException)
             {
                 problemDetails.Status = StatusCodes.Status400BadRequest;
                 problemDetails.Title = "Bad request";

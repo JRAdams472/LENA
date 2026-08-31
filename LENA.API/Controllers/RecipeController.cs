@@ -108,9 +108,7 @@ namespace LENA.API.Controllers
             {
                 RecipeID = id,
                 StepNumber = request.StepNumber,
-                Instruction = request.Instruction,
-                CreatedBy = User?.Identity?.Name ?? "RecipeController",
-                CreateDate = DateTime.UtcNow
+                Instruction = request.Instruction
             };
 
             var created = await _mediator.Send(new AddRecipeStepCommand(step));
@@ -125,9 +123,7 @@ namespace LENA.API.Controllers
                 RecipeStepID = stepId,
                 RecipeID = id,
                 StepNumber = request.StepNumber,
-                Instruction = request.Instruction,
-                LastUpdatedBy = User?.Identity?.Name ?? "RecipeController",
-                LastUpdatedDate = DateTime.UtcNow
+                Instruction = request.Instruction
             };
 
             var updated = await _mediator.Send(new UpdateRecipeStepCommand(step));
@@ -135,9 +131,9 @@ namespace LENA.API.Controllers
         }
 
         [HttpDelete("recipes/{id}/steps/{stepId}")]
-        public async Task<IActionResult> DeleteRecipeStep(int stepId)
+        public async Task<IActionResult> DeleteRecipeStep(int id, int stepId)
         {
-            await _mediator.Send(new DeleteRecipeStepCommand(stepId));
+            await _mediator.Send(new DeleteRecipeStepCommand(stepId, id));
             return NoContent();
         }
     }

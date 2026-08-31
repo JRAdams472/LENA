@@ -20,13 +20,46 @@ namespace LENA.Application.Repositories
 
         public override async Task<Item> CreateAsync(Item entity, CancellationToken cancellationToken = default)
         {
-            entity.ItemID = await QuerySingleAsync<int>("[Inventory].[usp_Item_Create]", entity, cancellationToken);
+            entity.ItemID = await QuerySingleAsync<int>("[Inventory].[usp_Item_Create]", new
+            {
+                entity.Name,
+                entity.Brand,
+                entity.UPC12,
+                entity.UPC14,
+                entity.CategoryID,
+                entity.Unit,
+                entity.CurrentQuantity,
+                entity.MinQuantity,
+                entity.PurchaseDate,
+                entity.ExpiryDate,
+                entity.Notes,
+                entity.IsFavorite,
+                entity.CreatedBy,
+                entity.CreateDate
+            }, cancellationToken);
             return entity;
         }
 
         public override async Task<Item> UpdateAsync(Item entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Inventory].[usp_Item_Update]", entity, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Inventory].[usp_Item_Update]", new
+            {
+                entity.ItemID,
+                entity.Name,
+                entity.Brand,
+                entity.UPC12,
+                entity.UPC14,
+                entity.CategoryID,
+                entity.Unit,
+                entity.CurrentQuantity,
+                entity.MinQuantity,
+                entity.PurchaseDate,
+                entity.ExpiryDate,
+                entity.Notes,
+                entity.IsFavorite,
+                entity.LastUpdatedBy,
+                entity.LastUpdatedDate
+            }, nameof(Item), entity.ItemID, cancellationToken);
             return entity;
         }
 

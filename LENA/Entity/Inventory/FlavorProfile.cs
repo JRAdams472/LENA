@@ -7,10 +7,10 @@ using LENA.Domain.Entity.Common;
 
 namespace LENA.Domain.Entity.Inventory
 {
-    public class FlavorProfile : AuditableEntity
+    public class FlavorProfile
     {
         public int FlavorId { get; set; }
-        public string FlavorName { get; set; }
+        public required string FlavorName { get; set; }
         public bool IsActive { get; set; } = true;
 
         // Navigation properties

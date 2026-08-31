@@ -24,7 +24,7 @@ interface CrudPageProps<T extends object> {
   listFn: () => Promise<T[]>;
   activeOnlyFn?: () => Promise<T[]>;
   filterBy?: FilterDef<T>;
-  fields: FieldDef[];
+  fields: FieldDef<T>[];
   createFn: (row: Record<string, unknown>) => Promise<unknown>;
   updateFn: (row: Record<string, unknown>) => Promise<unknown>;
   deleteFn: (row: T) => Promise<unknown>;

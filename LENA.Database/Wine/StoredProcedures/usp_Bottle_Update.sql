@@ -19,6 +19,8 @@
     @LastUpdatedDate DATETIME2 = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     UPDATE [Wine].[Bottle]
     SET BottleNumber = @BottleNumber, TypeID = @TypeID, CountryID = @CountryID, RegionID = @RegionID,
         VintageYear = @VintageYear, Vineyard = @Vineyard, ABV = @ABV,
@@ -27,4 +29,6 @@ BEGIN
         Notes = @Notes, IsFavorite = @IsFavorite,
         LastUpdatedBy = @LastUpdatedBy, LastUpdatedDate = @LastUpdatedDate
     WHERE BottleID = @BottleID;
+
+    SELECT @@ROWCOUNT;
 END

@@ -1,10 +1,15 @@
+using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Common;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
 
 namespace LENA.Application.Features.Inventory.Items.Commands
 {
-    public record CreateItemCommand(Item Item) : IRequest<Item>;
+    public record CreateItemCommand(Item Item) : IRequest<Item>, ICreateCommand
+    {
+        public AuditableEntity AuditableEntity => Item;
+    }
 
     public class CreateItemCommandHandler : IRequestHandler<CreateItemCommand, Item>
     {

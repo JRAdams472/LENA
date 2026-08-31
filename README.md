@@ -49,7 +49,7 @@ LENA/
 
 Create the database using `SQL/schema.sql`, then optionally load sample data from `SQL/seed.sql`.
 
-The API expects the `DefaultConnection` string in `LENA.API/appsettings.json`:
+The API expects the `DefaultConnection` string in `LENA.API/appsettings.Development.json` (or user secrets / environment variables outside development):
 
 ```json
 "ConnectionStrings": {
@@ -57,7 +57,21 @@ The API expects the `DefaultConnection` string in `LENA.API/appsettings.json`:
 }
 ```
 
-Update this to point to your SQL Server or LocalDB instance.
+Update this to point to your SQL Server or LocalDB instance. The API fails to start when it is missing.
+
+### Configuration and security
+
+The API also requires the browser origins that may call it:
+
+```json
+"Cors": {
+  "AllowedOrigins": [ "http://localhost:3000" ]
+}
+```
+
+Startup fails when `Cors:AllowedOrigins` is empty, so a deployment cannot silently fall back to allowing any origin.
+
+The API currently has **no authentication or authorization**: every endpoint is open to anyone who can reach it, and CORS only limits which browser origins may call it. Do not expose it beyond a trusted local network until auth is added. Audit fields (`CreatedBy` / `LastUpdatedBy`) are stamped server-side from the request identity and fall back to `system` while the API is unauthenticated.
 
 ### 2. Run the API
 

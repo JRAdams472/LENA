@@ -1,4 +1,7 @@
 using FluentValidation;
+using System.Text.Json.Serialization;
+using LENA.API.Services;
+using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Repositories;
 using Serilog;
@@ -27,16 +30,33 @@ builder.Host.UseSerilog(Log.Logger, true);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+// Origins allowed to call the API, e.g. "Cors:AllowedOrigins": [ "http://localhost:3000" ].
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+if (allowedOrigins.Length == 0)
+{
+    throw new InvalidOperationException(
+        "At least one origin must be configured under 'Cors:AllowedOrigins'. " +
+        "Add it to LENA.API/appsettings.json or LENA.API/appsettings.Development.json.");
+}
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowExternal", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Navigation properties are only populated by the queries that need them.
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<LENA.API.ExceptionHandling.GlobalExceptionHandler>();
 
@@ -47,6 +67,7 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(LENA.Application.Features.Wine.Bottles.Commands.CreateBottleCommand).Assembly);
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.LoggingBehavior<,>));
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.ValidationBehavior<,>));
+    cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.AuditingBehavior<,>));
 });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

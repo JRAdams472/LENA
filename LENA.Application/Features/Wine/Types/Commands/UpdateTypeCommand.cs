@@ -1,10 +1,15 @@
+using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Common;
 using MediatR;
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.Features.Wine.Types.Commands
 {
-    public record UpdateTypeCommand(TypeEntity Type) : IRequest<TypeEntity>;
+    public record UpdateTypeCommand(TypeEntity Type) : IRequest<TypeEntity>, IUpdateCommand
+    {
+        public AuditableEntity AuditableEntity => Type;
+    }
 
     public class UpdateTypeCommandHandler : IRequestHandler<UpdateTypeCommand, TypeEntity>
     {

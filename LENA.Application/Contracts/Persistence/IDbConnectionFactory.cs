@@ -4,6 +4,6 @@ namespace LENA.Application.Contracts.Persistence
 {
     public interface IDbConnectionFactory
     {
-        Task<DbConnection> CreateConnectionAsync();
+        Task<DbConnection> CreateConnectionAsync(CancellationToken cancellationToken = default);
     }
 }

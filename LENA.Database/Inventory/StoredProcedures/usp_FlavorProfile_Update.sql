@@ -4,8 +4,12 @@
     @IsActive BIT = 1
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     UPDATE [Inventory].[flavor_profiles]
     SET flavor_name = @FlavorName,
         is_active = @IsActive
     WHERE flavor_id = @FlavorId;
+
+    SELECT @@ROWCOUNT;
 END

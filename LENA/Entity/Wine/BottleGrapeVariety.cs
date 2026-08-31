@@ -12,7 +12,7 @@ namespace LENA.Domain.Entity.Wine
         public byte? Percentage { get; set; }
 
         // Navigation properties
-        public Bottle Bottle { get; set; }
-        public GrapeVariety GrapeVariety { get; set; }
+        public Bottle? Bottle { get; set; }
+        public GrapeVariety? GrapeVariety { get; set; }
     }
 }
