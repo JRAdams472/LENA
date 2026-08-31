@@ -42,6 +42,12 @@ builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<ITypeRepository, TypeRepository>();
 builder.Services.AddScoped<IVintageRepository, VintageRepository>();
 
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
+builder.Services.AddScoped<IFoodFlavorRepository, FoodFlavorRepository>();
+builder.Services.AddScoped<IFoodNutrientRepository, FoodNutrientRepository>();
+builder.Services.AddScoped<INutrientTypeRepository, NutrientTypeRepository>();
+builder.Services.AddScoped<IFlavorProfileRepository, FlavorProfileRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
