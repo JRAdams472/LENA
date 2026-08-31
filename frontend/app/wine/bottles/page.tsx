@@ -12,9 +12,10 @@ import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { api } from "@/lib/api";
+import { api, asEntity } from "@/lib/api";
 import DataTable from "@/app/components/DataTable";
 import CrudDialog from "@/app/components/CrudDialog";
+import { Bottle } from "@/lib/types";
 
 const bottleFields = [
   { key: "bottleNumber", label: "Bottle Number", type: "number" as const },
@@ -100,20 +101,21 @@ export default function BottlesPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: api.createBottle,
+    mutationFn: (row: Record<string, unknown>) =>
+      api.createBottle(asEntity(row)),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["bottles"] }),
   });
 
   const updateMutation = useMutation({
     mutationFn: (row: Record<string, unknown>) =>
-      api.updateBottle(row.bottleID as number, row as any),
+      api.updateBottle(row.bottleID as number, asEntity(row)),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["bottles"] }),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (row: any) => api.deleteBottle(row.bottleID),
+    mutationFn: (row: Bottle) => api.deleteBottle(row.bottleID),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["bottles"] }),
   });
@@ -124,13 +126,13 @@ export default function BottlesPage() {
     setDialogOpen(true);
   };
 
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: Bottle) => {
     setIsCreate(false);
     setDialogData({ ...row });
     setDialogOpen(true);
   };
 
-  const handleDelete = (row: any) => {
+  const handleDelete = (row: Bottle) => {
     if (window.confirm("Delete this bottle?")) {
       deleteMutation.mutate(row);
     }
@@ -138,7 +140,7 @@ export default function BottlesPage() {
 
   const handleSave = (values: Record<string, unknown>) => {
     if (isCreate) {
-      createMutation.mutate(values as any);
+      createMutation.mutate(values);
     } else {
       updateMutation.mutate(values);
     }

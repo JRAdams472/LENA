@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { api } from "@/lib/api";
+import { api, asEntity } from "@/lib/api";
 import DataTable from "@/app/components/DataTable";
 import CrudDialog from "@/app/components/CrudDialog";
+import { Item } from "@/lib/types";
 
 const itemFields = [
   { key: "name", label: "Name" },
@@ -35,18 +36,18 @@ export default function ItemsPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: api.createItem,
+    mutationFn: (row: Record<string, unknown>) => api.createItem(asEntity(row)),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["items"] }),
   });
 
   const updateMutation = useMutation({
     mutationFn: (row: Record<string, unknown>) =>
-      api.updateItem(row.itemID as number, row as any),
+      api.updateItem(row.itemID as number, asEntity(row)),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["items"] }),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (row: any) => api.deleteItem(row.itemID),
+    mutationFn: (row: Item) => api.deleteItem(row.itemID),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["items"] }),
   });
 
@@ -93,13 +94,13 @@ export default function ItemsPage() {
     setDialogOpen(true);
   };
 
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: Item) => {
     setIsCreate(false);
     setDialogData({ ...row });
     setDialogOpen(true);
   };
 
-  const handleDelete = (row: any) => {
+  const handleDelete = (row: Item) => {
     if (window.confirm("Delete this item?")) {
       deleteMutation.mutate(row);
     }
@@ -107,7 +108,7 @@ export default function ItemsPage() {
 
   const handleSave = (values: Record<string, unknown>) => {
     if (isCreate) {
-      createMutation.mutate(values as any);
+      createMutation.mutate(values);
     } else {
       updateMutation.mutate(values);
     }
@@ -159,7 +160,7 @@ export default function ItemsPage() {
     setFavoriteMutation.mutate({ id, isFavorite: !current });
   };
 
-  const extraActions = (row: any) => (
+  const extraActions = (row: Item) => (
     <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
       <Button
         size="small"
@@ -182,7 +183,7 @@ export default function ItemsPage() {
       <Button
         size="small"
         onClick={() =>
-          handleToggleFavorite(row.itemID, row.isFavorite as boolean)
+          handleToggleFavorite(row.itemID, row.isFavorite)
         }
       >
         {row.isFavorite ? "Unfav" : "Fav"}

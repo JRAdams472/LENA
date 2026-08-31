@@ -1,7 +1,7 @@
 "use client";
 
 import CrudPage from "@/app/components/CrudPage";
-import { api } from "@/lib/api";
+import { api, asEntity } from "@/lib/api";
 
 export default function VintagesPage() {
   return (
@@ -15,11 +15,11 @@ export default function VintagesPage() {
         { key: "description", label: "Description" },
         { key: "isActive", label: "Active", type: "boolean" },
       ]}
-      createFn={(row) => api.createVintage(row as any)}
+      createFn={(row) => api.createVintage(asEntity(row))}
       updateFn={(row) =>
-        api.updateVintage(row.vintageID as number, row as any)
+        api.updateVintage(row.vintageID as number, asEntity(row))
       }
-      deleteFn={(row) => api.deleteVintage(row.vintageID as number)}
+      deleteFn={(row) => api.deleteVintage(row.vintageID)}
     />
   );
 }

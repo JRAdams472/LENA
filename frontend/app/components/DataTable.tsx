@@ -17,18 +17,18 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ReactNode } from "react";
 
-interface DataTableProps {
+interface DataTableProps<T extends object> {
   title: string;
-  rows: any[];
+  rows: T[];
   isLoading: boolean;
   error: Error | null;
   onCreate: () => void;
-  onEdit: (row: any) => void;
-  onDelete: (row: any) => void;
-  extraActions?: (row: any) => ReactNode;
+  onEdit: (row: T) => void;
+  onDelete: (row: T) => void;
+  extraActions?: (row: T) => ReactNode;
 }
 
-export default function DataTable({
+export default function DataTable<T extends object>({
   title,
   rows,
   isLoading,
@@ -37,7 +37,7 @@ export default function DataTable({
   onEdit,
   onDelete,
   extraActions,
-}: DataTableProps) {
+}: DataTableProps<T>) {
   const columns = rows.length > 0 ? Object.keys(rows[0]) : [];
 
   return (
@@ -78,7 +78,7 @@ export default function DataTable({
               {rows.map((row, i) => (
                 <TableRow key={i}>
                   {columns.map((col) => {
-                    const value = row[col];
+                    const value = (row as Record<string, unknown>)[col];
                     return (
                       <TableCell key={col}>
                         {value === null || value === undefined

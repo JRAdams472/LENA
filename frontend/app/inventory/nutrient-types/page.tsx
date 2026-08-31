@@ -1,7 +1,7 @@
 "use client";
 
 import CrudPage from "@/app/components/CrudPage";
-import { api } from "@/lib/api";
+import { api, asEntity } from "@/lib/api";
 
 export default function NutrientTypesPage() {
   return (
@@ -13,11 +13,11 @@ export default function NutrientTypesPage() {
         { key: "nutrientName", label: "Nutrient Name" },
         { key: "unitOfMeasure", label: "Unit of Measure" },
       ]}
-      createFn={(row) => api.createNutrientType(row as any)}
+      createFn={(row) => api.createNutrientType(asEntity(row))}
       updateFn={(row) =>
-        api.updateNutrientType(row.nutrientId as number, row as any)
+        api.updateNutrientType(row.nutrientId as number, asEntity(row))
       }
-      deleteFn={(row) => api.deleteNutrientType(row.nutrientId as number)}
+      deleteFn={(row) => api.deleteNutrientType(row.nutrientId)}
     />
   );
 }

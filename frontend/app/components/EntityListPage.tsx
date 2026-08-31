@@ -13,18 +13,18 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 
-interface EntityListPageProps {
+interface EntityListPageProps<T extends object> {
   title: string;
   queryKey: string[];
-  queryFn: () => Promise<any[]>;
+  queryFn: () => Promise<T[]>;
 }
 
-export default function EntityListPage({
+export default function EntityListPage<T extends object>({
   title,
   queryKey,
   queryFn,
-}: EntityListPageProps) {
-  const { data, isLoading, error } = useQuery<any[]>({
+}: EntityListPageProps<T>) {
+  const { data, isLoading, error } = useQuery<T[]>({
     queryKey,
     queryFn,
   });
@@ -59,7 +59,7 @@ export default function EntityListPage({
                 {rows.map((row, i) => (
                   <TableRow key={i}>
                     {columns.map((col) => {
-                      const value = row[col];
+                      const value = (row as Record<string, unknown>)[col];
                       return (
                         <TableCell key={col}>
                           {value === null || value === undefined

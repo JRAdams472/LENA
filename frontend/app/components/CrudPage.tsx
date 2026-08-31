@@ -12,26 +12,26 @@ import Switch from "@mui/material/Switch";
 import DataTable from "./DataTable";
 import CrudDialog, { FieldDef } from "./CrudDialog";
 
-interface FilterDef {
+interface FilterDef<T> {
   label: string;
   optionsFn: () => Promise<{ id: number; name: string }[]>;
-  filterFn: (id: number) => Promise<any[]>;
+  filterFn: (id: number) => Promise<T[]>;
 }
 
-interface CrudPageProps {
+interface CrudPageProps<T extends object> {
   title: string;
   queryKey: string[];
-  listFn: () => Promise<any[]>;
-  activeOnlyFn?: () => Promise<any[]>;
-  filterBy?: FilterDef;
+  listFn: () => Promise<T[]>;
+  activeOnlyFn?: () => Promise<T[]>;
+  filterBy?: FilterDef<T>;
   fields: FieldDef[];
-  createFn: (row: Record<string, unknown>) => Promise<any>;
-  updateFn: (row: Record<string, unknown>) => Promise<any>;
-  deleteFn: (row: any) => Promise<any>;
-  prepareForEdit?: (row: any) => Record<string, unknown>;
+  createFn: (row: Record<string, unknown>) => Promise<unknown>;
+  updateFn: (row: Record<string, unknown>) => Promise<unknown>;
+  deleteFn: (row: T) => Promise<unknown>;
+  prepareForEdit?: (row: T) => Record<string, unknown>;
 }
 
-export default function CrudPage({
+export default function CrudPage<T extends object>({
   title,
   queryKey,
   listFn,
@@ -42,7 +42,7 @@ export default function CrudPage({
   updateFn,
   deleteFn,
   prepareForEdit,
-}: CrudPageProps) {
+}: CrudPageProps<T>) {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState<Record<string, unknown>>({});
@@ -52,7 +52,7 @@ export default function CrudPage({
   const [dialogError, setDialogError] = useState<Error | null>(null);
   const [tableError, setTableError] = useState<Error | null>(null);
 
-  const listQuery = useQuery<any[]>({
+  const listQuery = useQuery<T[]>({
     queryKey: [...queryKey, activeOnly, filterId],
     queryFn: () => {
       if (activeOnly && activeOnlyFn) return activeOnlyFn();
@@ -105,14 +105,18 @@ export default function CrudPage({
     setDialogOpen(true);
   };
 
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: T) => {
     setIsCreate(false);
     setDialogError(null);
-    setDialogData(prepareForEdit ? prepareForEdit(row) : { ...row });
+    setDialogData(
+      prepareForEdit
+        ? prepareForEdit(row)
+        : { ...(row as Record<string, unknown>) }
+    );
     setDialogOpen(true);
   };
 
-  const handleDelete = (row: any) => {
+  const handleDelete = (row: T) => {
     setTableError(null);
     if (window.confirm(`Delete this ${title.toLowerCase()}?`)) {
       deleteMutation.mutate(row);

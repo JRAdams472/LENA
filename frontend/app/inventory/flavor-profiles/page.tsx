@@ -1,7 +1,7 @@
 "use client";
 
 import CrudPage from "@/app/components/CrudPage";
-import { api } from "@/lib/api";
+import { api, asEntity } from "@/lib/api";
 
 export default function FlavorProfilesPage() {
   return (
@@ -15,11 +15,11 @@ export default function FlavorProfilesPage() {
         { key: "description", label: "Description" },
         { key: "isActive", label: "Active", type: "boolean" },
       ]}
-      createFn={(row) => api.createFlavorProfile(row as any)}
+      createFn={(row) => api.createFlavorProfile(asEntity(row))}
       updateFn={(row) =>
-        api.updateFlavorProfile(row.flavorId as number, row as any)
+        api.updateFlavorProfile(row.flavorId as number, asEntity(row))
       }
-      deleteFn={(row) => api.deleteFlavorProfile(row.flavorId as number)}
+      deleteFn={(row) => api.deleteFlavorProfile(row.flavorId)}
     />
   );
 }
