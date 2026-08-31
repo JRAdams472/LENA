@@ -1,7 +1,7 @@
-﻿using LENA.Domain.Entity.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using LENA.Domain.Entity.Inventory;
 
 namespace LENA.Domain.Services
 {

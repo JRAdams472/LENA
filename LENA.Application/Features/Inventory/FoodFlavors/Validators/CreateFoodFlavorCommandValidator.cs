@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using LENA.Application.Features.Inventory.FoodFlavors.Commands;
 using LENA.Domain.Entity.Inventory;
 

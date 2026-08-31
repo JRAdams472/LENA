@@ -1,4 +1,4 @@
-﻿using LENA.Application.Contracts.Persistence;
+using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 
 namespace LENA.Application.Repositories

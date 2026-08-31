@@ -3,8 +3,8 @@ using FluentValidation;
 using LENA.Application.Features.Wine.Types.Commands;
 using LENA.Application.Features.Wine.Types.Validators;
 using LENA.Domain.Entity.Wine;
-using TypeEntity = LENA.Domain.Entity.Wine.Type;
 using Xunit;
+using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.UnitTests.Features.Wine.Types.Validators
 {

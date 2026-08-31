@@ -1,7 +1,7 @@
+using System.Data.Common;
 using Dapper;
 using LENA.Application.Contracts.Persistence;
 using Microsoft.Data.SqlClient;
-using System.Data.Common;
 
 namespace LENA.Application.Repositories
 {

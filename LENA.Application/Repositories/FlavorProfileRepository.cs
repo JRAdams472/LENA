@@ -1,4 +1,4 @@
-﻿using LENA.Application.Contracts.Persistence;
+using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 
 namespace LENA.Application.Repositories

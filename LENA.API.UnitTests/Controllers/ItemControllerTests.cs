@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LENA.API.Controllers;
 using LENA.Application.Features.Inventory.Items.Commands;
@@ -6,9 +9,6 @@ using LENA.Domain.Entity.Inventory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace LENA.API.UnitTests.Controllers

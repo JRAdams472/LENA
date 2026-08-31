@@ -1,4 +1,4 @@
-﻿namespace LENA.API.UnitTests;
+namespace LENA.API.UnitTests;
 
 public class UnitTest1
 {
