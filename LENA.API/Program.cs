@@ -43,8 +43,15 @@ builder.Services.AddMediatR(cfg =>
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.LoggingBehavior<,>));
 });
 
-builder.Services.AddSingleton<IDbConnectionFactory>(
-    new DbConnectionFactory(builder.Configuration.GetConnectionString("DefaultConnection")!));
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "A 'DefaultConnection' connection string is required. " +
+        "Add it to LENA.API/appsettings.json or LENA.API/appsettings.Development.json.");
+}
+
+builder.Services.AddSingleton<IDbConnectionFactory>(new DbConnectionFactory(connectionString));
 
 builder.Services.AddScoped<IBottleRepository, BottleRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
