@@ -27,7 +27,11 @@ builder.Host.UseSerilog(Log.Logger, true);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(LENA.Application.Features.Wine.Commands.CreateBottleCommand).Assembly));
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(LENA.Application.Features.Wine.Commands.CreateBottleCommand).Assembly);
+    cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.LoggingBehavior<,>));
+});
 
 builder.Services.AddSingleton<IDbConnectionFactory>(
     new DbConnectionFactory(builder.Configuration.GetConnectionString("DefaultConnection")!));
