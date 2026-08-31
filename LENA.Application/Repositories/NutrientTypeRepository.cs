@@ -1,6 +1,7 @@
 using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
+using System.Data;
 
 namespace LENA.Application.Repositories
 {
@@ -13,48 +14,36 @@ namespace LENA.Application.Repositories
         public override async Task<IReadOnlyList<NutrientType>> ListAllAsync()
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT nutrient_id AS NutrientId,
-                       nutrient_name AS NutrientName,
-                       unit_of_measure AS UnitOfMeasure
-                FROM [Inventory].[nutrient_types]
-                ORDER BY nutrient_name";
-            return (IReadOnlyList<NutrientType>)await connection.QueryAsync<NutrientType>(sql);
+            return (IReadOnlyList<NutrientType>)await connection.QueryAsync<NutrientType>(
+                "[Inventory].[usp_NutrientType_ListAll]",
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<NutrientType?> GetByIdAsync(int id)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT nutrient_id AS NutrientId,
-                       nutrient_name AS NutrientName,
-                       unit_of_measure AS UnitOfMeasure
-                FROM [Inventory].[nutrient_types]
-                WHERE nutrient_id = @Id";
-            return await connection.QueryFirstOrDefaultAsync<NutrientType>(sql, new { Id = id });
+            return await connection.QueryFirstOrDefaultAsync<NutrientType>(
+                "[Inventory].[usp_NutrientType_GetById]",
+                new { Id = id },
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<NutrientType?> GetByNameAsync(string name)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT nutrient_id AS NutrientId,
-                       nutrient_name AS NutrientName,
-                       unit_of_measure AS UnitOfMeasure
-                FROM [Inventory].[nutrient_types]
-                WHERE nutrient_name = @Name";
-            return await connection.QueryFirstOrDefaultAsync<NutrientType>(sql, new { Name = name });
+            return await connection.QueryFirstOrDefaultAsync<NutrientType>(
+                "[Inventory].[usp_NutrientType_GetByName]",
+                new { Name = name },
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<NutrientType> CreateAsync(NutrientType entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                INSERT INTO [Inventory].[nutrient_types] (nutrient_name, unit_of_measure)
-                VALUES (@NutrientName, @UnitOfMeasure);
-                SELECT CAST(SCOPE_IDENTITY() as int);";
-
-            var id = await connection.QuerySingleAsync<int>(sql, entity);
+            var id = await connection.QuerySingleAsync<int>(
+                "[Inventory].[usp_NutrientType_Create]",
+                entity,
+                commandType: CommandType.StoredProcedure);
             entity.NutrientId = id;
             return entity;
         }
@@ -62,21 +51,20 @@ namespace LENA.Application.Repositories
         public override async Task<NutrientType> UpdateAsync(NutrientType entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                UPDATE [Inventory].[nutrient_types]
-                SET nutrient_name = @NutrientName,
-                    unit_of_measure = @UnitOfMeasure
-                WHERE nutrient_id = @NutrientId";
-
-            await connection.ExecuteAsync(sql, entity);
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_NutrientType_Update]",
+                entity,
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
 
         public override async Task<NutrientType> DeleteAsync(NutrientType entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "DELETE FROM [Inventory].[nutrient_types] WHERE nutrient_id = @NutrientId";
-            await connection.ExecuteAsync(sql, new { entity.NutrientId });
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_NutrientType_Delete]",
+                new { entity.NutrientId },
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
     }

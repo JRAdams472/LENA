@@ -1,6 +1,7 @@
 using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
+using System.Data;
 
 namespace LENA.Application.Repositories
 {
@@ -13,24 +14,18 @@ namespace LENA.Application.Repositories
         public override async Task<IReadOnlyList<FoodNutrient>> ListAllAsync()
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT food_id AS FoodId,
-                       nutrient_id AS NutrientId,
-                       amount_per_serving AS AmountPerServing
-                FROM [Inventory].[food_nutrients]";
-            return (IReadOnlyList<FoodNutrient>)await connection.QueryAsync<FoodNutrient>(sql);
+            return (IReadOnlyList<FoodNutrient>)await connection.QueryAsync<FoodNutrient>(
+                "[Inventory].[usp_FoodNutrient_ListAll]",
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<FoodNutrient?> GetByIdAsync(int id)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT food_id AS FoodId,
-                       nutrient_id AS NutrientId,
-                       amount_per_serving AS AmountPerServing
-                FROM [Inventory].[food_nutrients]
-                WHERE food_id = @Id";
-            return await connection.QueryFirstOrDefaultAsync<FoodNutrient>(sql, new { Id = id });
+            return await connection.QueryFirstOrDefaultAsync<FoodNutrient>(
+                "[Inventory].[usp_FoodNutrient_GetById]",
+                new { Id = id },
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<FoodNutrient?> GetByNameAsync(string name)
@@ -41,68 +36,58 @@ namespace LENA.Application.Repositories
         public override async Task<FoodNutrient> CreateAsync(FoodNutrient entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                INSERT INTO [Inventory].[food_nutrients] (food_id, nutrient_id, amount_per_serving)
-                VALUES (@FoodId, @NutrientId, @AmountPerServing)";
-
-            await connection.ExecuteAsync(sql, entity);
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_FoodNutrient_Create]",
+                entity,
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
 
         public override async Task<FoodNutrient> UpdateAsync(FoodNutrient entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                UPDATE [Inventory].[food_nutrients]
-                SET amount_per_serving = @AmountPerServing
-                WHERE food_id = @FoodId AND nutrient_id = @NutrientId";
-
-            await connection.ExecuteAsync(sql, entity);
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_FoodNutrient_Update]",
+                entity,
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
 
         public override async Task<FoodNutrient> DeleteAsync(FoodNutrient entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "DELETE FROM [Inventory].[food_nutrients] WHERE food_id = @FoodId AND nutrient_id = @NutrientId";
-            await connection.ExecuteAsync(sql, new { entity.FoodId, entity.NutrientId });
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_FoodNutrient_Delete]",
+                new { entity.FoodId, entity.NutrientId },
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
 
         public async Task<IEnumerable<FoodNutrient>> GetByFoodIdAsync(int foodId)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT food_id AS FoodId,
-                       nutrient_id AS NutrientId,
-                       amount_per_serving AS AmountPerServing
-                FROM [Inventory].[food_nutrients]
-                WHERE food_id = @FoodId";
-            return await connection.QueryAsync<FoodNutrient>(sql, new { FoodId = foodId });
+            return await connection.QueryAsync<FoodNutrient>(
+                "[Inventory].[usp_FoodNutrient_GetByFoodId]",
+                new { FoodId = foodId },
+                commandType: CommandType.StoredProcedure);
         }
 
         public async Task<IEnumerable<FoodNutrient>> GetByNutrientIdAsync(int nutrientId)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT food_id AS FoodId,
-                       nutrient_id AS NutrientId,
-                       amount_per_serving AS AmountPerServing
-                FROM [Inventory].[food_nutrients]
-                WHERE nutrient_id = @NutrientId";
-            return await connection.QueryAsync<FoodNutrient>(sql, new { NutrientId = nutrientId });
+            return await connection.QueryAsync<FoodNutrient>(
+                "[Inventory].[usp_FoodNutrient_GetByNutrientId]",
+                new { NutrientId = nutrientId },
+                commandType: CommandType.StoredProcedure);
         }
 
         public async Task<FoodNutrient?> GetByFoodAndNutrientIdAsync(int foodId, int nutrientId)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT food_id AS FoodId,
-                       nutrient_id AS NutrientId,
-                       amount_per_serving AS AmountPerServing
-                FROM [Inventory].[food_nutrients]
-                WHERE food_id = @FoodId AND nutrient_id = @NutrientId";
-            return await connection.QueryFirstOrDefaultAsync<FoodNutrient>(sql, new { FoodId = foodId, NutrientId = nutrientId });
+            return await connection.QueryFirstOrDefaultAsync<FoodNutrient>(
+                "[Inventory].[usp_FoodNutrient_GetByFoodAndNutrientId]",
+                new { FoodId = foodId, NutrientId = nutrientId },
+                commandType: CommandType.StoredProcedure);
         }
     }
 }

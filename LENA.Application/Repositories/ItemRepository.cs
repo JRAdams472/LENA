@@ -1,6 +1,7 @@
 using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
+using System.Data;
 
 namespace LENA.Application.Repositories
 {
@@ -13,37 +14,36 @@ namespace LENA.Application.Repositories
         public override async Task<IReadOnlyList<Item>> ListAllAsync()
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "SELECT * FROM [Inventory].[Item] ORDER BY [Name]";
-            return (IReadOnlyList<Item>)await connection.QueryAsync<Item>(sql);
+            return (IReadOnlyList<Item>)await connection.QueryAsync<Item>(
+                "[Inventory].[usp_Item_ListAll]",
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<Item?> GetByIdAsync(int id)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "SELECT * FROM [Inventory].[Item] WHERE [ItemID] = @Id";
-            return await connection.QueryFirstOrDefaultAsync<Item>(sql, new { Id = id });
+            return await connection.QueryFirstOrDefaultAsync<Item>(
+                "[Inventory].[usp_Item_GetById]",
+                new { Id = id },
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<Item?> GetByNameAsync(string name)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "SELECT * FROM [Inventory].[Item] WHERE [Name] = @Name";
-            return await connection.QueryFirstOrDefaultAsync<Item>(sql, new { Name = name });
+            return await connection.QueryFirstOrDefaultAsync<Item>(
+                "[Inventory].[usp_Item_GetByName]",
+                new { Name = name },
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<Item> CreateAsync(Item entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                INSERT INTO [Inventory].[Item]
-                ([Name], [Brand], [UPC12], [UPC14], [CategoryID], [Unit], [CurrentQuantity], [MinQuantity],
-                 [PurchaseDate], [ExpiryDate], [Notes], [IsFavorite], [CreatedBy], [CreateDate])
-                VALUES
-                (@Name, @Brand, @UPC12, @UPC14, @CategoryID, @Unit, @CurrentQuantity, @MinQuantity,
-                 @PurchaseDate, @ExpiryDate, @Notes, @IsFavorite, @CreatedBy, @CreateDate);
-                SELECT CAST(SCOPE_IDENTITY() as int);";
-
-            var id = await connection.QuerySingleAsync<int>(sql, entity);
+            var id = await connection.QuerySingleAsync<int>(
+                "[Inventory].[usp_Item_Create]",
+                entity,
+                commandType: CommandType.StoredProcedure);
             entity.ItemID = id;
             return entity;
         }
@@ -51,62 +51,66 @@ namespace LENA.Application.Repositories
         public override async Task<Item> UpdateAsync(Item entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                UPDATE [Inventory].[Item]
-                SET [Name] = @Name, [Brand] = @Brand, [UPC12] = @UPC12, [UPC14] = @UPC14,
-                    [CategoryID] = @CategoryID, [Unit] = @Unit, [CurrentQuantity] = @CurrentQuantity,
-                    [MinQuantity] = @MinQuantity, [PurchaseDate] = @PurchaseDate, [ExpiryDate] = @ExpiryDate,
-                    [Notes] = @Notes, [IsFavorite] = @IsFavorite, [LastUpdatedBy] = @LastUpdatedBy,
-                    [LastUpdatedDate] = @LastUpdatedDate
-                WHERE [ItemID] = @ItemID";
-
-            await connection.ExecuteAsync(sql, entity);
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_Item_Update]",
+                entity,
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
 
         public override async Task<Item> DeleteAsync(Item entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "DELETE FROM [Inventory].[Item] WHERE [ItemID] = @ItemID";
-            await connection.ExecuteAsync(sql, new { entity.ItemID });
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_Item_Delete]",
+                new { entity.ItemID },
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
 
         public async Task ChangeItemCategoryAsync(int itemId, int newCategoryId)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "UPDATE [Inventory].[Item] SET [CategoryID] = @CategoryID WHERE [ItemID] = @ItemID";
-            await connection.ExecuteAsync(sql, new { ItemID = itemId, CategoryID = newCategoryId });
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_Item_ChangeItemCategory]",
+                new { ItemID = itemId, CategoryID = newCategoryId },
+                commandType: CommandType.StoredProcedure);
         }
 
         public async Task AddOrUpdateUPC12Async(int itemId, string upc12)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "UPDATE [Inventory].[Item] SET [UPC12] = @UPC12 WHERE [ItemID] = @ItemID";
-            await connection.ExecuteAsync(sql, new { ItemID = itemId, UPC12 = upc12 });
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_Item_AddOrUpdateUPC12]",
+                new { ItemID = itemId, UPC12 = upc12 },
+                commandType: CommandType.StoredProcedure);
         }
 
         public async Task AddOrUpdateUPC14Async(int itemId, string upc14)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "UPDATE [Inventory].[Item] SET [UPC14] = @UPC14 WHERE [ItemID] = @ItemID";
-            await connection.ExecuteAsync(sql, new { ItemID = itemId, UPC14 = upc14 });
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_Item_AddOrUpdateUPC14]",
+                new { ItemID = itemId, UPC14 = upc14 },
+                commandType: CommandType.StoredProcedure);
         }
 
         public async Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = purchaseDate.HasValue
-                ? "UPDATE [Inventory].[Item] SET [CurrentQuantity] = @Quantity, [PurchaseDate] = @PurchaseDate WHERE [ItemID] = @ItemID"
-                : "UPDATE [Inventory].[Item] SET [CurrentQuantity] = @Quantity WHERE [ItemID] = @ItemID";
-            await connection.ExecuteAsync(sql, new { ItemID = itemId, Quantity = quantity, PurchaseDate = purchaseDate });
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_Item_AdjustQuantity]",
+                new { ItemID = itemId, Quantity = quantity, PurchaseDate = purchaseDate },
+                commandType: CommandType.StoredProcedure);
         }
 
         public async Task SetFavoriteAsync(int itemId, bool isFavorite)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "UPDATE [Inventory].[Item] SET [IsFavorite] = @IsFavorite WHERE [ItemID] = @ItemID";
-            await connection.ExecuteAsync(sql, new { ItemID = itemId, IsFavorite = isFavorite });
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_Item_SetFavorite]",
+                new { ItemID = itemId, IsFavorite = isFavorite },
+                commandType: CommandType.StoredProcedure);
         }
     }
 }

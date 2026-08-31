@@ -1,6 +1,7 @@
 using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
+using System.Data;
 
 namespace LENA.Application.Repositories
 {
@@ -13,48 +14,36 @@ namespace LENA.Application.Repositories
         public override async Task<IReadOnlyList<FlavorProfile>> ListAllAsync()
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT flavor_id AS FlavorId,
-                       flavor_name AS FlavorName,
-                       is_active AS IsActive
-                FROM [Inventory].[flavor_profiles]
-                ORDER BY flavor_name";
-            return (IReadOnlyList<FlavorProfile>)await connection.QueryAsync<FlavorProfile>(sql);
+            return (IReadOnlyList<FlavorProfile>)await connection.QueryAsync<FlavorProfile>(
+                "[Inventory].[usp_FlavorProfile_ListAll]",
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<FlavorProfile?> GetByIdAsync(int id)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT flavor_id AS FlavorId,
-                       flavor_name AS FlavorName,
-                       is_active AS IsActive
-                FROM [Inventory].[flavor_profiles]
-                WHERE flavor_id = @Id";
-            return await connection.QueryFirstOrDefaultAsync<FlavorProfile>(sql, new { Id = id });
+            return await connection.QueryFirstOrDefaultAsync<FlavorProfile>(
+                "[Inventory].[usp_FlavorProfile_GetById]",
+                new { Id = id },
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<FlavorProfile?> GetByNameAsync(string name)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT flavor_id AS FlavorId,
-                       flavor_name AS FlavorName,
-                       is_active AS IsActive
-                FROM [Inventory].[flavor_profiles]
-                WHERE flavor_name = @Name";
-            return await connection.QueryFirstOrDefaultAsync<FlavorProfile>(sql, new { Name = name });
+            return await connection.QueryFirstOrDefaultAsync<FlavorProfile>(
+                "[Inventory].[usp_FlavorProfile_GetByName]",
+                new { Name = name },
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<FlavorProfile> CreateAsync(FlavorProfile entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                INSERT INTO [Inventory].[flavor_profiles] (flavor_name, is_active)
-                VALUES (@FlavorName, @IsActive);
-                SELECT CAST(SCOPE_IDENTITY() as int);";
-
-            var id = await connection.QuerySingleAsync<int>(sql, entity);
+            var id = await connection.QuerySingleAsync<int>(
+                "[Inventory].[usp_FlavorProfile_Create]",
+                entity,
+                commandType: CommandType.StoredProcedure);
             entity.FlavorId = id;
             return entity;
         }
@@ -62,35 +51,29 @@ namespace LENA.Application.Repositories
         public override async Task<FlavorProfile> UpdateAsync(FlavorProfile entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                UPDATE [Inventory].[flavor_profiles]
-                SET flavor_name = @FlavorName,
-                    is_active = @IsActive
-                WHERE flavor_id = @FlavorId";
-
-            await connection.ExecuteAsync(sql, entity);
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_FlavorProfile_Update]",
+                entity,
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
 
         public override async Task<FlavorProfile> DeleteAsync(FlavorProfile entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "DELETE FROM [Inventory].[flavor_profiles] WHERE flavor_id = @FlavorId";
-            await connection.ExecuteAsync(sql, new { entity.FlavorId });
+            await connection.ExecuteAsync(
+                "[Inventory].[usp_FlavorProfile_Delete]",
+                new { entity.FlavorId },
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
 
         public async Task<IReadOnlyList<FlavorProfile>> GetAllActiveAsync()
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"
-                SELECT flavor_id AS FlavorId,
-                       flavor_name AS FlavorName,
-                       is_active AS IsActive
-                FROM [Inventory].[flavor_profiles]
-                WHERE is_active = 1
-                ORDER BY flavor_name";
-            return (IReadOnlyList<FlavorProfile>)await connection.QueryAsync<FlavorProfile>(sql);
+            return (IReadOnlyList<FlavorProfile>)await connection.QueryAsync<FlavorProfile>(
+                "[Inventory].[usp_FlavorProfile_GetAllActive]",
+                commandType: CommandType.StoredProcedure);
         }
     }
 }

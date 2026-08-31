@@ -1,6 +1,7 @@
 using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
+using System.Data;
 
 namespace LENA.Application.Repositories
 {
@@ -13,26 +14,28 @@ namespace LENA.Application.Repositories
         public async Task<IReadOnlyList<Region>> GetAllByCountryIdAsync(int countryId)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "SELECT * FROM [Wine].[Region] WHERE CountryID = @CountryId ORDER BY RegionName";
-            return (IReadOnlyList<Region>)await connection.QueryAsync<Region>(sql, new { CountryId = countryId });
+            return (IReadOnlyList<Region>)await connection.QueryAsync<Region>(
+                "[Wine].[usp_Region_GetAllByCountryId]",
+                new { CountryId = countryId },
+                commandType: CommandType.StoredProcedure);
         }
 
         public async Task<Region?> GetByNameAndCountryIdAsync(string name, int countryId)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "SELECT * FROM [Wine].[Region] WHERE RegionName = @Name AND CountryID = @CountryId";
-            return await connection.QueryFirstOrDefaultAsync<Region>(sql, new { Name = name, CountryId = countryId });
+            return await connection.QueryFirstOrDefaultAsync<Region>(
+                "[Wine].[usp_Region_GetByNameAndCountryId]",
+                new { Name = name, CountryId = countryId },
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<Region> CreateAsync(Region entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"INSERT INTO [Wine].[Region] 
-                       (RegionName, Description, IsActive, CountryID, CreatedBy, CreateDate) 
-                       VALUES (@RegionName, @Description, @IsActive, @CountryID, @CreatedBy, @CreateDate);
-                       SELECT CAST(SCOPE_IDENTITY() as int);";
-            
-            var id = await connection.QuerySingleAsync<int>(sql, entity);
+            var id = await connection.QuerySingleAsync<int>(
+                "[Wine].[usp_Region_Create]",
+                entity,
+                commandType: CommandType.StoredProcedure);
             entity.RegionID = id;
             return entity;
         }
@@ -40,42 +43,47 @@ namespace LENA.Application.Repositories
         public override async Task<Region?> GetByIdAsync(int id)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "SELECT * FROM [Wine].[Region] WHERE RegionID = @Id";
-            return await connection.QueryFirstOrDefaultAsync<Region>(sql, new { Id = id });
+            return await connection.QueryFirstOrDefaultAsync<Region>(
+                "[Wine].[usp_Region_GetById]",
+                new { Id = id },
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<IReadOnlyList<Region>> ListAllAsync()
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "SELECT * FROM [Wine].[Region] ORDER BY RegionName";
-            return (IReadOnlyList<Region>)await connection.QueryAsync<Region>(sql);
+            return (IReadOnlyList<Region>)await connection.QueryAsync<Region>(
+                "[Wine].[usp_Region_ListAll]",
+                commandType: CommandType.StoredProcedure);
         }
 
         public override async Task<Region> UpdateAsync(Region entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = @"UPDATE [Wine].[Region] 
-                       SET RegionName = @RegionName, Description = @Description, IsActive = @IsActive,
-                           CountryID = @CountryID, LastUpdatedBy = @LastUpdatedBy, LastUpdatedDate = @LastUpdatedDate
-                       WHERE RegionID = @RegionID";
-            
-            await connection.ExecuteAsync(sql, entity);
+            await connection.ExecuteAsync(
+                "[Wine].[usp_Region_Update]",
+                entity,
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
 
         public override async Task<Region> DeleteAsync(Region entity)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "DELETE FROM [Wine].[Region] WHERE RegionID = @RegionID";
-            await connection.ExecuteAsync(sql, new { RegionID = entity.RegionID });
+            await connection.ExecuteAsync(
+                "[Wine].[usp_Region_Delete]",
+                new { RegionID = entity.RegionID },
+                commandType: CommandType.StoredProcedure);
             return entity;
         }
 
         public override async Task<Region?> GetByNameAsync(string name)
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            var sql = "SELECT * FROM [Wine].[Region] WHERE RegionName = @Name";
-            return await connection.QueryFirstOrDefaultAsync<Region>(sql, new { Name = name });
+            return await connection.QueryFirstOrDefaultAsync<Region>(
+                "[Wine].[usp_Region_GetByName]",
+                new { Name = name },
+                commandType: CommandType.StoredProcedure);
         }
 
         public async Task<IReadOnlyList<Region>> GetAllByRegionIdAsync(int regionId)
