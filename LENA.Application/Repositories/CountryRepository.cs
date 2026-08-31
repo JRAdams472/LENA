@@ -1,7 +1,5 @@
-﻿using Dapper;
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
-using System.Data;
 
 namespace LENA.Application.Repositories
 {
@@ -12,78 +10,36 @@ namespace LENA.Application.Repositories
         }
 
         public async Task<Country?> GetByISOCodeAsync(string isoCode, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Country>(
-                "[Wine].[usp_Country_GetByISOCode]",
-                new { ISOCode = isoCode },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryFirstAsync<Country>("[Wine].[usp_Country_GetByISOCode]", new { ISOCode = isoCode }, cancellationToken);
 
         public async Task<IReadOnlyList<Country>> GetAllActiveAsync(CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Country>)await connection.QueryAsync<Country>(
-                "[Wine].[usp_Country_GetAllActive]",
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryListAsync<Country>("[Wine].[usp_Country_GetAllActive]", cancellationToken: cancellationToken);
 
         public override async Task<Country> CreateAsync(Country entity, CancellationToken cancellationToken = default)
         {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            var id = await connection.QuerySingleAsync<int>(
-                "[Wine].[usp_Country_Create]",
-                entity,
-                commandType: CommandType.StoredProcedure);
-            entity.CountryID = id;
+            entity.CountryID = await QuerySingleAsync<int>("[Wine].[usp_Country_Create]", entity, cancellationToken);
             return entity;
         }
 
         public override async Task<Country?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Country>(
-                "[Wine].[usp_Country_GetById]",
-                new { Id = id },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryFirstAsync<Country>("[Wine].[usp_Country_GetById]", new { Id = id }, cancellationToken);
 
         public override async Task<IReadOnlyList<Country>> ListAllAsync(CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Country>)await connection.QueryAsync<Country>(
-                "[Wine].[usp_Country_ListAll]",
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryListAsync<Country>("[Wine].[usp_Country_ListAll]", cancellationToken: cancellationToken);
 
         public override async Task<Country> UpdateAsync(Country entity, CancellationToken cancellationToken = default)
         {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync(
-                "[Wine].[usp_Country_Update]",
-                entity,
-                commandType: CommandType.StoredProcedure);
+            await ExecuteCommandAsync("[Wine].[usp_Country_Update]", entity, cancellationToken);
             return entity;
         }
 
         public override async Task<Country> DeleteAsync(Country entity, CancellationToken cancellationToken = default)
         {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync(
-                "[Wine].[usp_Country_Delete]",
-                new { CountryID = entity.CountryID },
-                commandType: CommandType.StoredProcedure);
+            await ExecuteCommandAsync("[Wine].[usp_Country_Delete]", new { CountryID = entity.CountryID }, cancellationToken);
             return entity;
         }
 
         public override async Task<Country?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Country>(
-                "[Wine].[usp_Country_GetByName]",
-                new { Name = name },
-                commandType: CommandType.StoredProcedure);
-        }
-
+            => await QueryFirstAsync<Country>("[Wine].[usp_Country_GetByName]", new { Name = name }, cancellationToken);
     }
 }

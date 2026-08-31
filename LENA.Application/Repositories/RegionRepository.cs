@@ -1,7 +1,5 @@
-﻿using Dapper;
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
-using System.Data;
 
 namespace LENA.Application.Repositories
 {
@@ -12,79 +10,36 @@ namespace LENA.Application.Repositories
         }
 
         public async Task<IReadOnlyList<Region>> GetAllByCountryIdAsync(int countryId, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Region>)await connection.QueryAsync<Region>(
-                "[Wine].[usp_Region_GetAllByCountryId]",
-                new { CountryId = countryId },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryListAsync<Region>("[Wine].[usp_Region_GetAllByCountryId]", new { CountryId = countryId }, cancellationToken);
 
         public async Task<Region?> GetByNameAndCountryIdAsync(string name, int countryId, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Region>(
-                "[Wine].[usp_Region_GetByNameAndCountryId]",
-                new { Name = name, CountryId = countryId },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryFirstAsync<Region>("[Wine].[usp_Region_GetByNameAndCountryId]", new { Name = name, CountryId = countryId }, cancellationToken);
 
         public override async Task<Region> CreateAsync(Region entity, CancellationToken cancellationToken = default)
         {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            var id = await connection.QuerySingleAsync<int>(
-                "[Wine].[usp_Region_Create]",
-                entity,
-                commandType: CommandType.StoredProcedure);
-            entity.RegionID = id;
+            entity.RegionID = await QuerySingleAsync<int>("[Wine].[usp_Region_Create]", entity, cancellationToken);
             return entity;
         }
 
         public override async Task<Region?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Region>(
-                "[Wine].[usp_Region_GetById]",
-                new { Id = id },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryFirstAsync<Region>("[Wine].[usp_Region_GetById]", new { Id = id }, cancellationToken);
 
         public override async Task<IReadOnlyList<Region>> ListAllAsync(CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Region>)await connection.QueryAsync<Region>(
-                "[Wine].[usp_Region_ListAll]",
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryListAsync<Region>("[Wine].[usp_Region_ListAll]", cancellationToken: cancellationToken);
 
         public override async Task<Region> UpdateAsync(Region entity, CancellationToken cancellationToken = default)
         {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync(
-                "[Wine].[usp_Region_Update]",
-                entity,
-                commandType: CommandType.StoredProcedure);
+            await ExecuteCommandAsync("[Wine].[usp_Region_Update]", entity, cancellationToken);
             return entity;
         }
 
         public override async Task<Region> DeleteAsync(Region entity, CancellationToken cancellationToken = default)
         {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync(
-                "[Wine].[usp_Region_Delete]",
-                new { RegionID = entity.RegionID },
-                commandType: CommandType.StoredProcedure);
+            await ExecuteCommandAsync("[Wine].[usp_Region_Delete]", new { RegionID = entity.RegionID }, cancellationToken);
             return entity;
         }
 
         public override async Task<Region?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Region>(
-                "[Wine].[usp_Region_GetByName]",
-                new { Name = name },
-                commandType: CommandType.StoredProcedure);
-        }
-
+            => await QueryFirstAsync<Region>("[Wine].[usp_Region_GetByName]", new { Name = name }, cancellationToken);
     }
 }

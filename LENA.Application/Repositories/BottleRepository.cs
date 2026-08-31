@@ -1,7 +1,5 @@
-﻿using Dapper;
-using LENA.Application.Contracts.Persistence;
+﻿using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
-using System.Data;
 
 namespace LENA.Application.Repositories
 {
@@ -12,123 +10,51 @@ namespace LENA.Application.Repositories
         }
 
         public async Task<IReadOnlyList<Bottle>> GetAllByCountryIdAsync(int countryId, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
-                "[Wine].[usp_Bottle_GetAllByCountryId]",
-                new { CountryId = countryId },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryListAsync<Bottle>("[Wine].[usp_Bottle_GetAllByCountryId]", new { CountryId = countryId }, cancellationToken);
 
         public async Task<IReadOnlyList<Bottle>> GetAllByRegionIdAsync(int regionId, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
-                "[Wine].[usp_Bottle_GetAllByRegionId]",
-                new { RegionId = regionId },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryListAsync<Bottle>("[Wine].[usp_Bottle_GetAllByRegionId]", new { RegionId = regionId }, cancellationToken);
 
         public async Task<IReadOnlyList<Bottle>> GetAllByTypeIdAsync(int typeId, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
-                "[Wine].[usp_Bottle_GetAllByTypeId]",
-                new { TypeId = typeId },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryListAsync<Bottle>("[Wine].[usp_Bottle_GetAllByTypeId]", new { TypeId = typeId }, cancellationToken);
 
         public async Task<IReadOnlyList<Bottle>> GetAllByVintageYearAsync(int vintageYear, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
-                "[Wine].[usp_Bottle_GetAllByVintageYear]",
-                new { VintageYear = vintageYear },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryListAsync<Bottle>("[Wine].[usp_Bottle_GetAllByVintageYear]", new { VintageYear = vintageYear }, cancellationToken);
 
         public async Task<IReadOnlyList<Bottle>> GetFavoritesAsync(CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
-                "[Wine].[usp_Bottle_GetFavorites]",
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryListAsync<Bottle>("[Wine].[usp_Bottle_GetFavorites]", cancellationToken: cancellationToken);
 
         public async Task<IReadOnlyList<Bottle>> SearchBottlesAsync(string searchTerm, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            var command = new CommandDefinition(
-                "[Wine].[usp_Bottle_SearchBottles]",
-                new { SearchTerm = searchTerm },
-                commandType: CommandType.StoredProcedure,
-                cancellationToken: cancellationToken);
-            return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(command);
-        }
+            => await QueryListAsync<Bottle>("[Wine].[usp_Bottle_SearchBottles]", new { SearchTerm = searchTerm }, cancellationToken);
 
         public async Task<int> GetTotalBottleCountAsync(CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.QuerySingleAsync<int>(
-                "[Wine].[usp_Bottle_GetTotalBottleCount]",
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QuerySingleAsync<int>("[Wine].[usp_Bottle_GetTotalBottleCount]", cancellationToken: cancellationToken);
 
         public override async Task<Bottle> CreateAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            var id = await connection.QuerySingleAsync<int>(
-                "[Wine].[usp_Bottle_Create]",
-                entity,
-                commandType: CommandType.StoredProcedure);
-            entity.BottleID = id;
+            entity.BottleID = await QuerySingleAsync<int>("[Wine].[usp_Bottle_Create]", entity, cancellationToken);
             return entity;
         }
 
         public override async Task<Bottle?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Bottle>(
-                "[Wine].[usp_Bottle_GetById]",
-                new { Id = id },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryFirstAsync<Bottle>("[Wine].[usp_Bottle_GetById]", new { Id = id }, cancellationToken);
 
         public override async Task<IReadOnlyList<Bottle>> ListAllAsync(CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(
-                "[Wine].[usp_Bottle_ListAll]",
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryListAsync<Bottle>("[Wine].[usp_Bottle_ListAll]", cancellationToken: cancellationToken);
 
         public override async Task<Bottle> UpdateAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync(
-                "[Wine].[usp_Bottle_Update]",
-                entity,
-                commandType: CommandType.StoredProcedure);
+            await ExecuteCommandAsync("[Wine].[usp_Bottle_Update]", entity, cancellationToken);
             return entity;
         }
 
         public override async Task<Bottle> DeleteAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync(
-                "[Wine].[usp_Bottle_Delete]",
-                new { BottleID = entity.BottleID },
-                commandType: CommandType.StoredProcedure);
+            await ExecuteCommandAsync("[Wine].[usp_Bottle_Delete]", new { BottleID = entity.BottleID }, cancellationToken);
             return entity;
         }
 
         public override async Task<Bottle?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-        {
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Bottle>(
-                "[Wine].[usp_Bottle_GetByName]",
-                new { Name = name },
-                commandType: CommandType.StoredProcedure);
-        }
+            => await QueryFirstAsync<Bottle>("[Wine].[usp_Bottle_GetByName]", new { Name = name }, cancellationToken);
     }
 }
