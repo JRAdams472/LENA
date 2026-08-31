@@ -13,6 +13,9 @@ import {
   GrapeVariety,
   BottleGrapeVariety,
   BottleFlavorProfile,
+  Recipe,
+  RecipeItem,
+  RecipeStep,
 } from "./types";
 
 const API_BASE_URL =
@@ -44,6 +47,8 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     const text = await res.text().catch(() => "");
     throw new ApiError(res.status, text || `HTTP ${res.status}`);
   }
+
+  if (res.status === 204) return undefined as T;
 
   const contentType = res.headers.get("content-type");
   if (contentType && contentType.includes("application/json")) {
@@ -176,4 +181,27 @@ export const api = {
   updateVintage: (id: number, vintage: Partial<Vintage>) =>
     request<Vintage>(`/api/Wine/vintages/${id}`, { method: "PUT", body: JSON.stringify({ ...vintage, vintageID: id }) }),
   deleteVintage: (id: number) => request<Vintage | null>(`/api/Wine/vintages/${id}`, { method: "DELETE" }),
+
+  // Recipes
+  getRecipes: () => request<Recipe[]>("/api/Recipe/recipes"),
+  getRecipe: (id: number) => request<Recipe>(`/api/Recipe/recipes/${id}`),
+  createRecipe: (recipe: Omit<Recipe, keyof AuditableEntity>) =>
+    request<Recipe>("/api/Recipe/recipes", { method: "POST", body: JSON.stringify(recipe) }),
+  updateRecipe: (id: number, recipe: Partial<Recipe>) =>
+    request<Recipe>(`/api/Recipe/recipes/${id}`, { method: "PUT", body: JSON.stringify({ ...recipe, recipeID: id }) }),
+  deleteRecipe: (id: number) => request<Recipe | null>(`/api/Recipe/recipes/${id}`, { method: "DELETE" }),
+
+  getRecipeItems: (recipeId: number) => request<RecipeItem[]>(`/api/Recipe/recipes/${recipeId}/items`),
+  addRecipeItem: (recipeId: number, item: { itemId: number; portion: number; unit: string | null }) =>
+    request<RecipeItem>(`/api/Recipe/recipes/${recipeId}/items`, { method: "POST", body: JSON.stringify(item) }),
+  removeRecipeItem: (recipeId: number, itemId: number) =>
+    request<void>(`/api/Recipe/recipes/${recipeId}/items/${itemId}`, { method: "DELETE" }),
+
+  getRecipeSteps: (recipeId: number) => request<RecipeStep[]>(`/api/Recipe/recipes/${recipeId}/steps`),
+  addRecipeStep: (recipeId: number, step: { stepNumber: number; instruction: string }) =>
+    request<RecipeStep>(`/api/Recipe/recipes/${recipeId}/steps`, { method: "POST", body: JSON.stringify(step) }),
+  updateRecipeStep: (recipeId: number, stepId: number, step: { stepNumber: number; instruction: string }) =>
+    request<RecipeStep>(`/api/Recipe/recipes/${recipeId}/steps/${stepId}`, { method: "PUT", body: JSON.stringify(step) }),
+  deleteRecipeStep: (recipeId: number, stepId: number) =>
+    request<void>(`/api/Recipe/recipes/${recipeId}/steps/${stepId}`, { method: "DELETE" }),
 };
