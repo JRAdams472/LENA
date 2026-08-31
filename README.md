@@ -17,6 +17,8 @@ LENA helps you manage your kitchen by keeping track of what you have, what you w
 ### Technology
 
 - **Database**: MS SQL Server
+- **Backend**: ASP.NET Core Web API
+- **Frontend**: Next.js 16 (App Router) + TypeScript + Material UI
 - **Platform**: Local/Server-based
 - **Privacy First**: No cloud dependencies
 
@@ -25,31 +27,116 @@ LENA helps you manage your kitchen by keeping track of what you have, what you w
 ## Project Structure
 
 ```
-lena/
-├── README.md
-├── SQL/
-│   ├── schema.sql          # Database schema
-│   ├── seed.sql            # Sample data
-│   └── procedures.sql      # Stored procedures
-├── docs/
-│   └── documentation.md    # This file
-└── notes.md                # Development notes
+LENA/
+├── LENA.API/                 # ASP.NET Core API
+├── LENA.Application/         # MediatR handlers, repositories, validators
+├── LENA/                     # Domain entities
+├── LENA.Application.UnitTests/
+├── LENA.API.UnitTests/
+├── frontend/                 # Next.js frontend
+│   ├── app/                  # App Router pages
+│   ├── lib/                  # Typed API client and types
+│   └── README.md             # Frontend-specific instructions
+├── SQL/                      # Database schema, seed data, stored procedures
+└── README.md                 # This file
 ```
 
 ---
 
 ## Quick Start
 
-1. Create the database using `SQL/schema.sql`
-2. Review the schema in `SQL/schema.sql`
-3. Optionally load sample data from `SQL/seed.sql`
+### 1. Database
+
+Create the database using `SQL/schema.sql`, then optionally load sample data from `SQL/seed.sql`.
+
+The API expects the `DefaultConnection` string in `LENA.API/appsettings.json`:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=LENA;Trusted_Connection=True;"
+}
+```
+
+Update this to point to your SQL Server or LocalDB instance.
+
+### 2. Run the API
+
+From the repo root:
+
+```bash
+dotnet run --project LENA.API
+```
+
+By default the API listens on `http://localhost:5059` as configured in `LENA.API/Properties/launchSettings.json`. The HTTPS profile also exposes `https://localhost:7284`.
+
+The API includes Swagger UI in development at `http://localhost:5059/swagger`.
+
+### 3. Run the Frontend
+
+From the `frontend/` directory:
+
+```bash
+cd frontend
+npm install
+```
+
+Copy the environment example and confirm the API origin:
+
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local` to match the running API port:
+
+```
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5059
+NEXT_PUBLIC_API_URL=http://localhost:5059
+```
+
+Start the dev server:
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+### 4. Confirm CORS
+
+The API registers an `AllowExternal` CORS policy allowing any origin, header, and method. If you serve the frontend from a different origin, verify that the API's CORS configuration in `LENA.API/Program.cs` covers it:
+
+```csharp
+options.AddPolicy("AllowExternal", policy =>
+{
+    policy.AllowAnyOrigin()
+          .AllowAnyHeader()
+          .AllowAnyMethod();
+});
+```
+
+---
+
+## Build for Production
+
+### API
+
+```bash
+dotnet build
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm run build
+```
 
 ---
 
 ## Getting Help
 
 - See `SQL/schema.sql` for the complete database design
-- Check `docs/documentation.md` for detailed usage guides
+- See `frontend/README.md` for frontend-specific details
 - Development notes in `notes.md`
 
 ---
