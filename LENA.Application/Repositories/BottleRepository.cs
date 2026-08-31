@@ -51,7 +51,6 @@ namespace LENA.Application.Repositories
             var sql = @"SELECT * FROM [Wine].[Bottle] 
                        WHERE (BottleNumber IS NOT NULL AND CAST(BottleNumber AS NVARCHAR(10)) LIKE @SearchTerm)
                           OR (Vineyard LIKE @SearchTerm)
-                          OR (GrapeVariety LIKE @SearchTerm)
                           OR (Notes LIKE @SearchTerm)
                        ORDER BY BottleNumber";
             return (IReadOnlyList<Bottle>)await connection.QueryAsync<Bottle>(sql, new { SearchTerm = $"%{searchTerm}%" });
@@ -68,9 +67,9 @@ namespace LENA.Application.Repositories
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = @"INSERT INTO [Wine].[Bottle] 
-                       (BottleNumber, TypeID, CountryID, RegionID, VintageYear, Vineyard, GrapeVariety, ABV, BottleSize, Quantity,
+                       (BottleNumber, TypeID, CountryID, RegionID, VintageYear, Vineyard, ABV, BottleSize, Quantity,
                         PurchaseDate, PurchasePrice, StorageTemp, Location, Notes, IsFavorite, CreatedBy, CreateDate) 
-                       VALUES (@BottleNumber, @TypeID, @CountryID, @RegionID, @VintageYear, @Vineyard, @GrapeVariety, @ABV, @BottleSize,
+                       VALUES (@BottleNumber, @TypeID, @CountryID, @RegionID, @VintageYear, @Vineyard, @ABV, @BottleSize,
                                @Quantity, @PurchaseDate, @PurchasePrice, @StorageTemp, @Location, @Notes, @IsFavorite, @CreatedBy, @CreateDate);
                        SELECT CAST(SCOPE_IDENTITY() as int);";
             
@@ -98,7 +97,7 @@ namespace LENA.Application.Repositories
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = @"UPDATE [Wine].[Bottle] 
                        SET BottleNumber = @BottleNumber, TypeID = @TypeID, CountryID = @CountryID, RegionID = @RegionID,
-                           VintageYear = @VintageYear, Vineyard = @Vineyard, GrapeVariety = @GrapeVariety, ABV = @ABV,
+                           VintageYear = @VintageYear, Vineyard = @Vineyard, ABV = @ABV,
                            BottleSize = @BottleSize, Quantity = @Quantity, PurchaseDate = @PurchaseDate,
                            PurchasePrice = @PurchasePrice, StorageTemp = @StorageTemp, Location = @Location,
                            Notes = @Notes, IsFavorite = @IsFavorite, LastUpdatedBy = @LastUpdatedBy, LastUpdatedDate = @LastUpdatedDate
