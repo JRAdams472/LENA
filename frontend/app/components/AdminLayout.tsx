@@ -20,6 +20,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import WineBarIcon from "@mui/icons-material/WineBar";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -76,6 +77,10 @@ const NAVIGATION: { label: string; href?: string; children?: NavItem[] }[] = [
       { label: "Types", href: "/wine/types" },
       { label: "Vintages", href: "/wine/vintages" },
     ],
+  },
+  {
+    label: "Recipes",
+    children: [{ label: "Recipes", href: "/recipes" }],
   },
 ];
 
@@ -136,6 +141,8 @@ export default function AdminLayout({
                 <InventoryIcon />
               ) : group.label === "Wine" ? (
                 <WineBarIcon />
+              ) : group.label === "Recipes" ? (
+                <MenuBookIcon />
               ) : null;
 
             return (
