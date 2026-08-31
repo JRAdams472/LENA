@@ -4,6 +4,5 @@ namespace LENA.Application.Contracts.Persistence
 {
     public interface INutrientTypeRepository : IAsyncRepository<NutrientType>
     {
-        Task<NutrientType?> GetByNameAsync(string name);
     }
 }

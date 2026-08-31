@@ -4,6 +4,5 @@ namespace LENA.Application.Contracts.Persistence
 {
     public interface ITypeRepository : IWineRepository<TypeEntity>
     {
-        Task<TypeEntity?> GetByNameAsync(string name);
     }
 }

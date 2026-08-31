@@ -6,6 +6,6 @@ namespace LENA.Application.Contracts.Persistence
     {
         Task<IEnumerable<FoodFlavor>> GetByFoodIdAsync(int foodId);
         Task<IEnumerable<FoodFlavor>> GetByFlavorIdAsync(int flavorId);
-        Task<FoodFlavor> GetByFoodAndFlavorIdAsync(int foodId, int flavorId);
+        Task<FoodFlavor?> GetByFoodAndFlavorIdAsync(int foodId, int flavorId);
     }
 }
