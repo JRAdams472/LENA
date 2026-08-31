@@ -3,9 +3,6 @@ using LENA.Application.Features.Inventory.Queries;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace LENA.API.Controllers
 {

@@ -1,11 +1,6 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System;
-using System.Linq;
 
 namespace LENA.Application.Features.Wine.Commands
 {

@@ -1,6 +1,5 @@
 using LENA.Application.Contracts.Persistence;
 using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
 
 namespace LENA.Application.Repositories
 {

@@ -1,11 +1,8 @@
-using LENA.Application.Features.Wine;
 using LENA.Application.Features.Wine.Commands;
 using LENA.Application.Features.Wine.Queries;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.API.Controllers

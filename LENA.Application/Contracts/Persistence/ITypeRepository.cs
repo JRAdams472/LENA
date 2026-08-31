@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.Contracts.Persistence

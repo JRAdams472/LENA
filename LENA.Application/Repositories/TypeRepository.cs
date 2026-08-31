@@ -1,11 +1,5 @@
 using Dapper;
 using LENA.Application.Contracts.Persistence;
-using LENA.Domain.Entity.Wine;
-using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.Repositories

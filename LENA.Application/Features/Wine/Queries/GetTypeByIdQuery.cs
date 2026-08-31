@@ -1,12 +1,6 @@
 using LENA.Application.Contracts.Persistence;
 using MediatR;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
-using LENA.Domain.Entity.Wine;
-using System;
-using System.Linq;
 
 namespace LENA.Application.Features.Wine.Queries
 {
