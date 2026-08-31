@@ -81,16 +81,5 @@ namespace LENA.Application.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public Task<IReadOnlyList<Vintage>> GetAllByCountryIdAsync(int countryId)
-            => throw new NotImplementedException();
-
-        public Task<IReadOnlyList<Vintage>> GetAllByRegionIdAsync(int regionId)
-            => throw new NotImplementedException();
-
-        public Task<IReadOnlyList<Vintage>> GetAllByTypeIdAsync(int typeId)
-            => throw new NotImplementedException();
-
-        public Task<IReadOnlyList<Vintage>> GetAllByVintageYearAsync(int vintageYear)
-            => throw new NotImplementedException();
     }
 }
