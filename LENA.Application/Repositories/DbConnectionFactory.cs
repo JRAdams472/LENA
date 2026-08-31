@@ -1,3 +1,4 @@
+using Dapper;
 using LENA.Application.Contracts.Persistence;
 using Microsoft.Data.SqlClient;
 using System.Data.Common;
@@ -7,6 +8,11 @@ namespace LENA.Application.Repositories
     public class DbConnectionFactory : IDbConnectionFactory
     {
         private readonly string _connectionString;
+
+        static DbConnectionFactory()
+        {
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+        }
 
         public DbConnectionFactory(string connectionString)
         {
