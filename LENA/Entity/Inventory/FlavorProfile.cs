@@ -11,7 +11,8 @@ namespace LENA.Domain.Entity.Inventory
     {
         public int FlavorId { get; set; }
         public string FlavorName { get; set; }
-        
+        public bool IsActive { get; set; } = true;
+
         // Navigation properties
         public ICollection<FoodFlavor>? FoodFlavors { get; set; }
     }

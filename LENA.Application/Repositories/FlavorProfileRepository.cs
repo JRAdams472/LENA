@@ -16,7 +16,7 @@ namespace LENA.Application.Repositories
             var sql = @"
                 SELECT flavor_id AS FlavorId,
                        flavor_name AS FlavorName,
-                       1 AS IsActive
+                       is_active AS IsActive
                 FROM [Inventory].[flavor_profiles]
                 ORDER BY flavor_name";
             return (IReadOnlyList<FlavorProfile>)await connection.QueryAsync<FlavorProfile>(sql);
@@ -28,7 +28,7 @@ namespace LENA.Application.Repositories
             var sql = @"
                 SELECT flavor_id AS FlavorId,
                        flavor_name AS FlavorName,
-                       1 AS IsActive
+                       is_active AS IsActive
                 FROM [Inventory].[flavor_profiles]
                 WHERE flavor_id = @Id";
             return await connection.QueryFirstOrDefaultAsync<FlavorProfile>(sql, new { Id = id });
@@ -40,7 +40,7 @@ namespace LENA.Application.Repositories
             var sql = @"
                 SELECT flavor_id AS FlavorId,
                        flavor_name AS FlavorName,
-                       1 AS IsActive
+                       is_active AS IsActive
                 FROM [Inventory].[flavor_profiles]
                 WHERE flavor_name = @Name";
             return await connection.QueryFirstOrDefaultAsync<FlavorProfile>(sql, new { Name = name });
@@ -50,8 +50,8 @@ namespace LENA.Application.Repositories
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = @"
-                INSERT INTO [Inventory].[flavor_profiles] (flavor_name)
-                VALUES (@FlavorName);
+                INSERT INTO [Inventory].[flavor_profiles] (flavor_name, is_active)
+                VALUES (@FlavorName, @IsActive);
                 SELECT CAST(SCOPE_IDENTITY() as int);";
 
             var id = await connection.QuerySingleAsync<int>(sql, entity);
@@ -64,7 +64,8 @@ namespace LENA.Application.Repositories
             using var connection = await _connectionFactory.CreateConnectionAsync();
             var sql = @"
                 UPDATE [Inventory].[flavor_profiles]
-                SET flavor_name = @FlavorName
+                SET flavor_name = @FlavorName,
+                    is_active = @IsActive
                 WHERE flavor_id = @FlavorId";
 
             await connection.ExecuteAsync(sql, entity);
@@ -81,7 +82,15 @@ namespace LENA.Application.Repositories
 
         public async Task<IReadOnlyList<FlavorProfile>> GetAllActiveAsync()
         {
-            return await ListAllAsync();
+            using var connection = await _connectionFactory.CreateConnectionAsync();
+            var sql = @"
+                SELECT flavor_id AS FlavorId,
+                       flavor_name AS FlavorName,
+                       is_active AS IsActive
+                FROM [Inventory].[flavor_profiles]
+                WHERE is_active = 1
+                ORDER BY flavor_name";
+            return (IReadOnlyList<FlavorProfile>)await connection.QueryAsync<FlavorProfile>(sql);
         }
     }
 }
