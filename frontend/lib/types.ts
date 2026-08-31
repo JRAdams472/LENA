@@ -153,3 +153,33 @@ export interface Vintage extends AuditableEntity {
   isActive: boolean;
   bottles: Bottle[];
 }
+
+export interface Recipe extends AuditableEntity {
+  recipeID: number;
+  recipeName: string;
+  description: string | null;
+  servings: number | null;
+  prepTimeMinutes: number | null;
+  cookTimeMinutes: number | null;
+  isActive: boolean;
+  recipeItems: RecipeItem[];
+  recipeSteps: RecipeStep[];
+}
+
+export interface RecipeItem extends AuditableEntity {
+  recipeID: number;
+  itemID: number;
+  quantity: number;
+  unitOfMeasure: string | null;
+  notes: string | null;
+  recipe: Recipe | null;
+  item: Item | null;
+}
+
+export interface RecipeStep extends AuditableEntity {
+  recipeStepID: number;
+  recipeID: number;
+  stepNumber: number;
+  instruction: string;
+  recipe: Recipe | null;
+}
