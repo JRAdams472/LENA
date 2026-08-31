@@ -1,0 +1,21 @@
+using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Wine;
+using MediatR;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System;
+using System.Linq;
+
+namespace LENA.Application.Features.Wine.Queries
+{
+    public record GetRegionsQuery : IRequest<IReadOnlyList<Region>>;
+
+        public class GetRegionsQueryHandler : IRequestHandler<GetRegionsQuery, IReadOnlyList<Region>>
+        {
+            private readonly IRegionRepository _regionRepository;
+            public GetRegionsQueryHandler(IRegionRepository regionRepository) => _regionRepository = regionRepository;
+            public async Task<IReadOnlyList<Region>> Handle(GetRegionsQuery request, CancellationToken cancellationToken)
+                => await _regionRepository.ListAllAsync();
+        }
+}

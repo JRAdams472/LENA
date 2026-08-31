@@ -1,0 +1,21 @@
+using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Wine;
+using MediatR;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System;
+using System.Linq;
+
+namespace LENA.Application.Features.Wine.Commands
+{
+    public record CreateRegionCommand(Region Region) : IRequest<Region>;
+
+        public class CreateRegionCommandHandler : IRequestHandler<CreateRegionCommand, Region>
+        {
+            private readonly IRegionRepository _regionRepository;
+            public CreateRegionCommandHandler(IRegionRepository regionRepository) => _regionRepository = regionRepository;
+            public async Task<Region> Handle(CreateRegionCommand request, CancellationToken cancellationToken)
+                => await _regionRepository.CreateAsync(request.Region);
+        }
+}

@@ -1,0 +1,21 @@
+using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Wine;
+using MediatR;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System;
+using System.Linq;
+
+namespace LENA.Application.Features.Wine.Queries
+{
+    public record GetRegionByNameAndCountryIdQuery(string Name, int CountryId) : IRequest<Region?>;
+
+        public class GetRegionByNameAndCountryIdQueryHandler : IRequestHandler<GetRegionByNameAndCountryIdQuery, Region?>
+        {
+            private readonly IRegionRepository _regionRepository;
+            public GetRegionByNameAndCountryIdQueryHandler(IRegionRepository regionRepository) => _regionRepository = regionRepository;
+            public async Task<Region?> Handle(GetRegionByNameAndCountryIdQuery request, CancellationToken cancellationToken)
+                => await _regionRepository.GetByNameAndCountryIdAsync(request.Name, request.CountryId);
+        }
+}
