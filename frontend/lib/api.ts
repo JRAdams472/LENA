@@ -2,7 +2,6 @@ import {
   AuditableEntity,
   Item,
   Bottle,
-  Category,
   Country,
   Region,
   WineType,
@@ -10,7 +9,6 @@ import {
   FlavorProfile,
   FoodFlavor,
   FoodNutrient,
-  InStock,
   NutrientType,
   GrapeVariety,
   BottleGrapeVariety,
@@ -99,7 +97,6 @@ export const api = {
     request<void>(`/api/Item/items/${id}/favorite?isFavorite=${isFavorite}`, { method: "POST" }),
 
   // Inventory reference data
-  getCategories: () => request<Category[]>("/api/Item/categories"),
   getFlavorProfiles: () => request<FlavorProfile[]>("/api/Item/flavorprofiles"),
   getActiveFlavorProfiles: () => request<FlavorProfile[]>("/api/Item/flavorprofiles/active"),
   createFlavorProfile: (profile: Omit<FlavorProfile, keyof AuditableEntity>) =>
@@ -122,7 +119,6 @@ export const api = {
     request<FoodNutrient>(`/api/Item/foodnutrients/food/${foodId}/nutrient/${nutrientId}`, { method: "PUT", body: JSON.stringify(foodNutrient) }),
   deleteFoodNutrient: (id: number) => request<FoodNutrient | null>(`/api/Item/foodnutrients/${id}`, { method: "DELETE" }),
 
-  getInStock: () => request<InStock[]>("/api/Item/inStock"),
   getNutrientTypes: () => request<NutrientType[]>("/api/Item/nutrienttypes"),
   createNutrientType: (nutrientType: Omit<NutrientType, keyof AuditableEntity>) =>
     request<NutrientType>("/api/Item/nutrienttypes", { method: "POST", body: JSON.stringify(nutrientType) }),
