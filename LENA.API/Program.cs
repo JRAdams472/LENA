@@ -1,7 +1,26 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Repositories;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.File(
+        new CompactJsonFormatter(),
+        "logs/log-.json",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 31,
+        fileSizeLimitBytes: 10485760,
+        rollOnFileSizeLimit: true)
+    .CreateLogger();
+
+builder.Host.UseSerilog(Log.Logger, true);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -28,6 +47,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseSerilogRequestLogging();
 
 app.MapControllers();
 
