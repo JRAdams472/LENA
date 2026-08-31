@@ -5,4 +5,5 @@
     <Deploy />
   </Project>
   <Project Path="LENA/LENA.Domain.csproj" />
+  <Project Path="LENA.API/LENA.API.csproj" />
 </Solution>

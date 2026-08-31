@@ -1,0 +1,25 @@
+using LENA.Application.Contracts.Persistence;
+using LENA.Domain.Entity.Wine;
+using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace LENA.Application.Features.Wine.Commands
+{
+    public record CreateCountryCommand(Country Country) : IRequest<Country>;
+
+    public class CreateCountryCommandHandler : IRequestHandler<CreateCountryCommand, Country>
+    {
+        private readonly ICountryRepository _countryRepository;
+
+        public CreateCountryCommandHandler(ICountryRepository countryRepository)
+        {
+            _countryRepository = countryRepository;
+        }
+
+        public async Task<Country> Handle(CreateCountryCommand request, CancellationToken cancellationToken)
+        {
+            return await _countryRepository.CreateAsync(request.Country);
+        }
+    }
+}
