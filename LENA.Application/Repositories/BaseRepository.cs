@@ -11,20 +11,11 @@ using System.Threading.Tasks;
 
 namespace LENA.Application.Repositories
 {
-    public abstract class BaseWineRepository<T> : IAsyncRepository<T> where T : class
+    public abstract class BaseRepository<T> : IAsyncRepository<T> where T : class
     {
         protected readonly IDbConnectionFactory _connectionFactory;
 
-        static BaseWineRepository()
-        {
-            var type = typeof(T);
-            if (type.Namespace != "LENA.Domain.Entity.Wine")
-            {
-                throw new InvalidOperationException($"BaseWineRepository only supports entities in the LENA.Domain.Entity.Wine namespace. Type {type.FullName} is in {type.Namespace}.");
-            }
-        }
-
-        protected BaseWineRepository(IDbConnectionFactory connectionFactory)
+        protected BaseRepository(IDbConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }

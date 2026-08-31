@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LENA.Application.Repositories
 {
-    public class ItemRepository : BaseWineRepository<Item>, IItemRepository
+    public class ItemRepository : BaseRepository<Item>, IItemRepository
     {
         public ItemRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {

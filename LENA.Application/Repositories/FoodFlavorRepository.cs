@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LENA.Application.Repositories
 {
-    public class FoodFlavorRepository : BaseWineRepository<FoodFlavor>, IFoodFlavorRepository
+    public class FoodFlavorRepository : BaseRepository<FoodFlavor>, IFoodFlavorRepository
     {
         public FoodFlavorRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {

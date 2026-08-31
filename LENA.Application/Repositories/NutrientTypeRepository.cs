@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LENA.Application.Repositories
 {
-    public class NutrientTypeRepository : BaseWineRepository<NutrientType>, INutrientTypeRepository
+    public class NutrientTypeRepository : BaseRepository<NutrientType>, INutrientTypeRepository
     {
         public NutrientTypeRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
         {
