@@ -130,6 +130,34 @@ options.AddPolicy("AllowExternal", policy =>
 
 ---
 
+## Docker
+
+Run the entire stack from the repo root:
+
+```bash
+docker compose up --build
+```
+
+Once the containers are healthy, the whole application is available on a single origin:
+
+- **Web app**: http://localhost
+- **Swagger UI**: http://localhost/api/swagger
+
+### Routing
+
+Caddy (the `proxy` service) reverse-proxies all traffic:
+
+- `/api/*` → `api` service (ASP.NET Core API on port 8080)
+- All other paths → `ui` service (Next.js on port 3000)
+
+### Going live
+
+To run on a real domain with automatic HTTPS:
+
+1. Open `Caddyfile` and replace `http://localhost` with your domain (e.g. `lena.example.com`).
+2. In `docker-compose.yml`, update `Cors__AllowedOrigins__0` to the same public origin (e.g. `https://lena.example.com`).
+3. Ensure the host is publicly reachable on ports 80/443 and DNS points the domain to it. Caddy provisions and renews the Let's Encrypt certificate automatically.
+
 ## Build for Production
 
 ### API
