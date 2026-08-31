@@ -1,5 +1,13 @@
-using LENA.Application.Features.Inventory.Commands;
-using LENA.Application.Features.Inventory.Queries;
+using LENA.Application.Features.Inventory.FlavorProfiles.Commands;
+using LENA.Application.Features.Inventory.FlavorProfiles.Queries;
+using LENA.Application.Features.Inventory.FoodFlavors.Commands;
+using LENA.Application.Features.Inventory.FoodFlavors.Queries;
+using LENA.Application.Features.Inventory.FoodNutrients.Commands;
+using LENA.Application.Features.Inventory.FoodNutrients.Queries;
+using LENA.Application.Features.Inventory.Items.Commands;
+using LENA.Application.Features.Inventory.Items.Queries;
+using LENA.Application.Features.Inventory.NutrientTypes.Commands;
+using LENA.Application.Features.Inventory.NutrientTypes.Queries;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

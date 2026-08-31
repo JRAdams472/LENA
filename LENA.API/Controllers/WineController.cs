@@ -1,5 +1,13 @@
-using LENA.Application.Features.Wine.Commands;
-using LENA.Application.Features.Wine.Queries;
+using LENA.Application.Features.Wine.Bottles.Commands;
+using LENA.Application.Features.Wine.Bottles.Queries;
+using LENA.Application.Features.Wine.Countries.Commands;
+using LENA.Application.Features.Wine.Countries.Queries;
+using LENA.Application.Features.Wine.Regions.Commands;
+using LENA.Application.Features.Wine.Regions.Queries;
+using LENA.Application.Features.Wine.Types.Commands;
+using LENA.Application.Features.Wine.Types.Queries;
+using LENA.Application.Features.Wine.Vintages.Commands;
+using LENA.Application.Features.Wine.Vintages.Queries;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

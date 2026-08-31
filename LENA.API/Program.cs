@@ -29,7 +29,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(LENA.Application.Features.Wine.Commands.CreateBottleCommand).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(LENA.Application.Features.Wine.Bottles.Commands.CreateBottleCommand).Assembly);
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.LoggingBehavior<,>));
 });
 
