@@ -1,5 +1,6 @@
 using LENA.Application.Contracts.Persistence;
 using Microsoft.Data.SqlClient;
+using System.Data.Common;
 
 namespace LENA.Application.Repositories
 {
@@ -12,7 +13,7 @@ namespace LENA.Application.Repositories
             _connectionString = connectionString;
         }
 
-        public async Task<SqlConnection> CreateConnectionAsync()
+        public async Task<DbConnection> CreateConnectionAsync()
         {
             var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();

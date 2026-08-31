@@ -1,9 +1,9 @@
-using Microsoft.Data.SqlClient;
+using System.Data.Common;
 
 namespace LENA.Application.Contracts.Persistence
 {
     public interface IDbConnectionFactory
     {
-        Task<SqlConnection> CreateConnectionAsync();
+        Task<DbConnection> CreateConnectionAsync();
     }
 }
