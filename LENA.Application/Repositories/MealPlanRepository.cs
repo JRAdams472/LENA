@@ -37,6 +37,9 @@ namespace LENA.Application.Repositories
         public override async Task<IReadOnlyList<MealPlanEntity>> ListAllAsync(CancellationToken cancellationToken = default)
             => await QueryListAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_ListAll]", cancellationToken: cancellationToken);
 
+        public async Task<IReadOnlyList<MealPlanNutritionRow>> GetMealPlanNutritionAsync(int mealPlanId, CancellationToken cancellationToken = default)
+            => await QueryListAsync<MealPlanNutritionRow>("[MealPlan].[usp_MealPlan_GetNutrition]", new { MealPlanID = mealPlanId }, cancellationToken);
+
         public override async Task<MealPlanEntity> UpdateAsync(MealPlanEntity entity, CancellationToken cancellationToken = default)
         {
             await ExecuteRequiringMatchAsync("[MealPlan].[usp_MealPlan_Update]", new

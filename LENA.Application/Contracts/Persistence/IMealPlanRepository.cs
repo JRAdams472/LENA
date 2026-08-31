@@ -5,6 +5,8 @@ namespace LENA.Application.Contracts.Persistence
 {
     public interface IMealPlanRepository : IAsyncRepository<MealPlanEntity>
     {
+        Task<IReadOnlyList<MealPlanNutritionRow>> GetMealPlanNutritionAsync(int mealPlanId, CancellationToken cancellationToken = default);
+
         Task<IReadOnlyList<MealSlot>> GetSlotsByMealPlanIdAsync(int mealPlanId, CancellationToken cancellationToken = default);
         Task<MealSlot> AddSlotAsync(MealSlot mealSlot, CancellationToken cancellationToken = default);
         Task<MealSlot> UpdateSlotAsync(MealSlot mealSlot, CancellationToken cancellationToken = default);

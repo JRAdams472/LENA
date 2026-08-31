@@ -4,6 +4,7 @@ using LENA.Application.Features.MealPlan.MealSlots.Commands;
 using LENA.Application.Features.MealPlan.MealSlots.Queries;
 using LENA.Application.Features.MealPlan.MealSlotItems.Commands;
 using LENA.Application.Features.MealPlan.MealSlotItems.Queries;
+using LENA.Application.Features.MealPlan.Queries;
 using LENA.Domain.Entity.MealPlan;
 using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 using MealSlot = LENA.Domain.Entity.MealPlan.MealSlot;
@@ -120,6 +121,13 @@ namespace LENA.API.Controllers
         {
             await _mediator.Send(new DeleteMealSlotItemCommand(mealSlotItemId));
             return NoContent();
+        }
+
+        [HttpGet("plans/{id}/nutrition")]
+        public async Task<ActionResult<MealPlanNutritionDto>> GetMealPlanNutrition(int id)
+        {
+            var nutrition = await _mediator.Send(new GetMealPlanNutritionQuery(id));
+            return Ok(nutrition);
         }
     }
 }
