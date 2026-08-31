@@ -22,7 +22,9 @@ export default function FoodNutrientsPage() {
           row as any
         )
       }
-      deleteFn={(row) => api.deleteFoodNutrient(row.foodId as number)}
+      deleteFn={(row) =>
+        api.deleteFoodNutrient(row.foodId as number, row.nutrientId as number)
+      }
     />
   );
 }

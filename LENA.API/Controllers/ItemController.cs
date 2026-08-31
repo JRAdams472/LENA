@@ -174,10 +174,10 @@ namespace LENA.API.Controllers
             return Ok(updated);
         }
 
-        [HttpDelete("foodflavors/{id}")]
-        public async Task<ActionResult<FoodFlavor?>> DeleteFoodFlavor(int id)
+        [HttpDelete("foodflavors/food/{foodId}/flavor/{flavorId}")]
+        public async Task<ActionResult<FoodFlavor?>> DeleteFoodFlavor(int foodId, int flavorId)
         {
-            var deleted = await _mediator.Send(new DeleteFoodFlavorCommand(id));
+            var deleted = await _mediator.Send(new DeleteFoodFlavorCommand(foodId, flavorId));
             if (deleted == null)
                 return NotFound();
 
@@ -243,10 +243,10 @@ namespace LENA.API.Controllers
             return Ok(updated);
         }
 
-        [HttpDelete("foodnutrients/{id}")]
-        public async Task<ActionResult<FoodNutrient?>> DeleteFoodNutrient(int id)
+        [HttpDelete("foodnutrients/food/{foodId}/nutrient/{nutrientId}")]
+        public async Task<ActionResult<FoodNutrient?>> DeleteFoodNutrient(int foodId, int nutrientId)
         {
-            var deleted = await _mediator.Send(new DeleteFoodNutrientCommand(id));
+            var deleted = await _mediator.Send(new DeleteFoodNutrientCommand(foodId, nutrientId));
             if (deleted == null)
                 return NotFound();
 

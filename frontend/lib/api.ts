@@ -110,14 +110,16 @@ export const api = {
     request<FoodFlavor>("/api/Item/foodflavors", { method: "POST", body: JSON.stringify(foodFlavor) }),
   updateFoodFlavor: (foodId: number, flavorId: number, foodFlavor: Partial<FoodFlavor>) =>
     request<FoodFlavor>(`/api/Item/foodflavors/food/${foodId}/flavor/${flavorId}`, { method: "PUT", body: JSON.stringify(foodFlavor) }),
-  deleteFoodFlavor: (id: number) => request<FoodFlavor | null>(`/api/Item/foodflavors/${id}`, { method: "DELETE" }),
+  deleteFoodFlavor: (foodId: number, flavorId: number) =>
+    request<FoodFlavor | null>(`/api/Item/foodflavors/food/${foodId}/flavor/${flavorId}`, { method: "DELETE" }),
 
   getFoodNutrients: () => request<FoodNutrient[]>("/api/Item/foodnutrients"),
   createFoodNutrient: (foodNutrient: Omit<FoodNutrient, keyof AuditableEntity>) =>
     request<FoodNutrient>("/api/Item/foodnutrients", { method: "POST", body: JSON.stringify(foodNutrient) }),
   updateFoodNutrient: (foodId: number, nutrientId: number, foodNutrient: Partial<FoodNutrient>) =>
     request<FoodNutrient>(`/api/Item/foodnutrients/food/${foodId}/nutrient/${nutrientId}`, { method: "PUT", body: JSON.stringify(foodNutrient) }),
-  deleteFoodNutrient: (id: number) => request<FoodNutrient | null>(`/api/Item/foodnutrients/${id}`, { method: "DELETE" }),
+  deleteFoodNutrient: (foodId: number, nutrientId: number) =>
+    request<FoodNutrient | null>(`/api/Item/foodnutrients/food/${foodId}/nutrient/${nutrientId}`, { method: "DELETE" }),
 
   getNutrientTypes: () => request<NutrientType[]>("/api/Item/nutrienttypes"),
   createNutrientType: (nutrientType: Omit<NutrientType, keyof AuditableEntity>) =>

@@ -4,19 +4,19 @@ using MediatR;
 
 namespace LENA.Application.Features.Inventory.FoodNutrients.Commands
 {
-    public record DeleteFoodNutrientCommand(int FoodNutrientId) : IRequest<FoodNutrient?>;
+    public record DeleteFoodNutrientCommand(int FoodId, int NutrientId) : IRequest<FoodNutrient?>;
 
-        public class DeleteFoodNutrientCommandHandler : IRequestHandler<DeleteFoodNutrientCommand, FoodNutrient?>
+    public class DeleteFoodNutrientCommandHandler : IRequestHandler<DeleteFoodNutrientCommand, FoodNutrient?>
+    {
+        private readonly IFoodNutrientRepository _foodNutrientRepository;
+        public DeleteFoodNutrientCommandHandler(IFoodNutrientRepository foodNutrientRepository) => _foodNutrientRepository = foodNutrientRepository;
+        public async Task<FoodNutrient?> Handle(DeleteFoodNutrientCommand request, CancellationToken cancellationToken)
         {
-            private readonly IFoodNutrientRepository _foodNutrientRepository;
-            public DeleteFoodNutrientCommandHandler(IFoodNutrientRepository foodNutrientRepository) => _foodNutrientRepository = foodNutrientRepository;
-            public async Task<FoodNutrient?> Handle(DeleteFoodNutrientCommand request, CancellationToken cancellationToken)
-            {
-                var foodNutrient = await _foodNutrientRepository.GetByIdAsync(request.FoodNutrientId);
-                if (foodNutrient == null)
-                    return null;
-    
-                return await _foodNutrientRepository.DeleteAsync(foodNutrient);
-            }
+            var foodNutrient = await _foodNutrientRepository.GetByFoodAndNutrientIdAsync(request.FoodId, request.NutrientId);
+            if (foodNutrient == null)
+                return null;
+
+            return await _foodNutrientRepository.DeleteAsync(foodNutrient);
         }
+    }
 }

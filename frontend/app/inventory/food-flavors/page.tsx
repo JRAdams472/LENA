@@ -22,7 +22,9 @@ export default function FoodFlavorsPage() {
           row as any
         )
       }
-      deleteFn={(row) => api.deleteFoodFlavor(row.foodId as number)}
+      deleteFn={(row) =>
+        api.deleteFoodFlavor(row.foodId as number, row.flavorId as number)
+      }
     />
   );
 }
