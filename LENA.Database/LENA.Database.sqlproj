@@ -2,9 +2,11 @@
   <Sdk Name="Microsoft.Build.Sql" Version="2.2.0" />
   <PropertyGroup>
     <Name>LENA.Database</Name>
+    <TargetFramework>net10.0</TargetFramework>
     <ProjectGuid>{156c637d-8f44-4516-b292-67fab53b7d71}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql170DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
   </PropertyGroup>
   <ItemGroup>
     <Build Remove="SeedData\*.sql" />
