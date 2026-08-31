@@ -1,8 +1,10 @@
 <Project>
-  <Sdk Name="Microsoft.Build.Sql" Version="2.2.0" />
+  <!-- Pinned to 2.0.0: 2.1.0+ pass SqlBuildTask parameters that the DacFx build task
+       bundled with Visual Studio does not define, so the project fails to build there. -->
+  <Sdk Name="Microsoft.Build.Sql" Version="2.0.0" />
   <PropertyGroup>
     <Name>LENA.Database</Name>
-    <TargetFramework>net10.0</TargetFramework>
+    <SkipCheckForNewSDKVersion>true</SkipCheckForNewSDKVersion>
     <ProjectGuid>{156c637d-8f44-4516-b292-67fab53b7d71}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql170DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
