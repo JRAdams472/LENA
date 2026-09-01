@@ -98,11 +98,19 @@ builder.Services.AddScoped<IFlavorProfileRepository, FlavorProfileRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Swagger is always on in development; elsewhere it is opt-in via "Swagger:Enabled".
+// "Swagger:RoutePrefix" moves it behind a reverse proxy that only forwards a subpath.
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {
+    var swaggerPrefix = (app.Configuration["Swagger:RoutePrefix"] ?? "swagger").Trim('/');
+
     app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(options => options.RouteTemplate = $"{swaggerPrefix}/{{documentName}}/swagger.json");
+    app.UseSwaggerUI(options =>
+    {
+        options.RoutePrefix = swaggerPrefix;
+        options.SwaggerEndpoint($"/{swaggerPrefix}/v1/swagger.json", "LENA API v1");
+    });
 }
 
 if (!app.Environment.IsDevelopment())

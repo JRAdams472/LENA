@@ -100,7 +100,7 @@ dotnet run --project LENA.API
 
 By default the API listens on `http://localhost:5059` as configured in `LENA.API/Properties/launchSettings.json`. The HTTPS profile also exposes `https://localhost:7284`.
 
-The API includes Swagger UI in development at `http://localhost:5059/swagger`.
+The API includes Swagger UI in development at `http://localhost:5059/swagger`. Outside development it is off unless `Swagger:Enabled` is `true`; `Swagger:RoutePrefix` moves it behind a reverse proxy subpath (the Docker stack sets both, serving it at `http://localhost/api/swagger`).
 
 ### 3. Run the Frontend
 
