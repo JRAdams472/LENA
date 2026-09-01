@@ -61,8 +61,11 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   throw new ApiError(res.status, "Expected JSON response");
 }
 
-export function asEntity<T>(row: Record<string, unknown>): T {
-  return row as unknown as T;
+export function asEntity<T extends object>(row: unknown): T {
+  if (typeof row !== "object" || row === null) {
+    throw new TypeError("asEntity expected a non-null object");
+  }
+  return row as T;
 }
 
 export const api = {

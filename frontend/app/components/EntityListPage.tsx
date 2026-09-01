@@ -32,6 +32,12 @@ export default function EntityListPage<T extends object>({
   const rows = data ?? [];
   const columns = rows.length > 0 ? Object.keys(rows[0]) : [];
 
+  const getRowKey = (row: T): string =>
+    Object.keys(row as Record<string, unknown>)
+      .sort()
+      .map((key) => `${key}:${JSON.stringify((row as Record<string, unknown>)[key])}`)
+      .join("|");
+
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
@@ -56,8 +62,8 @@ export default function EntityListPage<T extends object>({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row, i) => (
-                  <TableRow key={i}>
+                {rows.map((row) => (
+                  <TableRow key={getRowKey(row)}>
                     {columns.map((col) => {
                       const value = (row as Record<string, unknown>)[col];
                       return (
