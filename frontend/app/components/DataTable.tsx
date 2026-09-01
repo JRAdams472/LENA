@@ -15,7 +15,10 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import PaginationFooter from "./PaginationFooter";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import { ReactNode } from "react";
 
 interface DataTableProps<T extends object> {
@@ -32,6 +35,14 @@ interface DataTableProps<T extends object> {
   totalCount?: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (pageSize: number) => void;
+  pagination?: {
+    pageNumber: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+    onPageSizeChange: (size: number) => void;
+  };
 }
 
 export default function DataTable<T extends object>({
@@ -48,8 +59,22 @@ export default function DataTable<T extends object>({
   totalCount,
   onPageChange,
   onPageSizeChange,
+  pagination,
 }: DataTableProps<T>) {
   const columns = rows.length > 0 ? Object.keys(rows[0]) : [];
+
+  const paginationData =
+    pagination ??
+    (page !== undefined && pageSize !== undefined && totalCount !== undefined && onPageChange && onPageSizeChange
+      ? {
+          pageNumber: page,
+          pageSize,
+          totalCount,
+          totalPages: Math.max(1, Math.ceil(totalCount / pageSize)),
+          onPageChange,
+          onPageSizeChange,
+        }
+      : null);
 
   return (
     <Box>
@@ -115,14 +140,44 @@ export default function DataTable<T extends object>({
           </Table>
         </TableContainer>
       )}
-      {totalCount !== undefined && page !== undefined && pageSize !== undefined && onPageChange && onPageSizeChange && (
-        <PaginationFooter
-          page={page}
-          pageSize={pageSize}
-          totalCount={totalCount}
-          onPageChange={onPageChange}
-          onPageSizeChange={onPageSizeChange}
-        />
+      {paginationData && (
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel id="rows-per-page-label">Rows per page</InputLabel>
+              <Select
+                labelId="rows-per-page-label"
+                value={paginationData.pageSize}
+                label="Rows per page"
+                onChange={(e) => paginationData.onPageSizeChange(Number(e.target.value))}
+              >
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
+            <Typography variant="body2" color="text.secondary">
+              Page {paginationData.pageNumber} of {Math.max(paginationData.totalPages, 1)} ({paginationData.totalCount} total)
+            </Typography>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => paginationData.onPageChange(paginationData.pageNumber - 1)}
+              disabled={paginationData.pageNumber <= 1}
+            >
+              &lt;
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => paginationData.onPageChange(paginationData.pageNumber + 1)}
+              disabled={paginationData.pageNumber >= Math.max(paginationData.totalPages, 1)}
+            >
+              &gt;
+            </Button>
+          </Box>
+        </Box>
       )}
     </Box>
   );
