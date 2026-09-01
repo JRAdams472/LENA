@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -32,6 +33,40 @@ namespace LENA.Application.UnitTests.Features.Grocery.GroceryLists.Queries
 
             result.Should().NotBeNull();
             result!.GroceryListID.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task Handle_Should_Return_Items_With_Joined_ItemName()
+        {
+            var list = new GroceryList
+            {
+                GroceryListID = 1,
+                GeneratedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                GroceryListItems = new List<GroceryListItem>
+                {
+                    new() { GroceryListItemID = 1, ItemID = 7, ItemName = "Flour", Source = "MealPlan" },
+                    new() { GroceryListItemID = 2, ItemID = null, ManualItemName = "Napkins", Source = "Manual" }
+                }
+            };
+
+            _repository
+                .Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(list);
+
+            var handler = new GetGroceryListByIdQueryHandler(_repository.Object);
+            var result = await handler.Handle(new GetGroceryListByIdQuery(1), CancellationToken.None);
+
+            result!.GroceryListItems.Should().SatisfyRespectively(
+                first =>
+                {
+                    first.ItemName.Should().Be("Flour");
+                    first.ManualItemName.Should().BeNull();
+                },
+                second =>
+                {
+                    second.ItemName.Should().BeNull();
+                    second.ManualItemName.Should().Be("Napkins");
+                });
         }
 
         [Fact]

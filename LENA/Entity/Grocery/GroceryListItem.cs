@@ -8,6 +8,7 @@ namespace LENA.Domain.Entity.Grocery
         public int GroceryListItemID { get; set; }
         public int GroceryListID { get; set; }
         public int? ItemID { get; set; }
+        public string? ItemName { get; set; }
         public string? ManualItemName { get; set; }
         public decimal QuantityNeeded { get; set; }
         public string? UnitOfMeasure { get; set; }

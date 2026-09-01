@@ -54,6 +54,7 @@ function ItemRow({
   });
 
   const itemName =
+    item.itemName ??
     item.manualItemName ??
     items?.find((i) => i.itemID === item.itemID)?.name ??
     `Item ${item.itemID}`;

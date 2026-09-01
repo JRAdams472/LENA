@@ -78,8 +78,8 @@ namespace LENA.Application.Repositories
         public async Task AddOrUpdateUPC14Async(int itemId, string upc14, CancellationToken cancellationToken = default)
             => await ExecuteCommandAsync("[Inventory].[usp_Item_AddOrUpdateUPC14]", new { ItemID = itemId, UPC14 = upc14 }, cancellationToken);
 
-        public async Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null, CancellationToken cancellationToken = default)
-            => await ExecuteCommandAsync("[Inventory].[usp_Item_AdjustQuantity]", new { ItemID = itemId, Quantity = quantity, PurchaseDate = purchaseDate }, cancellationToken);
+        public async Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null, string? lastUpdatedBy = null, CancellationToken cancellationToken = default)
+            => await ExecuteCommandAsync("[Inventory].[usp_Item_AdjustQuantity]", new { ItemID = itemId, Quantity = quantity, PurchaseDate = purchaseDate, LastUpdatedBy = lastUpdatedBy }, cancellationToken);
 
         public async Task SetFavoriteAsync(int itemId, bool isFavorite, CancellationToken cancellationToken = default)
             => await ExecuteCommandAsync("[Inventory].[usp_Item_SetFavorite]", new { ItemID = itemId, IsFavorite = isFavorite }, cancellationToken);

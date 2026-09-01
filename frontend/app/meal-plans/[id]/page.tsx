@@ -71,25 +71,31 @@ function SlotDialog({
     queryFn: api.getItems,
   });
 
-  const recipeDetailQuery = useQuery({
-    queryKey: ["recipe", slot?.recipeID],
-    queryFn: () => (slot?.recipeID ? api.getRecipe(slot.recipeID) : null),
-    enabled: !!slot?.recipeID,
-  });
-
-  const selectedRecipe = slot?.recipeID
-    ? recipesQuery.data?.find((r) => r.recipeID === slot.recipeID) ??
-      recipeDetailQuery.data
-    : null;
-
   const [recipeId, setRecipeId] = useState<string>(
     slot?.recipeID ? String(slot.recipeID) : ""
   );
+
+  const selectedRecipeId = recipeId === "" ? null : Number(recipeId);
+
+  const recipeDetailQuery = useQuery({
+    queryKey: ["recipe", selectedRecipeId],
+    queryFn: () => (selectedRecipeId ? api.getRecipe(selectedRecipeId) : null),
+    enabled: selectedRecipeId !== null,
+  });
+
+  const selectedRecipe =
+    recipeDetailQuery.data ??
+    (selectedRecipeId
+      ? recipesQuery.data?.find((r) => r.recipeID === selectedRecipeId)
+      : null);
   const [selectedOptionalIds, setSelectedOptionalIds] = useState<string[]>(
     () =>
       (slot?.mealSlotItems?.filter((i) => i.isFromRecipe) ?? []).map((i) =>
         String(i.itemID)
       )
+  );
+  const [servings, setServings] = useState<string>(
+    String(slot?.servings ?? 1)
   );
   const [replacementNote, setReplacementNote] = useState(
     slot?.replacementNote ?? ""
@@ -110,8 +116,8 @@ function SlotDialog({
 
   const slotSaveMutation = useMutation({
     mutationFn: async () => {
-      const rid = recipeId === "" ? null : Number(recipeId);
-      const existingItems = slot?.mealSlotItems ?? [];
+      const rid = selectedRecipeId;
+      const slotServings = Number(servings) > 0 ? Number(servings) : 1;
       const recipeOptional = selectedRecipe?.recipeItems?.filter((ri) => ri.isOptional) ?? [];
 
       let currentSlot = slot;
@@ -120,6 +126,7 @@ function SlotDialog({
           dayOfWeek: day,
           mealType,
           recipeID: rid,
+          servings: slotServings,
           replacementNote: replacementNote || null,
         } as Omit<MealSlot, "mealSlotID" | "mealPlanID" | "mealPlan" | "recipe" | "mealSlotItems">);
       } else {
@@ -129,6 +136,7 @@ function SlotDialog({
           dayOfWeek: day,
           mealType,
           recipeID: rid,
+          servings: slotServings,
           replacementNote: replacementNote || null,
         });
       }
@@ -298,6 +306,17 @@ function SlotDialog({
         <TextField
           fullWidth
           size="small"
+          label="Servings"
+          type="number"
+          value={servings}
+          onChange={(e) => setServings(e.target.value)}
+          helperText="Servings of the recipe planned for this slot"
+          sx={{ mb: 2 }}
+        />
+
+        <TextField
+          fullWidth
+          size="small"
           label="Replacement Note"
           value={replacementNote}
           onChange={(e) => setReplacementNote(e.target.value)}
@@ -314,7 +333,14 @@ function SlotDialog({
               labelId="adhoc-item-label"
               label="Item"
               value={newItemId}
-              onChange={(e) => setNewItemId(e.target.value as string)}
+              onChange={(e) => {
+                const value = e.target.value as string;
+                setNewItemId(value);
+                setNewUnit(
+                  itemsQuery.data?.find((i) => String(i.itemID) === value)
+                    ?.unit ?? ""
+                );
+              }}
             >
               {(itemsQuery.data ?? []).map((item) => (
                 <MenuItem key={item.itemID} value={String(item.itemID)}>
@@ -335,6 +361,7 @@ function SlotDialog({
             label="Unit"
             value={newUnit}
             onChange={(e) => setNewUnit(e.target.value)}
+            helperText="Match the item's inventory unit"
           />
           <Button variant="outlined" onClick={handleAddAdhoc}>
             Add

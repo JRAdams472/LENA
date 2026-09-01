@@ -11,6 +11,7 @@ namespace LENA.Domain.Entity.MealPlan
         public byte DayOfWeek { get; set; }
         public byte MealType { get; set; }
         public int? RecipeID { get; set; }
+        public decimal Servings { get; set; } = 1m;
         public string? ReplacementNote { get; set; }
 
         public MealPlan? MealPlan { get; set; }
