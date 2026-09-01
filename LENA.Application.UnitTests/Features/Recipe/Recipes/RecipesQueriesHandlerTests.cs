@@ -20,12 +20,12 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
         public async Task GetRecipesQuery_Should_Return_All_Recipes()
         {
             IReadOnlyList<RecipeEntity> recipes = new List<RecipeEntity> { new() { RecipeName = "Soup" } };
-            _repo.Setup(r => r.ListAllAsync(It.IsAny<PaginationRequest?>(), It.IsAny<CancellationToken>())).ReturnsAsync(new PagedResult<RecipeEntity> { Items = recipes });
+            _repo.Setup(r => r.ListAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(recipes);
 
             var result = await new GetRecipesQueryHandler(_repo.Object)
                 .Handle(new GetRecipesQuery(), CancellationToken.None);
 
-            result.Items.Should().BeEquivalentTo(recipes);
+            result.Should().BeEquivalentTo(recipes);
         }
 
         [Fact]

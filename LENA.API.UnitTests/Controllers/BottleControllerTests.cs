@@ -25,7 +25,7 @@ namespace LENA.API.UnitTests.Controllers
         public async Task GetBottles_Should_Return_Ok_And_Send_GetBottlesQuery()
         {
             _mediator.Setup(m => m.Send(It.IsAny<GetBottlesQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PagedResult<Bottle> { Items = new List<Bottle>() });
+                .ReturnsAsync(new List<Bottle>());
 
             var result = await _sut.GetBottles();
 

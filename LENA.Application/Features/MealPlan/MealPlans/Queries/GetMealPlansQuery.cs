@@ -4,9 +4,9 @@ using MediatR;
 
 namespace LENA.Application.Features.MealPlan.MealPlans.Queries
 {
-    public record GetMealPlansQuery(LENA.Application.Models.PaginationRequest? Paging = null) : IRequest<LENA.Application.Models.PagedResult<MealPlanEntity>>;
+    public record GetMealPlansQuery : IRequest<IReadOnlyList<MealPlanEntity>>;
 
-    public class GetMealPlansQueryHandler : IRequestHandler<GetMealPlansQuery, LENA.Application.Models.PagedResult<MealPlanEntity>>
+    public class GetMealPlansQueryHandler : IRequestHandler<GetMealPlansQuery, IReadOnlyList<MealPlanEntity>>
     {
         private readonly IMealPlanRepository _mealPlanRepository;
 
@@ -15,9 +15,9 @@ namespace LENA.Application.Features.MealPlan.MealPlans.Queries
             _mealPlanRepository = mealPlanRepository;
         }
 
-        public async Task<LENA.Application.Models.PagedResult<MealPlanEntity>> Handle(GetMealPlansQuery request, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<MealPlanEntity>> Handle(GetMealPlansQuery request, CancellationToken cancellationToken)
         {
-            return await _mealPlanRepository.ListAllAsync(request.Paging, cancellationToken);
+            return await _mealPlanRepository.ListAllAsync(cancellationToken);
         }
     }
 }

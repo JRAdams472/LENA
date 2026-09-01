@@ -9,8 +9,8 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public override async Task<LENA.Application.Models.PagedResult<FoodNutrient>> ListAllAsync(LENA.Application.Models.PaginationRequest? paging = null, CancellationToken cancellationToken = default)
-            => await QueryPagedAsync<FoodNutrient>("[Inventory].[usp_FoodNutrient_ListAll]", paging, cancellationToken);
+        public override async Task<IReadOnlyList<FoodNutrient>> ListAllAsync(CancellationToken cancellationToken = default)
+            => await QueryListAsync<FoodNutrient>("[Inventory].[usp_FoodNutrient_ListAll]", cancellationToken: cancellationToken);
 
         public override async Task<FoodNutrient?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<FoodNutrient>("[Inventory].[usp_FoodNutrient_GetById]", new { Id = id }, cancellationToken);

@@ -31,8 +31,8 @@ namespace LENA.Application.Repositories
         public override async Task<MealPlanEntity?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_GetByName]", new { PlanName = name }, cancellationToken);
 
-        public override async Task<LENA.Application.Models.PagedResult<MealPlanEntity>> ListAllAsync(LENA.Application.Models.PaginationRequest? paging = null, CancellationToken cancellationToken = default)
-        => await QueryPagedAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_ListAll]", paging, cancellationToken);
+        public override async Task<IReadOnlyList<MealPlanEntity>> ListAllAsync(CancellationToken cancellationToken = default)
+        => await QueryListAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_ListAll]", cancellationToken: cancellationToken);
 
         public async Task<LENA.Application.Models.PagedResult<MealPlanEntity>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default)
             => await QueryPagedListAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_ListAllPaged]", pageNumber, pageSize, ct: ct);

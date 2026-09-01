@@ -7,9 +7,15 @@ public class PaginationRequest
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 25;
 
+    public static (int PageNumber, int PageSize) Clamp(int pageNumber, int pageSize)
+    {
+        if (pageNumber < 1) pageNumber = 1;
+        if (!AllowedPageSizes.Contains(pageSize)) pageSize = 25;
+        return (pageNumber, pageSize);
+    }
+
     public void Normalize()
     {
-        if (PageNumber < 1) PageNumber = 1;
-        if (!AllowedPageSizes.Contains(PageSize)) PageSize = 25;
+        (PageNumber, PageSize) = Clamp(PageNumber, PageSize);
     }
 }

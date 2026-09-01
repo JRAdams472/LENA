@@ -1,4 +1,3 @@
-using LENA.Application.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ namespace LENA.API.UnitTests.Controllers
         public async Task GetItems_Should_Return_Ok_And_Send_GetItemsQuery()
         {
             _mediator.Setup(m => m.Send(It.IsAny<GetItemsQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PagedResult<Item> { Items = new List<Item>() });
+                .ReturnsAsync(new List<Item>());
 
             var result = await _sut.GetItems();
 

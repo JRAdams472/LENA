@@ -161,6 +161,13 @@ export default function BottlesPage() {
   const pagedData = listData && !Array.isArray(listData) ? (listData as PagedResult<Bottle>) : undefined;
   const rows = pagedData?.items ?? (listData as Bottle[] | undefined) ?? [];
   const totalCount = pagedData?.totalCount;
+  const isDefaultList =
+    !favorites &&
+    !searchTerm.trim() &&
+    !countryId &&
+    !regionId &&
+    !typeId &&
+    !vintageYear;
 
   return (
     <Box>
@@ -278,7 +285,7 @@ export default function BottlesPage() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         pagination={
-          pagedData
+          isDefaultList && pagedData
             ? {
                 pageNumber,
                 pageSize,

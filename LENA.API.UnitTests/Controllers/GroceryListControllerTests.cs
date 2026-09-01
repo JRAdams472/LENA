@@ -1,4 +1,3 @@
-using LENA.Application.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ namespace LENA.API.UnitTests.Controllers
         public async Task GetGroceryLists_Should_Return_Ok()
         {
             _mediator.Setup(m => m.Send(It.IsAny<GetGroceryListsQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PagedResult<GroceryList> { Items = new List<GroceryList>() });
+                .ReturnsAsync(new List<GroceryList>());
 
             var result = await _sut.GetGroceryLists();
 

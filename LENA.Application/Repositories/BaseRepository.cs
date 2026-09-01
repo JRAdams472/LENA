@@ -21,7 +21,7 @@ namespace LENA.Application.Repositories
         public abstract Task<T?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
         public abstract Task<T> UpdateAsync(T entity, CancellationToken cancellationToken = default);
         public abstract Task<T> DeleteAsync(T entity, CancellationToken cancellationToken = default);
-        public abstract Task<PagedResult<T>> ListAllAsync(PaginationRequest? paging = null, CancellationToken cancellationToken = default);
+        public abstract Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default);
 
         protected async Task<IReadOnlyList<TResult>> QueryListAsync<TResult>(string procedureName, object? param = null, CancellationToken cancellationToken = default)
         {
@@ -51,24 +51,6 @@ namespace LENA.Application.Repositories
                 TotalCount = total,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-            };
-        }
-
-        protected async Task<PagedResult<TResult>> QueryPagedAsync<TResult>(string procedureName, PaginationRequest? paging = null, CancellationToken cancellationToken = default)
-        {
-            var page = paging ?? new PaginationRequest();
-        page.Normalize();
-            await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
-            var command = new CommandDefinition(procedureName, new { PageNumber = page.PageNumber, PageSize = page.PageSize }, commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken);
-            using var reader = await connection.QueryMultipleAsync(command);
-            var items = (await reader.ReadAsync<TResult>()).ToList();
-            var total = (await reader.ReadAsync<int>()).FirstOrDefault();
-            return new PagedResult<TResult>
-            {
-                Items = items,
-                TotalCount = total,
-                PageNumber = page.PageNumber,
-                PageSize = page.PageSize,
             };
         }
 

@@ -18,15 +18,16 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("bottles")]
-        public async Task<ActionResult<LENA.Application.Models.PagedResult<Bottle>>> GetBottles([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
+        public async Task<ActionResult<IReadOnlyList<Bottle>>> GetBottles()
         {
-            var bottles = await _mediator.Send(new GetBottlesQuery(paging));
+            var bottles = await _mediator.Send(new GetBottlesQuery());
             return Ok(bottles);
         }
 
         [HttpGet("bottles/paged")]
         public async Task<ActionResult<LENA.Application.Models.PagedResult<Bottle>>> GetBottlesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
         {
+            (pageNumber, pageSize) = LENA.Application.Models.PaginationRequest.Clamp(pageNumber, pageSize);
             var bottles = await _mediator.Send(new GetBottlesPagedQuery(pageNumber, pageSize));
             return Ok(bottles);
         }

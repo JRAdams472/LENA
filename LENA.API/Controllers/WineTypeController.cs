@@ -19,15 +19,16 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("types")]
-        public async Task<ActionResult<LENA.Application.Models.PagedResult<TypeEntity>>> GetTypes([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
+        public async Task<ActionResult<IReadOnlyList<TypeEntity>>> GetTypes()
         {
-            var types = await _mediator.Send(new GetTypesQuery(paging));
+            var types = await _mediator.Send(new GetTypesQuery());
             return Ok(types);
         }
 
         [HttpGet("types/paged")]
         public async Task<ActionResult<LENA.Application.Models.PagedResult<TypeEntity>>> GetTypesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
         {
+            (pageNumber, pageSize) = LENA.Application.Models.PaginationRequest.Clamp(pageNumber, pageSize);
             var types = await _mediator.Send(new GetTypesPagedQuery(pageNumber, pageSize));
             return Ok(types);
         }

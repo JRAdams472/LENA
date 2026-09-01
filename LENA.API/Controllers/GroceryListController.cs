@@ -18,9 +18,9 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<LENA.Application.Models.PagedResult<GroceryList>>> GetGroceryLists([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
+        public async Task<ActionResult<IReadOnlyList<GroceryList>>> GetGroceryLists()
         {
-            var lists = await _mediator.Send(new GetGroceryListsQuery(paging));
+            var lists = await _mediator.Send(new GetGroceryListsQuery());
             return Ok(lists);
         }
 

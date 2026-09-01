@@ -31,8 +31,8 @@ namespace LENA.Application.Repositories
         public override async Task<Recipe?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Recipe>("[Recipe].[usp_Recipe_GetByName]", new { RecipeName = name }, cancellationToken);
 
-        public override async Task<LENA.Application.Models.PagedResult<Recipe>> ListAllAsync(LENA.Application.Models.PaginationRequest? paging = null, CancellationToken cancellationToken = default)
-            => await QueryPagedAsync<Recipe>("[Recipe].[usp_Recipe_ListAll]", paging, cancellationToken);
+        public override async Task<IReadOnlyList<Recipe>> ListAllAsync(CancellationToken cancellationToken = default)
+            => await QueryListAsync<Recipe>("[Recipe].[usp_Recipe_ListAll]", cancellationToken: cancellationToken);
 
         public async Task<LENA.Application.Models.PagedResult<Recipe>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default)
             => await QueryPagedListAsync<Recipe>("[Recipe].[usp_Recipe_ListAllPaged]", pageNumber, pageSize, ct: ct);

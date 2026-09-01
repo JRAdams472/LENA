@@ -116,8 +116,8 @@ export const api = {
     request<void>(`/api/Item/items/${id}/favorite?isFavorite=${isFavorite}`, { method: "POST" }),
 
   // Inventory reference data
-  getFlavorProfiles: (page = 1, pageSize = 25) =>
-    request<PagedResult<FlavorProfile>>(`/api/Item/flavorprofiles?pageNumber=${page}&pageSize=${pageSize}`),
+  getFlavorProfiles: () =>
+    request<FlavorProfile[]>(`/api/Item/flavorprofiles`),
   getActiveFlavorProfiles: () => request<FlavorProfile[]>("/api/Item/flavorprofiles/active"),
   createFlavorProfile: (profile: Omit<FlavorProfile, keyof AuditableEntity>) =>
     request<FlavorProfile>("/api/Item/flavorprofiles", { method: "POST", body: JSON.stringify(profile) }),
@@ -125,8 +125,8 @@ export const api = {
     request<FlavorProfile>(`/api/Item/flavorprofiles/${id}`, { method: "PUT", body: JSON.stringify({ ...profile, flavorId: id }) }),
   deleteFlavorProfile: (id: number) => request<FlavorProfile | null>(`/api/Item/flavorprofiles/${id}`, { method: "DELETE" }),
 
-  getFoodFlavors: (page = 1, pageSize = 25) =>
-    request<PagedResult<FoodFlavor>>(`/api/Item/foodflavors?pageNumber=${page}&pageSize=${pageSize}`),
+  getFoodFlavors: () =>
+    request<FoodFlavor[]>(`/api/Item/foodflavors`),
   createFoodFlavor: (foodFlavor: Omit<FoodFlavor, keyof AuditableEntity>) =>
     request<FoodFlavor>("/api/Item/foodflavors", { method: "POST", body: JSON.stringify(foodFlavor) }),
   updateFoodFlavor: (foodId: number, flavorId: number, foodFlavor: Partial<FoodFlavor>) =>
@@ -134,8 +134,8 @@ export const api = {
   deleteFoodFlavor: (foodId: number, flavorId: number) =>
     request<FoodFlavor | null>(`/api/Item/foodflavors/food/${foodId}/flavor/${flavorId}`, { method: "DELETE" }),
 
-  getFoodNutrients: (page = 1, pageSize = 25) =>
-    request<PagedResult<FoodNutrient>>(`/api/Item/foodnutrients?pageNumber=${page}&pageSize=${pageSize}`),
+  getFoodNutrients: () =>
+    request<FoodNutrient[]>(`/api/Item/foodnutrients`),
   createFoodNutrient: (foodNutrient: Omit<FoodNutrient, keyof AuditableEntity>) =>
     request<FoodNutrient>("/api/Item/foodnutrients", { method: "POST", body: JSON.stringify(foodNutrient) }),
   updateFoodNutrient: (foodId: number, nutrientId: number, foodNutrient: Partial<FoodNutrient>) =>
@@ -143,8 +143,8 @@ export const api = {
   deleteFoodNutrient: (foodId: number, nutrientId: number) =>
     request<FoodNutrient | null>(`/api/Item/foodnutrients/food/${foodId}/nutrient/${nutrientId}`, { method: "DELETE" }),
 
-  getNutrientTypes: (page = 1, pageSize = 25) =>
-    request<PagedResult<NutrientType>>(`/api/Item/nutrienttypes?pageNumber=${page}&pageSize=${pageSize}`),
+  getNutrientTypes: () =>
+    request<NutrientType[]>(`/api/Item/nutrienttypes`),
   createNutrientType: (nutrientType: Omit<NutrientType, keyof AuditableEntity>) =>
     request<NutrientType>("/api/Item/nutrienttypes", { method: "POST", body: JSON.stringify(nutrientType) }),
   updateNutrientType: (id: number, nutrientType: Partial<NutrientType>) =>
@@ -267,8 +267,8 @@ export const api = {
     request<void>(`/api/MealPlan/slots/${slotId}/items/${itemId}`, { method: "DELETE" }),
 
   // Grocery Lists
-  getGroceryLists: (page = 1, pageSize = 25) =>
-    request<PagedResult<GroceryList>>(`/api/GroceryList?pageNumber=${page}&pageSize=${pageSize}`),
+  getGroceryLists: () =>
+    request<GroceryList[]>(`/api/GroceryList`),
   getGroceryList: (id: number) => request<GroceryList>(`/api/GroceryList/${id}`),
   generateGroceryList: (mealPlanId?: number) => {
     const qs = mealPlanId !== undefined ? `?mealPlanId=${mealPlanId}` : "";
