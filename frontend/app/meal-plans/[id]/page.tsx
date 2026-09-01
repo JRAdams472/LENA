@@ -2,6 +2,7 @@
 
 import { use, useState, Fragment } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
@@ -425,6 +426,7 @@ export default function MealPlanDetailPage({
   const { id } = use(params);
   const planId = Number(id);
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [slotDialog, setSlotDialog] = useState<SlotDialogState | null>(null);
 
   const planQuery = useQuery({
@@ -440,6 +442,13 @@ export default function MealPlanDetailPage({
   const nutritionQuery = useQuery({
     queryKey: ["mealPlanNutrition", planId],
     queryFn: () => api.getMealPlanNutrition(planId),
+  });
+
+  const generateGroceryListMutation = useMutation({
+    mutationFn: () => api.generateGroceryList(planId),
+    onSuccess: (list) => {
+      router.push(`/grocery-lists/${list.groceryListID}`);
+    },
   });
 
   const findSlot = (day: number, mealType: number) =>
@@ -466,13 +475,31 @@ export default function MealPlanDetailPage({
   return (
     <Box>
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          {plan.planName}
-        </Typography>
-        <Typography variant="body1" color="text.secondary" gutterBottom>
-          Week starting {plan.weekStartDate?.split("T")[0]} (
-          {DAY_NAMES[plan.weekStartDayOfWeek]})
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            flexWrap: "wrap",
+          }}
+        >
+          <Box>
+            <Typography variant="h4" gutterBottom>
+              {plan.planName}
+            </Typography>
+            <Typography variant="body1" color="text.secondary" gutterBottom>
+              Week starting {plan.weekStartDate?.split("T")[0]} (
+              {DAY_NAMES[plan.weekStartDayOfWeek]})
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            onClick={() => generateGroceryListMutation.mutate()}
+            disabled={generateGroceryListMutation.isPending}
+          >
+            Generate Grocery List
+          </Button>
+        </Box>
       </Paper>
 
       <Paper sx={{ p: 3, mb: 3, overflowX: "auto" }}>
