@@ -533,18 +533,18 @@ export default function MealPlanDetailPage({
         <Typography variant="h5" gutterBottom>
           Weekly Grid
         </Typography>
-        <Box sx={{ display: "grid", gridTemplateColumns: "repeat(8, minmax(140px, 1fr))", gap: 1 }}>
+        <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(140px, 1fr))", gap: 1 }}>
           <Box sx={{ fontWeight: 700 }}></Box>
-          {DAY_NAMES.map((d) => (
-            <Box key={d} sx={{ textAlign: "center", fontWeight: 700 }}>
-              {d}
+          {MEAL_TYPE_IDS.map((mt) => (
+            <Box key={mt} sx={{ textAlign: "center", fontWeight: 700 }}>
+              {MEAL_TYPES[mt]}
             </Box>
           ))}
 
-          {MEAL_TYPE_IDS.map((mt) => (
-            <Fragment key={mt}>
-              <Box sx={{ fontWeight: 700 }}>{MEAL_TYPES[mt]}</Box>
-              {Array.from({ length: 7 }).map((_, day) => {
+          {Array.from({ length: 7 }).map((_, day) => (
+            <Fragment key={day}>
+              <Box sx={{ fontWeight: 700 }}>{DAY_NAMES[day]}</Box>
+              {MEAL_TYPE_IDS.map((mt) => {
                 const slot = findSlot(day, mt);
                 const nut = mealNutrition(day, mt);
                 return (
