@@ -20,6 +20,19 @@ services:
       retries: 10
       start_period: 30s
 
+  db-init:
+    # Same image as db: it ships /opt/mssql-tools18/bin/sqlcmd, so no extra image to pull.
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: lena-db-init
+    environment:
+      MSSQL_SA_PASSWORD: "P@ssw0rd!"
+    volumes:
+      - ./LENA.Database:/database:ro
+    entrypoint: ["bash", "/database/init.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+
   api:
     build:
       context: .
@@ -32,6 +45,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
 
   ui:
     build:

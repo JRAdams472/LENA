@@ -37,7 +37,7 @@ LENA/
 │   ├── app/                  # App Router pages
 │   ├── lib/                  # Typed API client and types
 │   └── README.md             # Frontend-specific instructions
-├── SQL/                      # Database schema, seed data, stored procedures
+├── LENA.Database/            # SQL Server project: schemas, tables, indexes, seed data, stored procedures
 └── README.md                 # This file
 ```
 
@@ -47,7 +47,24 @@ LENA/
 
 ### 1. Database
 
-Create the database using `SQL/schema.sql`, then optionally load sample data from `SQL/seed.sql`.
+All DDL lives in `LENA.Database/`, split by domain (`Wine/`, `Inventory/`, `MealPlan/`, `Recipe/`). Each domain has `Schema.sql`, `Tables/`, `Indexes/` and `StoredProcedures/`; seed data lives in `Wine/Seed/` and `SeedData/`.
+
+With Docker, nothing to do: `docker compose up --build` provisions the database automatically (see [Docker](#docker)).
+
+For a non-Docker setup (LocalDB or an existing SQL Server), create the `LENA` database and apply the fragments in dependency order — schemas, tables, indexes, seed data, then stored procedures:
+
+```bash
+sqlcmd -S "(localdb)\mssqllocaldb" -Q "IF DB_ID(N'LENA') IS NULL CREATE DATABASE [LENA]"
+for f in LENA.Database/*/Schema.sql \
+         LENA.Database/{Wine,Inventory,MealPlan,Recipe}/Tables/*.sql \
+         LENA.Database/*/Indexes/*.sql \
+         LENA.Database/Wine/Seed/*.sql LENA.Database/SeedData/*.sql \
+         LENA.Database/*/StoredProcedures/*.sql; do
+  sqlcmd -S "(localdb)\mssqllocaldb" -d LENA -b -i "$f"
+done
+```
+
+Tables carry inline foreign keys, so a file may need to be retried after the table it references exists; `LENA.Database/init.sh` (used by Docker) handles that ordering for you.
 
 The API expects the `DefaultConnection` string in `LENA.API/appsettings.Development.json` (or user secrets / environment variables outside development):
 
@@ -138,6 +155,10 @@ Run the entire stack from the repo root:
 docker compose up --build
 ```
 
+The one-shot `db-init` service runs `LENA.Database/init.sh` against the `db` container: it waits for SQL Server, creates the `LENA` database if missing, and applies every `.sql` fragment (schemas → tables → indexes → seed data → stored procedures). The `api` service only starts once `db-init` has completed successfully.
+
+Init is idempotent — existing schemas, tables, indexes and already-populated seed tables are skipped, and stored procedures are applied as `CREATE OR ALTER` — so re-running `docker compose up` against an existing `mssql_data` volume is safe. Use `docker compose down -v` to start from an empty database.
+
 Once the containers are healthy, the whole application is available on a single origin:
 
 - **Web app**: http://localhost
@@ -177,7 +198,7 @@ npm run build
 
 ## Getting Help
 
-- See `SQL/schema.sql` for the complete database design
+- See `LENA.Database/` for the complete database design
 - See `frontend/README.md` for frontend-specific details
 - Development notes in `notes.md`
 
