@@ -15,8 +15,8 @@ namespace LENA.Application.Repositories
         public override async Task<FoodNutrient?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<FoodNutrient>("[Inventory].[usp_FoodNutrient_GetById]", new { Id = id }, cancellationToken);
 
-        public override async Task<FoodNutrient?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-            => await Task.FromResult<FoodNutrient?>(null);
+        public override Task<FoodNutrient?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+            => Task.FromResult<FoodNutrient?>(null);
 
         public override async Task<FoodNutrient> CreateAsync(FoodNutrient entity, CancellationToken cancellationToken = default)
         {

@@ -48,8 +48,8 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Vintage?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-            => await Task.FromResult<Vintage?>(null);
+        public override Task<Vintage?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+            => Task.FromResult<Vintage?>(null);
 
         public async Task<Vintage?> GetByYearAsync(int year, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Vintage>("[Wine].[usp_Vintage_GetByYear]", new { Year = year }, cancellationToken);
