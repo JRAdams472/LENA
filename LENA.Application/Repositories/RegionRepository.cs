@@ -35,6 +35,9 @@ namespace LENA.Application.Repositories
         public override async Task<LENA.Application.Models.PagedResult<Region>> ListAllAsync(LENA.Application.Models.PaginationRequest? paging = null, CancellationToken cancellationToken = default)
         => await QueryPagedAsync<Region>("[Wine].[usp_Region_ListAll]", paging, cancellationToken);
 
+        public async Task<LENA.Application.Models.PagedResult<Region>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default)
+            => await QueryPagedListAsync<Region>("[Wine].[usp_Region_ListAllPaged]", pageNumber, pageSize, ct: ct);
+
         public override async Task<Region> UpdateAsync(Region entity, CancellationToken cancellationToken = default)
         {
             await ExecuteRequiringMatchAsync("[Wine].[usp_Region_Update]", new

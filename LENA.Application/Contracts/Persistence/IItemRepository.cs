@@ -1,3 +1,4 @@
+using LENA.Application.Models;
 using LENA.Domain.Entity.Inventory;
 
 namespace LENA.Application.Contracts.Persistence
@@ -18,5 +19,7 @@ namespace LENA.Application.Contracts.Persistence
 
         // Set the favorite flag of an item
         Task SetFavoriteAsync(int itemId, bool isFavorite, CancellationToken cancellationToken = default);
+
+        Task<PagedResult<Item>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default);
     }
 }

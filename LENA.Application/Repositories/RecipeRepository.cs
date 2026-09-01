@@ -34,6 +34,9 @@ namespace LENA.Application.Repositories
         public override async Task<LENA.Application.Models.PagedResult<Recipe>> ListAllAsync(LENA.Application.Models.PaginationRequest? paging = null, CancellationToken cancellationToken = default)
             => await QueryPagedAsync<Recipe>("[Recipe].[usp_Recipe_ListAll]", paging, cancellationToken);
 
+        public async Task<LENA.Application.Models.PagedResult<Recipe>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default)
+            => await QueryPagedListAsync<Recipe>("[Recipe].[usp_Recipe_ListAllPaged]", pageNumber, pageSize, ct: ct);
+
         public override async Task<Recipe> UpdateAsync(Recipe entity, CancellationToken cancellationToken = default)
         {
             await ExecuteRequiringMatchAsync("[Recipe].[usp_Recipe_Update]", new

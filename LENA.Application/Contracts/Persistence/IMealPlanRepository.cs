@@ -1,3 +1,4 @@
+using LENA.Application.Models;
 using LENA.Domain.Entity.MealPlan;
 using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 
@@ -15,5 +16,7 @@ namespace LENA.Application.Contracts.Persistence
         Task<IReadOnlyList<MealSlotItem>> GetSlotItemsBySlotIdAsync(int mealSlotId, CancellationToken cancellationToken = default);
         Task<MealSlotItem> AddSlotItemAsync(MealSlotItem mealSlotItem, CancellationToken cancellationToken = default);
         Task DeleteSlotItemAsync(int mealSlotItemId, CancellationToken cancellationToken = default);
+
+        Task<PagedResult<MealPlanEntity>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default);
     }
 }

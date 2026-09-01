@@ -1,3 +1,4 @@
+using LENA.Application.Models;
 using LENA.Domain.Entity.Recipe;
 
 namespace LENA.Application.Contracts.Persistence
@@ -11,5 +12,7 @@ namespace LENA.Application.Contracts.Persistence
         Task<RecipeStep> AddStepAsync(RecipeStep recipeStep, CancellationToken cancellationToken = default);
         Task<RecipeStep> UpdateStepAsync(RecipeStep recipeStep, CancellationToken cancellationToken = default);
         Task DeleteStepAsync(int recipeStepId, int recipeId, CancellationToken cancellationToken = default);
+
+        Task<PagedResult<Recipe>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default);
     }
 }

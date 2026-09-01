@@ -28,6 +28,9 @@ namespace LENA.Application.Repositories
         public override async Task<LENA.Application.Models.PagedResult<TypeEntity>> ListAllAsync(LENA.Application.Models.PaginationRequest? paging = null, CancellationToken cancellationToken = default)
             => await QueryPagedAsync<TypeEntity>("[Wine].[usp_Type_ListAll]", paging, cancellationToken);
 
+        public async Task<LENA.Application.Models.PagedResult<TypeEntity>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default)
+            => await QueryPagedListAsync<TypeEntity>("[Wine].[usp_Type_ListAllPaged]", pageNumber, pageSize, ct: ct);
+
         public override async Task<TypeEntity> UpdateAsync(TypeEntity entity, CancellationToken cancellationToken = default)
         {
             await ExecuteRequiringMatchAsync("[Wine].[usp_Type_Update]", new
