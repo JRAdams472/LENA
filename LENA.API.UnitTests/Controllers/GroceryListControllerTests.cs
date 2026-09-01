@@ -1,0 +1,93 @@
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LENA.API.Controllers;
+using LENA.Application.Features.Grocery.GroceryLists.Commands;
+using LENA.Application.Features.Grocery.GroceryLists.Queries;
+using LENA.Domain.Entity.Grocery;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Xunit;
+
+namespace LENA.API.UnitTests.Controllers
+{
+    public class GroceryListControllerTests
+    {
+        private readonly Mock<IMediator> _mediator = new();
+        private readonly GroceryListController _sut;
+
+        public GroceryListControllerTests() => _sut = new GroceryListController(_mediator.Object);
+
+        [Fact]
+        public async Task GetGroceryLists_Should_Return_Ok()
+        {
+            _mediator.Setup(m => m.Send(It.IsAny<GetGroceryListsQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<GroceryList>().AsReadOnly());
+
+            var result = await _sut.GetGroceryLists();
+
+            result.Result.Should().BeOfType<OkObjectResult>();
+        }
+
+        [Fact]
+        public async Task GetGroceryListById_Should_Return_NotFound_When_Missing()
+        {
+            _mediator.Setup(m => m.Send(It.IsAny<GetGroceryListByIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((GroceryList?)null);
+
+            var result = await _sut.GetGroceryListById(1);
+
+            result.Result.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public async Task GenerateGroceryList_Should_Return_CreatedAtAction()
+        {
+            var list = new GroceryList { GroceryListID = 1 };
+            _mediator.Setup(m => m.Send(It.IsAny<GenerateGroceryListCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(list);
+
+            var result = await _sut.GenerateGroceryList(5);
+
+            result.Result.Should().BeOfType<CreatedAtActionResult>();
+        }
+
+        [Fact]
+        public async Task AddGroceryListItem_Should_Map_To_Command_And_Set_Source_To_Manual_When_Blank()
+        {
+            GroceryListItem? sent = null;
+            _mediator.Setup(m => m.Send(It.IsAny<AddGroceryListItemCommand>(), It.IsAny<CancellationToken>()))
+                .Callback<object, CancellationToken>((c, _) => sent = ((AddGroceryListItemCommand)c).GroceryListItem)
+                .ReturnsAsync(new GroceryListItem { GroceryListItemID = 1 });
+
+            await _sut.AddGroceryListItem(1, new GroceryListItem { ManualItemName = "Eggs", QuantityNeeded = 12 });
+
+            sent.Should().NotBeNull();
+            sent!.GroceryListID.Should().Be(1);
+            sent.Source.Should().Be("Manual");
+        }
+
+        [Fact]
+        public async Task ToggleGroceryItemChecked_Should_Send_Command()
+        {
+            _mediator.Setup(m => m.Send(It.IsAny<ToggleGroceryListItemCheckedCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new GroceryListItem { GroceryListItemID = 1 });
+
+            var result = await _sut.ToggleGroceryItemChecked(1);
+
+            _mediator.Verify(m => m.Send(It.Is<ToggleGroceryListItemCheckedCommand>(c => c.GroceryListItemId == 1), It.IsAny<CancellationToken>()), Times.Once);
+            result.Result.Should().BeOfType<OkObjectResult>();
+        }
+
+        [Fact]
+        public async Task DeleteGroceryItem_Should_Return_NoContent()
+        {
+            var result = await _sut.DeleteGroceryItem(1);
+
+            _mediator.Verify(m => m.Send(It.Is<DeleteGroceryListItemCommand>(c => c.GroceryListItemId == 1), It.IsAny<CancellationToken>()), Times.Once);
+            result.Should().BeOfType<NoContentResult>();
+        }
+    }
+}

@@ -86,7 +86,7 @@ namespace LENA.API.UnitTests.Controllers
             _mediator.Setup(m => m.Send(It.IsAny<AddOrUpdateRecipeItemCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new RecipeItem { RecipeID = 1, ItemID = 2, Quantity = 3 });
 
-            await _sut.AddRecipeItem(1, new RecipeItemRequest(2, 3, "g"));
+            await _sut.AddRecipeItem(1, new RecipeItemRequest(2, 3, "g", false));
 
             _mediator.Verify(m => m.Send(
                 It.Is<AddOrUpdateRecipeItemCommand>(c =>
