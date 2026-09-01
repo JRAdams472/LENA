@@ -29,7 +29,7 @@ const SOURCE_LABELS: Record<string, string> = {
   Manual: "Manual",
 };
 
-function ItemRow({
+export function ItemRow({
   item,
   items,
   listId,
