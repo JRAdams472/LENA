@@ -4,7 +4,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT MealSlotID, MealPlanID, DayOfWeek, MealType, RecipeID, ReplacementNote, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate
+    SELECT MealSlotID, MealPlanID, DayOfWeek, MealType, RecipeID, Servings, ReplacementNote, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate
     FROM [MealPlan].[MealSlot]
     WHERE MealPlanID = @MealPlanID
     ORDER BY DayOfWeek, MealType;

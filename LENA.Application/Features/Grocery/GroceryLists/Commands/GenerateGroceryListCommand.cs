@@ -8,7 +8,9 @@ namespace LENA.Application.Features.Grocery.GroceryLists.Commands
 {
     public record GenerateGroceryListCommand(int? MealPlanId) : IRequest<GroceryList>, ICreateCommand
     {
-        public AuditableEntity AuditableEntity => new GroceryList { MealPlanID = MealPlanId };
+        private readonly GroceryList _groceryList = new() { MealPlanID = MealPlanId };
+
+        public AuditableEntity AuditableEntity => _groceryList;
     }
 
     public class GenerateGroceryListCommandHandler : IRequestHandler<GenerateGroceryListCommand, GroceryList>

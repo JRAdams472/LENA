@@ -72,6 +72,7 @@ namespace LENA.Application.Repositories
                 mealSlot.DayOfWeek,
                 mealSlot.MealType,
                 mealSlot.RecipeID,
+                mealSlot.Servings,
                 mealSlot.ReplacementNote,
                 mealSlot.CreatedBy,
                 mealSlot.CreateDate
@@ -88,6 +89,7 @@ namespace LENA.Application.Repositories
                 mealSlot.DayOfWeek,
                 mealSlot.MealType,
                 mealSlot.RecipeID,
+                mealSlot.Servings,
                 mealSlot.ReplacementNote,
                 mealSlot.LastUpdatedBy,
                 mealSlot.LastUpdatedDate

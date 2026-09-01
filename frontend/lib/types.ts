@@ -202,6 +202,7 @@ export interface MealSlot extends AuditableEntity {
   dayOfWeek: number;
   mealType: number;
   recipeID: number | null;
+  servings: number;
   replacementNote: string | null;
   mealPlan?: MealPlan | null;
   recipe?: Recipe | null;
@@ -255,6 +256,7 @@ export interface GroceryListItem extends AuditableEntity {
   groceryListItemID: number;
   groceryListID: number;
   itemID: number | null;
+  itemName: string | null;
   manualItemName: string | null;
   quantityNeeded: number;
   unitOfMeasure: string | null;

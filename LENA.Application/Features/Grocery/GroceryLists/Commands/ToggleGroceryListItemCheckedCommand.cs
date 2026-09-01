@@ -8,7 +8,9 @@ namespace LENA.Application.Features.Grocery.GroceryLists.Commands
 {
     public record ToggleGroceryListItemCheckedCommand(int GroceryListItemId) : IRequest<GroceryListItem>, IUpdateCommand
     {
-        public AuditableEntity AuditableEntity => new GroceryListItem { GroceryListItemID = GroceryListItemId };
+        private readonly GroceryListItem _groceryListItem = new() { GroceryListItemID = GroceryListItemId };
+
+        public AuditableEntity AuditableEntity => _groceryListItem;
     }
 
     public class ToggleGroceryListItemCheckedCommandHandler : IRequestHandler<ToggleGroceryListItemCheckedCommand, GroceryListItem>

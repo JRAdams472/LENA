@@ -4,6 +4,7 @@ CREATE TABLE [MealPlan].[MealSlot] (
     [DayOfWeek] TINYINT NOT NULL,
     [MealType] TINYINT NOT NULL,
     [RecipeID] INT NULL,
+    [Servings] DECIMAL(10,2) DEFAULT 1 NOT NULL,
     [ReplacementNote] NVARCHAR(500) NULL,
     [CreatedBy] NVARCHAR(100) NOT NULL,
     [CreateDate] DATETIME2 NOT NULL,

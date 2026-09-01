@@ -65,5 +65,21 @@ namespace LENA.Application.UnitTests.Features.Inventory.Items
             mockRepo.Verify(r => r.UpdateAsync(It.Is<Item>(x => x == request.Item)), Times.Once);
             result.Should().NotBeNull();
         }
+
+        [Fact]
+        public async Task AdjustItemQuantityCommand_Should_Forward_Audit_User()
+        {
+            var request = new AdjustItemQuantityCommand(4, 0m, null);
+            request.AuditableEntity.LastUpdatedBy = "tester";
+
+            var mockRepo = new Mock<IItemRepository>();
+            var handler = new AdjustItemQuantityCommandHandler(mockRepo.Object);
+
+            await handler.Handle(request, CancellationToken.None);
+
+            mockRepo.Verify(
+                r => r.AdjustQuantityAsync(4, 0m, null, "tester", It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
     }
 }

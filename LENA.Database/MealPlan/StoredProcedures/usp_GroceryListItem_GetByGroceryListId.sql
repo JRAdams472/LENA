@@ -4,8 +4,11 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT GroceryListItemID, GroceryListID, ItemID, ManualItemName, QuantityNeeded, UnitOfMeasure, Source, IsChecked, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate
-    FROM [MealPlan].[GroceryListItem]
-    WHERE GroceryListID = @GroceryListID
-    ORDER BY Source, ManualItemName;
+    SELECT gli.GroceryListItemID, gli.GroceryListID, gli.ItemID, i.Name AS ItemName, gli.ManualItemName,
+           gli.QuantityNeeded, gli.UnitOfMeasure, gli.Source, gli.IsChecked,
+           gli.CreatedBy, gli.CreateDate, gli.LastUpdatedBy, gli.LastUpdatedDate
+    FROM [MealPlan].[GroceryListItem] gli
+    LEFT JOIN [Inventory].[Item] i ON gli.ItemID = i.ItemID
+    WHERE gli.GroceryListID = @GroceryListID
+    ORDER BY gli.Source, COALESCE(i.Name, gli.ManualItemName);
 END

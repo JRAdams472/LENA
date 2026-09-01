@@ -14,7 +14,7 @@ namespace LENA.Application.Contracts.Persistence
         Task AddOrUpdateUPC14Async(int itemId, string upc14, CancellationToken cancellationToken = default);
 
         // Change the quantity of an existing item (with optional purchase date)
-        Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null, CancellationToken cancellationToken = default);
+        Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null, string? lastUpdatedBy = null, CancellationToken cancellationToken = default);
 
         // Set the favorite flag of an item
         Task SetFavoriteAsync(int itemId, bool isFavorite, CancellationToken cancellationToken = default);
