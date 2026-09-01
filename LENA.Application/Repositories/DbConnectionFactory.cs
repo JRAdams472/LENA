@@ -22,8 +22,16 @@ namespace LENA.Application.Repositories
         public async Task<DbConnection> CreateConnectionAsync(CancellationToken cancellationToken = default)
         {
             var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync(cancellationToken);
-            return connection;
+            try
+            {
+                await connection.OpenAsync(cancellationToken);
+                return connection;
+            }
+            catch
+            {
+                await connection.DisposeAsync();
+                throw;
+            }
         }
     }
 }
