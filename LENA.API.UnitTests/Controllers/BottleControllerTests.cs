@@ -34,6 +34,30 @@ namespace LENA.API.UnitTests.Controllers
         }
 
         [Fact]
+        public async Task GetBottlesPaged_Should_Call_Mediator_With_Defaults()
+        {
+            _mediator.Setup(m => m.Send(It.IsAny<GetBottlesPagedQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PagedResult<Bottle> { Items = new List<Bottle>() });
+
+            var result = await _sut.GetBottlesPaged();
+
+            _mediator.Verify(m => m.Send(It.Is<GetBottlesPagedQuery>(q => q.PageNumber == 1 && q.PageSize == 25), It.IsAny<CancellationToken>()), Times.Once);
+            result.Result.Should().BeOfType<OkObjectResult>();
+        }
+
+        [Fact]
+        public async Task GetBottlesPaged_Should_Call_Mediator_With_Supplied_PageNumber_And_PageSize()
+        {
+            _mediator.Setup(m => m.Send(It.IsAny<GetBottlesPagedQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PagedResult<Bottle> { Items = new List<Bottle>() });
+
+            var result = await _sut.GetBottlesPaged(3, 50);
+
+            _mediator.Verify(m => m.Send(It.Is<GetBottlesPagedQuery>(q => q.PageNumber == 3 && q.PageSize == 50), It.IsAny<CancellationToken>()), Times.Once);
+            result.Result.Should().BeOfType<OkObjectResult>();
+        }
+
+        [Fact]
         public async Task GetBottleById_Should_Return_Ok_When_Found()
         {
             _mediator.Setup(m => m.Send(It.IsAny<GetBottleByIdQuery>(), It.IsAny<CancellationToken>()))

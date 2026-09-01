@@ -29,6 +29,22 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
         }
 
         [Fact]
+        public async Task GetRecipesPagedQuery_Should_Return_PagedResult_And_Pass_Through_Page_And_Size()
+        {
+            IReadOnlyList<RecipeEntity> recipes = new List<RecipeEntity> { new() { RecipeName = "Soup" } };
+            _repo.Setup(r => r.ListPagedAsync(2, 10, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PagedResult<RecipeEntity> { Items = recipes, PageNumber = 2, PageSize = 10, TotalCount = 1 });
+
+            var result = await new GetRecipesPagedQueryHandler(_repo.Object)
+                .Handle(new GetRecipesPagedQuery(2, 10), CancellationToken.None);
+
+            result.Items.Should().BeEquivalentTo(recipes);
+            result.PageNumber.Should().Be(2);
+            result.PageSize.Should().Be(10);
+            _repo.Verify(r => r.ListPagedAsync(2, 10, It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
         public async Task GetRecipeByIdQuery_Should_Populate_Items_And_Steps()
         {
             var recipe = new RecipeEntity { RecipeID = 1, RecipeName = "Soup" };
