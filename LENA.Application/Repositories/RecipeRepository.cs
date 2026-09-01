@@ -28,7 +28,7 @@ namespace LENA.Application.Repositories
         public override async Task<Recipe?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Recipe>("[Recipe].[usp_Recipe_GetById]", new { RecipeID = id }, cancellationToken);
 
-        public override async Task<Recipe?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<Recipe?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Recipe>("[Recipe].[usp_Recipe_GetByName]", new { RecipeName = name }, cancellationToken);
 
         public override async Task<IReadOnlyList<Recipe>> ListAllAsync(CancellationToken cancellationToken = default)

@@ -4,7 +4,7 @@ using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 
 namespace LENA.Application.Contracts.Persistence
 {
-    public interface IMealPlanRepository : IAsyncRepository<MealPlanEntity>
+    public interface IMealPlanRepository : IAsyncRepository<MealPlanEntity>, IGetByNameRepository<MealPlanEntity>
     {
         Task<IReadOnlyList<MealPlanNutritionRow>> GetMealPlanNutritionAsync(int mealPlanId, CancellationToken cancellationToken = default);
 

@@ -3,7 +3,7 @@ using LENA.Domain.Entity.Inventory;
 
 namespace LENA.Application.Contracts.Persistence
 {
-    public interface IItemRepository : IAsyncRepository<Item>
+    public interface IItemRepository : IAsyncRepository<Item>, IGetByNameRepository<Item>
     {
         // Change the category of an existing item
         Task ChangeItemCategoryAsync(int itemId, int newCategoryId, CancellationToken cancellationToken = default);

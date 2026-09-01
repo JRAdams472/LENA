@@ -15,7 +15,7 @@ export default function Dashboard() {
     error,
   } = useQuery({
     queryKey: ["items"],
-    queryFn: () => api.getItems(1, 1000).then((r) => r.items),
+    queryFn: () => api.getItems(),
   });
 
   return (

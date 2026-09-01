@@ -18,7 +18,7 @@ namespace LENA.Application.Repositories
         public override async Task<Item?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Item>("[Inventory].[usp_Item_GetById]", new { Id = id }, cancellationToken);
 
-        public override async Task<Item?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<Item?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Item>("[Inventory].[usp_Item_GetByName]", new { Name = name }, cancellationToken);
 
         public override async Task<Item> CreateAsync(Item entity, CancellationToken cancellationToken = default)

@@ -90,8 +90,7 @@ export const api = {
     }),
 
   // Items
-  getItems: (page = 1, pageSize = 25) =>
-    request<PagedResult<Item>>(`/api/Item/items?pageNumber=${page}&pageSize=${pageSize}`),
+  getItems: () => request<Item[]>(`/api/Item/items`),
   getItemsPaged: (pageNumber: number, pageSize: number) =>
     request<PagedResult<Item>>(`/api/Item/items/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
   getItem: (id: number) => request<Item>(`/api/Item/items/${id}`),
@@ -152,8 +151,6 @@ export const api = {
   deleteNutrientType: (id: number) => request<NutrientType | null>(`/api/Item/nutrienttypes/${id}`, { method: "DELETE" }),
 
   // Wine
-  getBottles: (page = 1, pageSize = 25) =>
-    request<PagedResult<Bottle>>(`/api/Wine/bottles?pageNumber=${page}&pageSize=${pageSize}`),
   getBottlesPaged: (pageNumber: number, pageSize: number) =>
     request<PagedResult<Bottle>>(`/api/Wine/bottles/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
   getBottle: (id: number) => request<Bottle>(`/api/Wine/bottles/${id}`),
@@ -172,8 +169,7 @@ export const api = {
   getBottleCount: () => request<number>("/api/Wine/bottles/count"),
 
   // Wine reference data
-  getCountries: (page = 1, pageSize = 25) =>
-    request<PagedResult<Country>>(`/api/Wine/countries?pageNumber=${page}&pageSize=${pageSize}`),
+  getCountries: () => request<Country[]>(`/api/Wine/countries`),
   getCountriesPaged: (pageNumber: number, pageSize: number) =>
     request<PagedResult<Country>>(`/api/Wine/countries/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
   getActiveCountries: () => request<Country[]>("/api/Wine/countries/active"),
@@ -183,8 +179,7 @@ export const api = {
     request<Country>(`/api/Wine/countries/${id}`, { method: "PUT", body: JSON.stringify({ ...country, countryID: id }) }),
   deleteCountry: (id: number) => request<Country | null>(`/api/Wine/countries/${id}`, { method: "DELETE" }),
 
-  getRegions: (page = 1, pageSize = 25) =>
-    request<PagedResult<Region>>(`/api/Wine/regions?pageNumber=${page}&pageSize=${pageSize}`),
+  getRegions: () => request<Region[]>(`/api/Wine/regions`),
   getRegionsPaged: (pageNumber: number, pageSize: number) =>
     request<PagedResult<Region>>(`/api/Wine/regions/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
   getRegionsByCountryId: (countryId: number) => request<Region[]>(`/api/Wine/regions/country/${countryId}`),
@@ -194,8 +189,7 @@ export const api = {
     request<Region>(`/api/Wine/regions/${id}`, { method: "PUT", body: JSON.stringify({ ...region, regionID: id }) }),
   deleteRegion: (id: number) => request<Region | null>(`/api/Wine/regions/${id}`, { method: "DELETE" }),
 
-  getTypes: (page = 1, pageSize = 25) =>
-    request<PagedResult<WineType>>(`/api/Wine/types?pageNumber=${page}&pageSize=${pageSize}`),
+  getTypes: () => request<WineType[]>(`/api/Wine/types`),
   getTypesPaged: (pageNumber: number, pageSize: number) =>
     request<PagedResult<WineType>>(`/api/Wine/types/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
   createType: (type: Omit<WineType, keyof AuditableEntity>) =>
@@ -204,8 +198,7 @@ export const api = {
     request<WineType>(`/api/Wine/types/${id}`, { method: "PUT", body: JSON.stringify({ ...type, typeID: id }) }),
   deleteType: (id: number) => request<WineType | null>(`/api/Wine/types/${id}`, { method: "DELETE" }),
 
-  getVintages: (page = 1, pageSize = 25) =>
-    request<PagedResult<Vintage>>(`/api/Wine/vintages?pageNumber=${page}&pageSize=${pageSize}`),
+  getVintages: () => request<Vintage[]>(`/api/Wine/vintages`),
   getVintagesPaged: (pageNumber: number, pageSize: number) =>
     request<PagedResult<Vintage>>(`/api/Wine/vintages/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
   getActiveVintages: () => request<Vintage[]>("/api/Wine/vintages/active"),
@@ -216,8 +209,7 @@ export const api = {
   deleteVintage: (id: number) => request<Vintage | null>(`/api/Wine/vintages/${id}`, { method: "DELETE" }),
 
   // Recipes
-  getRecipes: (page = 1, pageSize = 25) =>
-    request<PagedResult<Recipe>>(`/api/Recipe/recipes?pageNumber=${page}&pageSize=${pageSize}`),
+  getRecipes: () => request<Recipe[]>(`/api/Recipe/recipes`),
   getRecipesPaged: (pageNumber: number, pageSize: number) =>
     request<PagedResult<Recipe>>(`/api/Recipe/recipes/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
   getRecipe: (id: number) => request<Recipe>(`/api/Recipe/recipes/${id}`),
@@ -242,8 +234,6 @@ export const api = {
     request<void>(`/api/Recipe/recipes/${recipeId}/steps/${stepId}`, { method: "DELETE" }),
 
   // Meal Plans
-  getMealPlans: (page = 1, pageSize = 25) =>
-    request<PagedResult<MealPlan>>(`/api/MealPlan/plans?pageNumber=${page}&pageSize=${pageSize}`),
   getMealPlansPaged: (pageNumber: number, pageSize: number) =>
     request<PagedResult<MealPlan>>(`/api/MealPlan/plans/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
   getMealPlan: (id: number) => request<MealPlan>(`/api/MealPlan/plans/${id}`),

@@ -16,7 +16,7 @@ namespace LENA.Application.Repositories
         public override async Task<FlavorProfile?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<FlavorProfile>("[Inventory].[usp_FlavorProfile_GetById]", new { Id = id }, cancellationToken);
 
-        public override async Task<FlavorProfile?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<FlavorProfile?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<FlavorProfile>("[Inventory].[usp_FlavorProfile_GetByName]", new { Name = name }, cancellationToken);
 
         public override async Task<FlavorProfile> CreateAsync(FlavorProfile entity, CancellationToken cancellationToken = default)

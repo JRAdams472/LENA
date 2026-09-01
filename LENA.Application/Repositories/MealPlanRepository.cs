@@ -28,7 +28,7 @@ namespace LENA.Application.Repositories
         public override async Task<MealPlanEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_GetById]", new { MealPlanID = id }, cancellationToken);
 
-        public override async Task<MealPlanEntity?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<MealPlanEntity?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_GetByName]", new { PlanName = name }, cancellationToken);
 
         public override async Task<IReadOnlyList<MealPlanEntity>> ListAllAsync(CancellationToken cancellationToken = default)

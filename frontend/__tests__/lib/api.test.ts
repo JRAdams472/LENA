@@ -12,25 +12,19 @@ describe("api client", () => {
       ok: true,
       status: 200,
       headers: { get: (name: string) => (name === "content-type" ? "application/json" : null) },
-      json: async () => ({
-        items: [{ itemID: 1, name: "Milk" }],
-        pageNumber: 1,
-        pageSize: 25,
-        totalCount: 1,
-        totalPages: 1,
-      }),
+      json: async () => [{ itemID: 1, name: "Milk" }],
     });
 
     const result = await api.getItems();
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "http://localhost:5059/api/Item/items?pageNumber=1&pageSize=25",
+      "http://localhost:5059/api/Item/items",
       expect.objectContaining({
         headers: expect.objectContaining({ Accept: "application/json" }),
       })
     );
-    expect(result.items).toHaveLength(1);
-    expect(result.items[0].name).toBe("Milk");
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("Milk");
   });
 
   it("getBottlesPaged calls the paged endpoint and returns data", async () => {

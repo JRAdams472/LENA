@@ -63,12 +63,12 @@ function SlotDialog({
 
   const recipesQuery = useQuery({
     queryKey: ["recipes"],
-    queryFn: () => api.getRecipes(1, 1000).then((r) => r.items),
+    queryFn: () => api.getRecipes(),
   });
 
   const itemsQuery = useQuery({
     queryKey: ["items"],
-    queryFn: () => api.getItems(1, 1000).then((r) => r.items),
+    queryFn: () => api.getItems(),
   });
 
   const [recipeId, setRecipeId] = useState<string>(
@@ -463,7 +463,7 @@ export default function MealPlanDetailPage({
 
   const recipesQuery = useQuery({
     queryKey: ["recipes"],
-    queryFn: () => api.getRecipes(1, 1000).then((r) => r.items),
+    queryFn: () => api.getRecipes(),
   });
 
   const nutritionQuery = useQuery({

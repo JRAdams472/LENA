@@ -12,7 +12,7 @@ export default function RegionsPage() {
       filterBy={{
         label: "Country",
         optionsFn: async () =>
-          (await api.getCountries(1, 1000)).items.map((c) => ({
+          (await api.getCountries()).map((c) => ({
             id: c.countryID,
             name: c.countryName,
           })),

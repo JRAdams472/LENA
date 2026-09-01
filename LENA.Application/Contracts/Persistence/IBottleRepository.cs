@@ -3,7 +3,7 @@ using LENA.Domain.Entity.Wine;
 
 namespace LENA.Application.Contracts.Persistence
 {
-    public interface IBottleRepository : IAsyncRepository<Bottle>
+    public interface IBottleRepository : IAsyncRepository<Bottle>, IGetByNameRepository<Bottle>
     {
         Task<IReadOnlyList<Bottle>> GetAllByCountryIdAsync(int countryId, CancellationToken cancellationToken = default);
         Task<IReadOnlyList<Bottle>> GetAllByRegionIdAsync(int regionId, CancellationToken cancellationToken = default);

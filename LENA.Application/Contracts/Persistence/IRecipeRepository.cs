@@ -3,7 +3,7 @@ using LENA.Domain.Entity.Recipe;
 
 namespace LENA.Application.Contracts.Persistence
 {
-    public interface IRecipeRepository : IAsyncRepository<Recipe>
+    public interface IRecipeRepository : IAsyncRepository<Recipe>, IGetByNameRepository<Recipe>
     {
         Task<IReadOnlyList<RecipeItem>> GetItemsByRecipeIdAsync(int recipeId, CancellationToken cancellationToken = default);
         Task<IReadOnlyList<RecipeStep>> GetStepsByRecipeIdAsync(int recipeId, CancellationToken cancellationToken = default);

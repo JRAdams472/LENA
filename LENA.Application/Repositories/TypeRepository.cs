@@ -51,7 +51,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<TypeEntity?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<TypeEntity?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<TypeEntity>("[Wine].[usp_Type_GetByName]", new { Name = name }, cancellationToken);
     }
 }

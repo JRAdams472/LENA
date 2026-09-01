@@ -61,19 +61,19 @@ export default function BottlesPage() {
 
   const countriesQuery = useQuery({
     queryKey: ["countries"],
-    queryFn: () => api.getCountries(1, 1000).then((r) => r.items),
+    queryFn: () => api.getCountries(),
   });
   const regionsQuery = useQuery({
     queryKey: ["regions"],
-    queryFn: () => api.getRegions(1, 1000).then((r) => r.items),
+    queryFn: () => api.getRegions(),
   });
   const typesQuery = useQuery({
     queryKey: ["types"],
-    queryFn: () => api.getTypes(1, 1000).then((r) => r.items),
+    queryFn: () => api.getTypes(),
   });
   const vintagesQuery = useQuery({
     queryKey: ["vintages"],
-    queryFn: () => api.getVintages(1, 1000).then((r) => r.items),
+    queryFn: () => api.getVintages(),
   });
 
   const listQuery = useQuery<Bottle[] | PagedResult<Bottle>>({

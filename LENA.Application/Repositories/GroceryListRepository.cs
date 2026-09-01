@@ -43,8 +43,6 @@ namespace LENA.Application.Repositories
             return groceryList;
         }
 
-        public override Task<GroceryList?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-            => Task.FromResult<GroceryList?>(null);
 
         public override async Task<IReadOnlyList<GroceryList>> ListAllAsync(CancellationToken cancellationToken = default)
             => await QueryListAsync<GroceryList>("[MealPlan].[usp_GroceryList_ListAll]", cancellationToken: cancellationToken);

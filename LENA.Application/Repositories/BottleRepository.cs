@@ -96,7 +96,7 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Bottle?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<Bottle?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Bottle>("[Wine].[usp_Bottle_GetByName]", new { Name = name }, cancellationToken);
     }
 }

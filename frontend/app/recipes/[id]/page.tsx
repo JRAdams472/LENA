@@ -48,7 +48,7 @@ export default function RecipeDetailPage() {
 
   const itemsQuery = useQuery({
     queryKey: ["items"],
-    queryFn: () => api.getItems(1, 1000).then((r) => r.items),
+    queryFn: () => api.getItems(),
   });
 
   const recipeItemsQuery = useQuery({
