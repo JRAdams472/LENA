@@ -20,7 +20,8 @@ BEGIN
     IF @Affected > 0
     BEGIN
         DECLARE @OwningRecipeID INT, @DeletedStepNumber INT;
-        SELECT TOP (1) @OwningRecipeID = RecipeID, @DeletedStepNumber = StepNumber FROM @Deleted;
+        SET @OwningRecipeID = (SELECT TOP (1) RecipeID FROM @Deleted);
+        SET @DeletedStepNumber = (SELECT TOP (1) StepNumber FROM @Deleted);
 
         UPDATE [Recipe].[RecipeStep]
         SET StepNumber = -(StepNumber - 1)

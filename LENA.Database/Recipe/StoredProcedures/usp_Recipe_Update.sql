@@ -20,4 +20,6 @@ BEGIN
         LastUpdatedBy = @LastUpdatedBy,
         LastUpdatedDate = @LastUpdatedDate
     WHERE RecipeID = @RecipeID;
+
+    SELECT @@ROWCOUNT;
 END
