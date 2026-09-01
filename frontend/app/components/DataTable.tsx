@@ -65,11 +65,15 @@ export default function DataTable<T extends object>({
   pagination,
   fields,
 }: DataTableProps<T>) {
-  const columnDefs: FieldDef<T>[] = fields && fields.length > 0
+  let columnDefs: FieldDef<T>[] = fields && fields.length > 0
     ? fields
     : rows.length > 0
       ? (Object.keys(rows[0]) as Extract<keyof T, string>[]).map((key) => ({ key, label: key, sortable: true }))
       : [];
+
+  const hiddenKeys = new Set(["createdBy", "createDate"]);
+  const idRegex = /id$/i;
+  columnDefs = columnDefs.filter((col) => !hiddenKeys.has(col.key) && !idRegex.test(col.key));
 
   const [sortField, setSortField] = useState<Extract<keyof T, string> | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
