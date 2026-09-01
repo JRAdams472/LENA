@@ -9,4 +9,5 @@
   <Folder Name="/LENA/" />
   <Project Path="LENA.API.UnitTests/LENA.API.UnitTests.csproj" />
   <Project Path="LENA.API/LENA.API.csproj" />
+  <Project Path="LENA.IntegrationTests/LENA.IntegrationTests.csproj" />
 </Solution>
