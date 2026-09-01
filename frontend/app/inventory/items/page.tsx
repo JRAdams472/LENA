@@ -29,12 +29,13 @@ export default function ItemsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState<Record<string, unknown>>({});
   const [isCreate, setIsCreate] = useState(false);
-  const [page, setPage] = useState(1);
+  const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
   const listQuery = useQuery({
-    queryKey: ["items", page, pageSize],
-    queryFn: () => api.getItems(page, pageSize),
+    queryKey: ["items", pageNumber, pageSize],
+    queryFn: () => api.getItemsPaged(pageNumber, pageSize),
+    placeholderData: (prev) => prev,
   });
 
   const createMutation = useMutation({
@@ -204,11 +205,18 @@ export default function ItemsPage() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         extraActions={extraActions}
-        page={page}
-        pageSize={pageSize}
-        totalCount={listQuery.data?.totalCount ?? 0}
-        onPageChange={setPage}
-        onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        pagination={
+          listQuery.data
+            ? {
+                pageNumber,
+                pageSize,
+                totalCount: listQuery.data.totalCount,
+                totalPages: listQuery.data.totalPages,
+                onPageChange: setPageNumber,
+                onPageSizeChange: (size) => { setPageSize(size); setPageNumber(1); },
+              }
+            : undefined
+        }
       />
       <CrudDialog
         open={dialogOpen}

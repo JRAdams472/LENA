@@ -8,7 +8,7 @@ export default function RegionsPage() {
     <CrudPage
       title="Regions"
       queryKey={["regions"]}
-      pagedListFn={api.getRegions}
+      pagedListFn={api.getRegionsPaged}
       filterBy={{
         label: "Country",
         optionsFn: async () =>

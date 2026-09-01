@@ -8,7 +8,7 @@ export default function VintagesPage() {
     <CrudPage
       title="Vintages"
       queryKey={["vintages"]}
-      pagedListFn={api.getVintages}
+      pagedListFn={api.getVintagesPaged}
       activeOnlyFn={api.getActiveVintages}
       fields={[
         { key: "year", label: "Year", type: "number" },

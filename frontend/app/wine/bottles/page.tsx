@@ -52,7 +52,7 @@ export default function BottlesPage() {
   const [vintageYear, setVintageYear] = useState<string>("");
   const [favorites, setFavorites] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(1);
+  const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -85,7 +85,7 @@ export default function BottlesPage() {
       vintageYear,
       favorites,
       searchTerm,
-      page,
+      pageNumber,
       pageSize,
     ],
     queryFn: () => {
@@ -95,8 +95,9 @@ export default function BottlesPage() {
       if (regionId) return api.getBottlesByRegionId(Number(regionId));
       if (typeId) return api.getBottlesByTypeId(Number(typeId));
       if (vintageYear) return api.getBottlesByVintageYear(Number(vintageYear));
-      return api.getBottles(page, pageSize);
+      return api.getBottlesPaged(pageNumber, pageSize);
     },
+    placeholderData: (prev) => prev,
   });
 
   const countQuery = useQuery({
@@ -276,11 +277,18 @@ export default function BottlesPage() {
         onCreate={handleCreate}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        page={page}
-        pageSize={pageSize}
-        totalCount={totalCount}
-        onPageChange={setPage}
-        onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+        pagination={
+          pagedData
+            ? {
+                pageNumber,
+                pageSize,
+                totalCount: pagedData.totalCount,
+                totalPages: pagedData.totalPages,
+                onPageChange: setPageNumber,
+                onPageSizeChange: (size) => { setPageSize(size); setPageNumber(1); },
+              }
+            : undefined
+        }
       />
 
       <CrudDialog

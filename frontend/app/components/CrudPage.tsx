@@ -65,6 +65,7 @@ export default function CrudPage<T extends object>({
       if (pagedListFn) return pagedListFn(page, pageSize);
       return listFn!();
     },
+    placeholderData: (prev) => prev,
   });
 
   const optionsQuery = useQuery<{ id: number; name: string }[]>({
@@ -186,11 +187,18 @@ export default function CrudPage<T extends object>({
         onCreate={handleCreate}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        page={pagedListFn ? page : undefined}
-        pageSize={pagedListFn ? pageSize : undefined}
-        totalCount={totalCount}
-        onPageChange={pagedListFn ? setPage : undefined}
-        onPageSizeChange={pagedListFn ? (newSize) => { setPageSize(newSize); setPage(1); } : undefined}
+        pagination={
+          isPaged
+            ? {
+                pageNumber: page,
+                pageSize,
+                totalCount: (data as PagedResult<T>).totalCount,
+                totalPages: (data as PagedResult<T>).totalPages,
+                onPageChange: setPage,
+                onPageSizeChange: (newSize) => { setPageSize(newSize); setPage(1); },
+              }
+            : undefined
+        }
       />
 
       <CrudDialog
