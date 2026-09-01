@@ -33,6 +33,23 @@ namespace LENA.API.Controllers
             return Ok(items);
         }
 
+        [HttpGet("items/search")]
+        public async Task<ActionResult<IReadOnlyList<Item>>> SearchItems([FromQuery] string? search = null, [FromQuery] string? brand = null, [FromQuery] int limit = 50)
+        {
+            if (string.IsNullOrWhiteSpace(brand) && (string.IsNullOrWhiteSpace(search) || search!.Length < 2))
+                return Ok(Array.Empty<Item>());
+
+            var items = await _mediator.Send(new SearchItemsQuery(search ?? string.Empty, brand, limit));
+            return Ok(items);
+        }
+
+        [HttpGet("brands")]
+        public async Task<ActionResult<IReadOnlyList<string>>> GetBrands()
+        {
+            var brands = await _mediator.Send(new GetItemBrandsQuery());
+            return Ok(brands);
+        }
+
         [HttpGet("items/paged")]
         public async Task<ActionResult<LENA.Application.Models.PagedResult<Item>>> GetItemsPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
         {

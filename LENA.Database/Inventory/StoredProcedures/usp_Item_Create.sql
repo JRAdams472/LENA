@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [Inventory].[usp_Item_Create]
+﻿CREATE OR ALTER PROCEDURE [Inventory].[usp_Item_Create]
     @Name NVARCHAR(200),
     @Brand NVARCHAR(100) = NULL,
     @UPC12 NVARCHAR(12) = NULL,
@@ -15,11 +15,24 @@
     @CreateDate DATETIME2
 AS
 BEGIN
+    SET NOCOUNT ON;
+    DECLARE @BrandID INT = NULL;
+
+    IF @Brand IS NOT NULL AND @Brand <> ''
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM [Inventory].[ItemBrand] WHERE [Name] = @Brand)
+            INSERT INTO [Inventory].[ItemBrand] ([Name]) VALUES (@Brand);
+
+        SELECT @BrandID = [ItemBrandID]
+        FROM [Inventory].[ItemBrand]
+        WHERE [Name] = @Brand;
+    END
+
     INSERT INTO [Inventory].[Item]
-        ([Name], [Brand], [UPC12], [UPC14], [CategoryID], [Unit], [CurrentQuantity], [MinQuantity],
+        ([Name], [BrandID], [UPC12], [UPC14], [CategoryID], [Unit], [CurrentQuantity], [MinQuantity],
          [PurchaseDate], [ExpiryDate], [Notes], [IsFavorite], [CreatedBy], [CreateDate])
     VALUES
-        (@Name, @Brand, @UPC12, @UPC14, @CategoryID, @Unit, @CurrentQuantity, @MinQuantity,
+        (@Name, @BrandID, @UPC12, @UPC14, @CategoryID, @Unit, @CurrentQuantity, @MinQuantity,
          @PurchaseDate, @ExpiryDate, @Notes, @IsFavorite, @CreatedBy, @CreateDate);
     SELECT CAST(SCOPE_IDENTITY() as int);
 END

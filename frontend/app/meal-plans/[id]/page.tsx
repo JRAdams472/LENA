@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, Fragment } from "react";
+import { use, useState, useEffect, Fragment } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
@@ -17,6 +17,7 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Autocomplete from "@mui/material/Autocomplete";
 import { api, asEntity } from "@/lib/api";
 import CrudDialog, { FieldDef } from "@/app/components/CrudDialog";
 import {
@@ -71,6 +72,35 @@ function SlotDialog({
     queryFn: () => api.getItems(),
   });
 
+  const [newItemId, setNewItemId] = useState<string>("");
+  const [newQty, setNewQty] = useState<string>("");
+  const [newUnit, setNewUnit] = useState<string>("");
+  const [brand, setBrand] = useState<string | "">("");
+  const [brandInput, setBrandInput] = useState("");
+  const [itemSearch, setItemSearch] = useState("");
+  const [debouncedItemSearch, setDebouncedItemSearch] = useState("");
+
+  const brandsQuery = useQuery({
+    queryKey: ["item-brands"],
+    queryFn: () => api.getBrands(),
+  });
+
+  const searchQuery = useQuery({
+    queryKey: ["items-search", debouncedItemSearch, brand],
+    queryFn: () =>
+      api.searchItems(
+        debouncedItemSearch,
+        brand,
+        brand !== "" && debouncedItemSearch.length === 0 ? 1000 : 50
+      ),
+    enabled: brand !== "" || debouncedItemSearch.length >= 2,
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedItemSearch(itemSearch), 300);
+    return () => clearTimeout(timer);
+  }, [itemSearch]);
+
   const [recipeId, setRecipeId] = useState<string>(
     slot?.recipeID ? String(slot.recipeID) : ""
   );
@@ -108,9 +138,6 @@ function SlotDialog({
         unit: i.unitOfMeasure ?? "",
       }))
   );
-  const [newItemId, setNewItemId] = useState<string>("");
-  const [newQty, setNewQty] = useState<string>("");
-  const [newUnit, setNewUnit] = useState<string>("");
 
   const [recipeDialogOpen, setRecipeDialogOpen] = useState(false);
 
@@ -212,6 +239,9 @@ function SlotDialog({
       setNewItemId("");
       setNewQty("");
       setNewUnit("");
+      setBrand("");
+      setItemSearch("");
+      setDebouncedItemSearch("");
     }
   };
 
@@ -327,28 +357,77 @@ function SlotDialog({
           Ad-hoc Additional Items
         </Typography>
         <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
-          <FormControl size="small" sx={{ minWidth: 160 }}>
-            <InputLabel id="adhoc-item-label">Item</InputLabel>
-            <Select
-              labelId="adhoc-item-label"
-              label="Item"
-              value={newItemId}
-              onChange={(e) => {
-                const value = e.target.value as string;
-                setNewItemId(value);
-                setNewUnit(
-                  itemsQuery.data?.find((i) => String(i.itemID) === value)
-                    ?.unit ?? ""
-                );
-              }}
-            >
-              {(itemsQuery.data ?? []).map((item) => (
-                <MenuItem key={item.itemID} value={String(item.itemID)}>
-                  {item.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            size="small"
+            options={brandsQuery.data ?? []}
+            getOptionLabel={(b) => b ?? ""}
+            isOptionEqualToValue={(a, b) => a === b}
+            inputValue={brandInput}
+            onInputChange={(_, value) => setBrandInput(value)}
+            value={brand === "" ? null : brand}
+            onChange={(_, value) => {
+              setBrand(value ?? "");
+              setBrandInput(value ?? "");
+              setNewItemId("");
+              setNewUnit("");
+              setItemSearch("");
+              setDebouncedItemSearch("");
+            }}
+            filterOptions={(options, state) =>
+              state.inputValue.length < 1
+                ? []
+                : options.filter((b) =>
+                    b.toLowerCase().includes(state.inputValue.toLowerCase())
+                  )
+            }
+            noOptionsText={
+              brandInput.length < 1
+                ? "Type at least 1 character"
+                : "No brands found"
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="Brand" size="small" />
+            )}
+            sx={{ minWidth: 160 }}
+          />
+          <Autocomplete
+            size="small"
+            options={searchQuery.data ?? []}
+            getOptionLabel={(item) => item?.name ?? ""}
+            isOptionEqualToValue={(option, value) =>
+              option?.itemID === value?.itemID
+            }
+            inputValue={itemSearch}
+            onInputChange={(_, value) => setItemSearch(value)}
+            value={
+              searchQuery.data?.find(
+                (item) => String(item.itemID) === newItemId
+              ) ?? null
+            }
+            onChange={(_, value) => {
+              setNewItemId(value ? String(value.itemID) : "");
+              setNewUnit(value ? value.unit ?? "" : "");
+            }}
+            filterOptions={(options) => options}
+            loading={searchQuery.isLoading}
+            noOptionsText={
+              brand === "" && debouncedItemSearch.length < 2
+                ? "Type at least 2 characters"
+                : brand !== "" && debouncedItemSearch.length === 0
+                ? "No items for this brand"
+                : "No items found"
+            }
+            renderOption={(props, item) => (
+              <li {...props} key={item.itemID}>
+                {item.name}
+                {item.brand ? ` — ${item.brand}` : ""}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} label="Item" size="small" />
+            )}
+            sx={{ minWidth: 260 }}
+          />
           <TextField
             size="small"
             label="Qty"

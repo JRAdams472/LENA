@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Alert from "@mui/material/Alert";
@@ -15,6 +15,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
 import Select from "@mui/material/Select";
+import Autocomplete from "@mui/material/Autocomplete";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -39,6 +40,10 @@ export default function RecipeDetailPage() {
   const [stepNumber, setStepNumber] = useState("");
   const [instruction, setInstruction] = useState("");
   const [editingStepId, setEditingStepId] = useState<number | null>(null);
+  const [brand, setBrand] = useState<string | "">("");
+  const [brandInput, setBrandInput] = useState("");
+  const [itemSearch, setItemSearch] = useState("");
+  const [debouncedItemSearch, setDebouncedItemSearch] = useState("");
 
   const recipeQuery = useQuery({
     queryKey: ["recipe", recipeId],
@@ -46,9 +51,25 @@ export default function RecipeDetailPage() {
     enabled: !isNaN(recipeId),
   });
 
-  const itemsQuery = useQuery({
-    queryKey: ["items"],
-    queryFn: () => api.getItems(),
+  const brandsQuery = useQuery({
+    queryKey: ["item-brands"],
+    queryFn: () => api.getBrands(),
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedItemSearch(itemSearch), 300);
+    return () => clearTimeout(timer);
+  }, [itemSearch]);
+
+  const searchQuery = useQuery({
+    queryKey: ["items-search", debouncedItemSearch, brand],
+    queryFn: () =>
+      api.searchItems(
+        debouncedItemSearch,
+        brand,
+        brand !== "" && debouncedItemSearch.length === 0 ? 1000 : 50
+      ),
+    enabled: brand !== "" || debouncedItemSearch.length >= 2,
   });
 
   const recipeItemsQuery = useQuery({
@@ -77,6 +98,8 @@ export default function RecipeDetailPage() {
     }) => api.addRecipeItem(recipeId, payload),
     onSuccess: () => {
       setItemId("");
+      setItemSearch("");
+      setDebouncedItemSearch("");
       setPortion("");
       setUnit("");
       setIsOptional(false);
@@ -162,9 +185,6 @@ export default function RecipeDetailPage() {
     }
   };
 
-  const itemName = (id: number) =>
-    itemsQuery.data?.find((item) => item.itemID === id)?.name ?? String(id);
-
   const sortedSteps = [...(recipeStepsQuery.data ?? [])].sort(
     (a, b) => a.stepNumber - b.stepNumber
   );
@@ -203,23 +223,71 @@ export default function RecipeDetailPage() {
         </Typography>
 
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 2 }}>
-          <FormControl size="small" sx={{ minWidth: 220 }}>
-            <InputLabel id="recipe-item-label">Item</InputLabel>
-            <Select
-              labelId="recipe-item-label"
-              label="Item"
-              value={itemId === "" ? "" : String(itemId)}
-              onChange={(e) =>
-                setItemId(e.target.value === "" ? "" : Number(e.target.value))
-              }
-            >
-              {(itemsQuery.data ?? []).map((item) => (
-                <MenuItem key={item.itemID} value={String(item.itemID)}>
-                  {item.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            size="small"
+            options={brandsQuery.data ?? []}
+            getOptionLabel={(b) => b ?? ""}
+            isOptionEqualToValue={(a, b) => a === b}
+            inputValue={brandInput}
+            onInputChange={(_, value) => setBrandInput(value)}
+            value={brand === "" ? null : brand}
+            onChange={(_, value) => {
+              setBrand(value ?? "");
+              setBrandInput(value ?? "");
+              setItemId("");
+              setItemSearch("");
+              setDebouncedItemSearch("");
+            }}
+            filterOptions={(options, state) =>
+              state.inputValue.length < 1
+                ? []
+                : options.filter((b) =>
+                    b.toLowerCase().includes(state.inputValue.toLowerCase())
+                  )
+            }
+            noOptionsText={
+              brandInput.length < 1
+                ? "Type at least 1 character"
+                : "No brands found"
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="Brand" size="small" />
+            )}
+            sx={{ minWidth: 180 }}
+          />
+          <Autocomplete
+            size="small"
+            options={searchQuery.data ?? []}
+            getOptionLabel={(item) => item?.name ?? ""}
+            isOptionEqualToValue={(option, value) =>
+              option?.itemID === value?.itemID
+            }
+            inputValue={itemSearch}
+            onInputChange={(_, value) => setItemSearch(value)}
+            value={
+              searchQuery.data?.find((item) => item.itemID === itemId) ?? null
+            }
+            onChange={(_, value) => setItemId(value ? value.itemID : "")}
+            filterOptions={(options) => options}
+            loading={searchQuery.isLoading}
+            noOptionsText={
+              brand === "" && debouncedItemSearch.length < 2
+                ? "Type at least 2 characters"
+                : brand !== "" && debouncedItemSearch.length === 0
+                ? "No items for this brand"
+                : "No items found"
+            }
+            renderOption={(props, item) => (
+              <li {...props} key={item.itemID}>
+                {item.name}
+                {item.brand ? ` — ${item.brand}` : ""}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} label="Item" size="small" />
+            )}
+            sx={{ minWidth: 260 }}
+          />
           <TextField
             size="small"
             label="Portion"
@@ -278,9 +346,8 @@ export default function RecipeDetailPage() {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Item</TableCell>
                   <TableCell>Portion</TableCell>
-                  <TableCell>Unit</TableCell>
+                  <TableCell>Item</TableCell>
                   <TableCell>Optional</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
@@ -288,9 +355,15 @@ export default function RecipeDetailPage() {
               <TableBody>
                 {(recipeItemsQuery.data ?? []).map((recipeItem) => (
                   <TableRow key={recipeItem.itemID}>
-                    <TableCell>{itemName(recipeItem.itemID)}</TableCell>
-                    <TableCell>{recipeItem.quantity}</TableCell>
-                    <TableCell>{recipeItem.unitOfMeasure ?? ""}</TableCell>
+                    <TableCell>
+                      {recipeItem.quantity}{" "}
+                      {recipeItem.unitOfMeasure ?? ""}
+                    </TableCell>
+                    <TableCell>
+                      {recipeItem.itemBrand
+                        ? `${recipeItem.itemBrand} — ${recipeItem.itemName ?? recipeItem.itemID}`
+                        : (recipeItem.itemName ?? recipeItem.itemID)}
+                    </TableCell>
                     <TableCell>{recipeItem.isOptional ? "Yes" : "No"}</TableCell>
                     <TableCell>
                       <Button

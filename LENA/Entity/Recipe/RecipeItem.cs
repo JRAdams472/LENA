@@ -11,6 +11,8 @@ namespace LENA.Domain.Entity.Recipe
         public string? UnitOfMeasure { get; set; }
         public string? Notes { get; set; }
         public bool IsOptional { get; set; }
+        public string? ItemName { get; set; }
+        public string? ItemBrand { get; set; }
 
         public Recipe? Recipe { get; set; }
         public Item? Item { get; set; }

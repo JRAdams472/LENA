@@ -21,5 +21,9 @@ namespace LENA.Application.Contracts.Persistence
         Task SetFavoriteAsync(int itemId, bool isFavorite, CancellationToken cancellationToken = default);
 
         Task<PagedResult<Item>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default);
+
+        Task<IReadOnlyList<Item>> SearchAsync(string search, string? brand, int limit, CancellationToken ct = default);
+
+        Task<IReadOnlyList<string>> GetBrandsAsync(CancellationToken ct = default);
     }
 }

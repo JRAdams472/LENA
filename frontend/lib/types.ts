@@ -183,6 +183,8 @@ export interface RecipeItem {
   unitOfMeasure: string | null;
   notes: string | null;
   isOptional: boolean;
+  itemName?: string | null;
+  itemBrand?: string | null;
   recipe?: Recipe | null;
   item?: Item | null;
 }

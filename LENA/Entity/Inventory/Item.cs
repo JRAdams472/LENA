@@ -10,6 +10,7 @@ namespace LENA.Domain.Entity.Inventory
         public int ItemID { get; set; }
         public required string Name { get; set; }
         public string? Brand { get; set; }
+        public int? BrandID { get; set; }
         public string? UPC12 { get; set; }
         public string? UPC14 { get; set; }
         public int CategoryID { get; set; }

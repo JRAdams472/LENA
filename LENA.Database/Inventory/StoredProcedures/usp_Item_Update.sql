@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [Inventory].[usp_Item_Update]
+﻿CREATE OR ALTER PROCEDURE [Inventory].[usp_Item_Update]
     @ItemID INT,
     @Name NVARCHAR(200),
     @Brand NVARCHAR(100) = NULL,
@@ -17,9 +17,20 @@
 AS
 BEGIN
     SET NOCOUNT ON;
+    DECLARE @BrandID INT = NULL;
+
+    IF @Brand IS NOT NULL AND @Brand <> ''
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM [Inventory].[ItemBrand] WHERE [Name] = @Brand)
+            INSERT INTO [Inventory].[ItemBrand] ([Name]) VALUES (@Brand);
+
+        SELECT @BrandID = [ItemBrandID]
+        FROM [Inventory].[ItemBrand]
+        WHERE [Name] = @Brand;
+    END
 
     UPDATE [Inventory].[Item]
-    SET [Name] = @Name, [Brand] = @Brand, [UPC12] = @UPC12, [UPC14] = @UPC14,
+    SET [Name] = @Name, [BrandID] = @BrandID, [UPC12] = @UPC12, [UPC14] = @UPC14,
         [CategoryID] = @CategoryID, [Unit] = @Unit, [CurrentQuantity] = @CurrentQuantity,
         [MinQuantity] = @MinQuantity, [PurchaseDate] = @PurchaseDate, [ExpiryDate] = @ExpiryDate,
         [Notes] = @Notes, [IsFavorite] = @IsFavorite,
