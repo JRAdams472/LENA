@@ -65,7 +65,7 @@ namespace LENA.Application.Repositories
 
         public override async Task<Item> DeleteAsync(Item entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Inventory].[usp_Item_Delete]", new { entity.ItemID }, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Inventory].[usp_Item_Delete]", new { entity.ItemID }, nameof(Item), entity.ItemID, cancellationToken);
             return entity;
         }
 

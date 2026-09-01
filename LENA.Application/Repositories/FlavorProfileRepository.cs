@@ -41,7 +41,7 @@ namespace LENA.Application.Repositories
 
         public override async Task<FlavorProfile> DeleteAsync(FlavorProfile entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Inventory].[usp_FlavorProfile_Delete]", new { entity.FlavorId }, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Inventory].[usp_FlavorProfile_Delete]", new { entity.FlavorId }, nameof(FlavorProfile), entity.FlavorId, cancellationToken);
             return entity;
         }
 

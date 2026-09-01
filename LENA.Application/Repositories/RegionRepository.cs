@@ -52,7 +52,7 @@ namespace LENA.Application.Repositories
 
         public override async Task<Region> DeleteAsync(Region entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Wine].[usp_Region_Delete]", new { RegionID = entity.RegionID }, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Wine].[usp_Region_Delete]", new { RegionID = entity.RegionID }, nameof(Region), entity.RegionID, cancellationToken);
             return entity;
         }
 

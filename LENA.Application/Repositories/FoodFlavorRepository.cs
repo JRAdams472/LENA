@@ -42,7 +42,7 @@ namespace LENA.Application.Repositories
 
         public override async Task<FoodFlavor> DeleteAsync(FoodFlavor entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Inventory].[usp_FoodFlavor_Delete]", new { entity.FoodId, entity.FlavorId }, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Inventory].[usp_FoodFlavor_Delete]", new { entity.FoodId, entity.FlavorId }, nameof(FoodFlavor), $"{entity.FoodId}-{entity.FlavorId}", cancellationToken);
             return entity;
         }
 

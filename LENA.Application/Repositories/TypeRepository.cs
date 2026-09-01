@@ -44,7 +44,7 @@ namespace LENA.Application.Repositories
 
         public override async Task<TypeEntity> DeleteAsync(TypeEntity entitey, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Wine].[usp_Type_Delete]", new { entitey.TypeID }, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Wine].[usp_Type_Delete]", new { entitey.TypeID }, nameof(TypeEntity), entitey.TypeID, cancellationToken);
             return entitey;
         }
 

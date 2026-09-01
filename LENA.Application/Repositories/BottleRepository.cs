@@ -89,7 +89,7 @@ namespace LENA.Application.Repositories
 
         public override async Task<Bottle> DeleteAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Wine].[usp_Bottle_Delete]", new { BottleID = entity.BottleID }, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Wine].[usp_Bottle_Delete]", new { BottleID = entity.BottleID }, nameof(Bottle), entity.BottleID, cancellationToken);
             return entity;
         }
 

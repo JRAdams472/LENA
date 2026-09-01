@@ -53,7 +53,7 @@ namespace LENA.Application.Repositories
 
         public override async Task<Recipe> DeleteAsync(Recipe entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteCommandAsync("[Recipe].[usp_Recipe_Delete]", new { entity.RecipeID }, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Recipe].[usp_Recipe_Delete]", new { entity.RecipeID }, nameof(Recipe), entity.RecipeID, cancellationToken);
             return entity;
         }
 
@@ -75,7 +75,7 @@ namespace LENA.Application.Repositories
             }, cancellationToken);
 
         public async Task RemoveRecipeItemAsync(int recipeId, int itemId, CancellationToken cancellationToken = default)
-            => await ExecuteCommandAsync("[Recipe].[usp_RecipeItem_Delete]", new { RecipeID = recipeId, ItemID = itemId }, cancellationToken);
+            => await ExecuteRequiringMatchAsync("[Recipe].[usp_RecipeItem_Delete]", new { RecipeID = recipeId, ItemID = itemId }, nameof(RecipeItem), $"{recipeId}-{itemId}", cancellationToken);
 
         public async Task<RecipeStep> AddStepAsync(RecipeStep recipeStep, CancellationToken cancellationToken = default)
         {
