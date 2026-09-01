@@ -30,6 +30,30 @@ namespace LENA.Application.Repositories
             return new List<TResult>(await connection.QueryAsync<TResult>(command));
         }
 
+        protected async Task<PagedResult<TResult>> QueryPagedListAsync<TResult>(string procedureName, int pageNumber, int pageSize, object? param = null, CancellationToken ct = default)
+        {
+            var parameters = new DynamicParameters();
+            if (param != null)
+            {
+                parameters.AddDynamicParams(param);
+            }
+            parameters.Add("PageNumber", pageNumber);
+            parameters.Add("PageSize", pageSize);
+
+            await using var connection = await _connectionFactory.CreateConnectionAsync(ct);
+            var command = new CommandDefinition(procedureName, parameters, commandType: CommandType.StoredProcedure, cancellationToken: ct);
+            using var reader = await connection.QueryMultipleAsync(command);
+            var items = (await reader.ReadAsync<TResult>()).ToList();
+            var total = (await reader.ReadAsync<int>()).Single();
+            return new PagedResult<TResult>
+            {
+                Items = items,
+                TotalCount = total,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+            };
+        }
+
         protected async Task<PagedResult<TResult>> QueryPagedAsync<TResult>(string procedureName, PaginationRequest? paging = null, CancellationToken cancellationToken = default)
         {
             var page = paging ?? new PaginationRequest();
