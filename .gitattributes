@@ -1,0 +1,38 @@
+# Normalize line endings to LF for all text files, regardless of platform
+# (Git for Windows defaults to core.autocrlf=true, which would otherwise
+# check out CRLF and break scripts run inside Linux containers).
+* text=auto eol=lf
+
+# Line-ending-sensitive files
+*.sh        text eol=lf
+*.sql       text eol=lf
+Dockerfile  text eol=lf
+Caddyfile   text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.cs        text eol=lf
+*.csproj    text eol=lf
+*.sqlproj   text eol=lf
+*.slnx      text eol=lf
+*.ts        text eol=lf
+*.tsx       text eol=lf
+*.js        text eol=lf
+*.mjs       text eol=lf
+*.css       text eol=lf
+*.svg       text eol=lf
+*.http      text eol=lf
+.editorconfig   text eol=lf
+.gitattributes  text eol=lf
+.gitignore      text eol=lf
+.dockerignore   text eol=lf
+
+# Binary files
+*.ico   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.woff  binary
+*.woff2 binary
