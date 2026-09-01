@@ -29,10 +29,7 @@ namespace LENA.Application.Repositories
             => await QueryFirstAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_GetById]", new { MealPlanID = id }, cancellationToken);
 
         public override async Task<MealPlanEntity?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-        {
-            var all = await QueryListAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_ListAll]", cancellationToken: cancellationToken);
-            return all.FirstOrDefault(x => x.PlanName == name);
-        }
+            => await QueryFirstAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_GetByName]", new { PlanName = name }, cancellationToken);
 
         public override async Task<IReadOnlyList<MealPlanEntity>> ListAllAsync(CancellationToken cancellationToken = default)
             => await QueryListAsync<MealPlanEntity>("[MealPlan].[usp_MealPlan_ListAll]", cancellationToken: cancellationToken);
