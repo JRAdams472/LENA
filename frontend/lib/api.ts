@@ -13,6 +13,12 @@ import {
   Recipe,
   RecipeItem,
   RecipeStep,
+  MealPlan,
+  MealSlot,
+  MealSlotItem,
+  MealPlanNutrition,
+  GroceryList,
+  GroceryListItem,
 } from "./types";
 
 const API_BASE_URL =
@@ -205,4 +211,40 @@ export const api = {
     request<RecipeStep>(`/api/Recipe/recipes/${recipeId}/steps/${stepId}`, { method: "PUT", body: JSON.stringify(step) }),
   deleteRecipeStep: (recipeId: number, stepId: number) =>
     request<void>(`/api/Recipe/recipes/${recipeId}/steps/${stepId}`, { method: "DELETE" }),
+
+  // Meal Plans
+  getMealPlans: () => request<MealPlan[]>("/api/MealPlan/plans"),
+  getMealPlan: (id: number) => request<MealPlan>(`/api/MealPlan/plans/${id}`),
+  createMealPlan: (plan: Omit<MealPlan, keyof AuditableEntity | "mealPlanID" | "mealSlots">) =>
+    request<MealPlan>("/api/MealPlan/plans", { method: "POST", body: JSON.stringify(plan) }),
+  updateMealPlan: (id: number, plan: Partial<MealPlan>) =>
+    request<MealPlan>(`/api/MealPlan/plans/${id}`, { method: "PUT", body: JSON.stringify({ ...plan, mealPlanID: id }) }),
+  deleteMealPlan: (id: number) => request<MealPlan | null>(`/api/MealPlan/plans/${id}`, { method: "DELETE" }),
+  getMealPlanNutrition: (id: number) => request<MealPlanNutrition>(`/api/MealPlan/plans/${id}/nutrition`),
+  getMealSlots: (planId: number) => request<MealSlot[]>(`/api/MealPlan/plans/${planId}/slots`),
+  addMealSlot: (planId: number, slot: Omit<MealSlot, "mealSlotID" | "mealPlanID" | "mealPlan" | "recipe" | "mealSlotItems">) =>
+    request<MealSlot>(`/api/MealPlan/plans/${planId}/slots`, { method: "POST", body: JSON.stringify(slot) }),
+  updateMealSlot: (planId: number, slotId: number, slot: Partial<MealSlot>) =>
+    request<MealSlot>(`/api/MealPlan/plans/${planId}/slots/${slotId}`, { method: "PUT", body: JSON.stringify({ ...slot, mealSlotID: slotId, mealPlanID: planId }) }),
+  deleteMealSlot: (planId: number, slotId: number) =>
+    request<void>(`/api/MealPlan/plans/${planId}/slots/${slotId}`, { method: "DELETE" }),
+  getMealSlotItems: (slotId: number) => request<MealSlotItem[]>(`/api/MealPlan/slots/${slotId}/items`),
+  addMealSlotItem: (slotId: number, item: Omit<MealSlotItem, "mealSlotItemID" | "mealSlotID" | "mealSlot" | "item">) =>
+    request<MealSlotItem>(`/api/MealPlan/slots/${slotId}/items`, { method: "POST", body: JSON.stringify(item) }),
+  deleteMealSlotItem: (slotId: number, itemId: number) =>
+    request<void>(`/api/MealPlan/slots/${slotId}/items/${itemId}`, { method: "DELETE" }),
+
+  // Grocery Lists
+  getGroceryLists: () => request<GroceryList[]>("/api/GroceryList"),
+  getGroceryList: (id: number) => request<GroceryList>(`/api/GroceryList/${id}`),
+  generateGroceryList: (mealPlanId?: number) => {
+    const qs = mealPlanId !== undefined ? `?mealPlanId=${mealPlanId}` : "";
+    return request<GroceryList>(`/api/GroceryList/generate${qs}`, { method: "POST" });
+  },
+  addGroceryListItem: (listId: number, item: Omit<GroceryListItem, "groceryListItemID" | "groceryListID" | "groceryList">) =>
+    request<GroceryListItem>(`/api/GroceryList/${listId}/items`, { method: "POST", body: JSON.stringify({ ...item, groceryListID: listId }) }),
+  toggleGroceryListItemChecked: (id: number) =>
+    request<GroceryListItem>(`/api/GroceryList/items/${id}/checked`, { method: "PUT" }),
+  deleteGroceryListItem: (id: number) =>
+    request<void>(`/api/GroceryList/items/${id}`, { method: "DELETE" }),
 };

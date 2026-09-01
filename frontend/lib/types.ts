@@ -186,3 +186,79 @@ export interface RecipeStep extends AuditableEntity {
   instruction: string;
   recipe?: Recipe | null;
 }
+
+export interface MealPlan extends AuditableEntity {
+  mealPlanID: number;
+  planName: string;
+  weekStartDate: string;
+  weekStartDayOfWeek: number;
+  isActive: boolean;
+  mealSlots?: MealSlot[];
+}
+
+export interface MealSlot extends AuditableEntity {
+  mealSlotID: number;
+  mealPlanID: number;
+  dayOfWeek: number;
+  mealType: number;
+  recipeID: number | null;
+  replacementNote: string | null;
+  mealPlan?: MealPlan | null;
+  recipe?: Recipe | null;
+  mealSlotItems?: MealSlotItem[];
+}
+
+export interface MealSlotItem extends AuditableEntity {
+  mealSlotItemID: number;
+  mealSlotID: number;
+  itemID: number;
+  quantity: number;
+  unitOfMeasure: string | null;
+  isFromRecipe: boolean;
+  mealSlot?: MealSlot | null;
+  item?: Item | null;
+}
+
+export interface NutrientAmount {
+  nutrientId: number;
+  nutrientName: string;
+  unitOfMeasure: string;
+  amount: number;
+}
+
+export interface DailyNutrition {
+  dayOfWeek: number;
+  nutrients: NutrientAmount[];
+}
+
+export interface MealNutrition {
+  dayOfWeek: number;
+  mealType: number;
+  mealSlotId: number;
+  nutrients: NutrientAmount[];
+}
+
+export interface MealPlanNutrition {
+  mealPlanId: number;
+  dailyTotals: DailyNutrition[];
+  meals: MealNutrition[];
+}
+
+export interface GroceryList extends AuditableEntity {
+  groceryListID: number;
+  mealPlanID: number | null;
+  generatedDate: string;
+  groceryListItems?: GroceryListItem[];
+}
+
+export interface GroceryListItem extends AuditableEntity {
+  groceryListItemID: number;
+  groceryListID: number;
+  itemID: number | null;
+  manualItemName: string | null;
+  quantityNeeded: number;
+  unitOfMeasure: string | null;
+  source: string;
+  isChecked: boolean;
+  groceryList?: GroceryList | null;
+}
