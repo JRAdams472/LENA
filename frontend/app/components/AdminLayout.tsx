@@ -21,6 +21,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import WineBarIcon from "@mui/icons-material/WineBar";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import RestaurantIcon from "@mui/icons-material/Restaurant";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -81,6 +82,13 @@ const NAVIGATION: { label: string; href?: string; children?: NavItem[] }[] = [
   {
     label: "Recipes",
     children: [{ label: "Recipes", href: "/recipes" }],
+  },
+  {
+    label: "Meal Planning",
+    children: [
+      { label: "Weekly Plan", href: "/meal-plans" },
+      { label: "Grocery Lists", href: "/grocery-lists" },
+    ],
   },
 ];
 
@@ -143,6 +151,8 @@ export default function AdminLayout({
                 <WineBarIcon />
               ) : group.label === "Recipes" ? (
                 <MenuBookIcon />
+              ) : group.label === "Meal Planning" ? (
+                <RestaurantIcon />
               ) : null;
 
             return (
