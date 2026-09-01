@@ -1,4 +1,5 @@
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Models;
 using LENA.Domain.Entity.Inventory;
 
 namespace LENA.Application.Repositories
@@ -9,8 +10,8 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public override async Task<IReadOnlyList<FlavorProfile>> ListAllAsync(CancellationToken cancellationToken = default)
-            => await QueryListAsync<FlavorProfile>("[Inventory].[usp_FlavorProfile_ListAll]", cancellationToken: cancellationToken);
+        public override async Task<PagedResult<FlavorProfile>> ListAllAsync(PaginationRequest? paging = null, CancellationToken cancellationToken = default)
+            => await QueryPagedAsync<FlavorProfile>("[Inventory].[usp_FlavorProfile_ListAll]", paging, cancellationToken);
 
         public override async Task<FlavorProfile?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<FlavorProfile>("[Inventory].[usp_FlavorProfile_GetById]", new { Id = id }, cancellationToken);

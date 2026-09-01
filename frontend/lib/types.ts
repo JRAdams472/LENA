@@ -1,3 +1,11 @@
+export interface PagedResult<T> {
+  items: T[];
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
 export interface AuditableEntity {
   createdBy: string;
   createDate: string;

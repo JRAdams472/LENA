@@ -1,3 +1,4 @@
+using LENA.Domain.Entity.Common;
 using FluentAssertions;
 using LENA.Application.Features.Grocery.GroceryLists.Commands;
 using LENA.Application.Features.Inventory.Items.Commands;

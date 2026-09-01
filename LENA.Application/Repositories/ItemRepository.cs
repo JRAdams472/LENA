@@ -9,8 +9,8 @@ namespace LENA.Application.Repositories
         {
         }
 
-        public override async Task<IReadOnlyList<Item>> ListAllAsync(CancellationToken cancellationToken = default)
-            => await QueryListAsync<Item>("[Inventory].[usp_Item_ListAll]", cancellationToken: cancellationToken);
+        public override async Task<LENA.Application.Models.PagedResult<Item>> ListAllAsync(LENA.Application.Models.PaginationRequest? paging = null, CancellationToken cancellationToken = default)
+            => await QueryPagedAsync<Item>("[Inventory].[usp_Item_ListAll]", paging, cancellationToken);
 
         public override async Task<Item?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Item>("[Inventory].[usp_Item_GetById]", new { Id = id }, cancellationToken);

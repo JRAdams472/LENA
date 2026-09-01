@@ -8,7 +8,7 @@ export default function FoodNutrientsPage() {
     <CrudPage
       title="Food Nutrients"
       queryKey={["food-nutrients"]}
-      listFn={api.getFoodNutrients}
+      pagedListFn={api.getFoodNutrients}
       fields={[
         { key: "foodId", label: "Food ID", type: "number" },
         { key: "nutrientId", label: "Nutrient ID", type: "number" },

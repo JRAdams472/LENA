@@ -32,8 +32,8 @@ namespace LENA.Application.Repositories
         public override async Task<Region?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Region>("[Wine].[usp_Region_GetById]", new { Id = id }, cancellationToken);
 
-        public override async Task<IReadOnlyList<Region>> ListAllAsync(CancellationToken cancellationToken = default)
-            => await QueryListAsync<Region>("[Wine].[usp_Region_ListAll]", cancellationToken: cancellationToken);
+        public override async Task<LENA.Application.Models.PagedResult<Region>> ListAllAsync(LENA.Application.Models.PaginationRequest? paging = null, CancellationToken cancellationToken = default)
+        => await QueryPagedAsync<Region>("[Wine].[usp_Region_ListAll]", paging, cancellationToken);
 
         public override async Task<Region> UpdateAsync(Region entity, CancellationToken cancellationToken = default)
         {

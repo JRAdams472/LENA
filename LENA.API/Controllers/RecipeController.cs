@@ -22,9 +22,9 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("recipes")]
-        public async Task<ActionResult<IReadOnlyList<Recipe>>> GetRecipes()
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<Recipe>>> GetRecipes([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
         {
-            var recipes = await _mediator.Send(new GetRecipesQuery());
+            var recipes = await _mediator.Send(new GetRecipesQuery(paging));
             return Ok(recipes);
         }
 

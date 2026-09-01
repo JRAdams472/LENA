@@ -1,3 +1,4 @@
+using LENA.Application.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace LENA.API.UnitTests.Controllers
         public async Task GetMealPlans_Should_Return_Ok()
         {
             _mediator.Setup(m => m.Send(It.IsAny<GetMealPlansQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<MealPlanEntity>().AsReadOnly());
+                .ReturnsAsync(new PagedResult<MealPlanEntity> { Items = new List<MealPlanEntity>() });
 
             var result = await _sut.GetMealPlans();
 

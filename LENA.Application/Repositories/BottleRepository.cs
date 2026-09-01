@@ -58,8 +58,8 @@ namespace LENA.Application.Repositories
         public override async Task<Bottle?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Bottle>("[Wine].[usp_Bottle_GetById]", new { Id = id }, cancellationToken);
 
-        public override async Task<IReadOnlyList<Bottle>> ListAllAsync(CancellationToken cancellationToken = default)
-            => await QueryListAsync<Bottle>("[Wine].[usp_Bottle_ListAll]", cancellationToken: cancellationToken);
+        public override async Task<LENA.Application.Models.PagedResult<Bottle>> ListAllAsync(LENA.Application.Models.PaginationRequest? paging = null, CancellationToken cancellationToken = default)
+        => await QueryPagedAsync<Bottle>("[Wine].[usp_Bottle_ListAll]", paging, cancellationToken);
 
         public override async Task<Bottle> UpdateAsync(Bottle entity, CancellationToken cancellationToken = default)
         {

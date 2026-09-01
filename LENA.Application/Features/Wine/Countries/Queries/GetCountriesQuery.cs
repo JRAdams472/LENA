@@ -4,9 +4,9 @@ using MediatR;
 
 namespace LENA.Application.Features.Wine.Countries.Queries
 {
-    public record GetCountriesQuery : IRequest<IReadOnlyList<Country>>;
+    public record GetCountriesQuery(LENA.Application.Models.PaginationRequest? Paging = null) : IRequest<LENA.Application.Models.PagedResult<Country>>;
 
-    public class GetCountriesQueryHandler : IRequestHandler<GetCountriesQuery, IReadOnlyList<Country>>
+    public class GetCountriesQueryHandler : IRequestHandler<GetCountriesQuery, LENA.Application.Models.PagedResult<Country>>
     {
         private readonly ICountryRepository _countryRepository;
 
@@ -15,9 +15,9 @@ namespace LENA.Application.Features.Wine.Countries.Queries
             _countryRepository = countryRepository;
         }
 
-        public async Task<IReadOnlyList<Country>> Handle(GetCountriesQuery request, CancellationToken cancellationToken)
+        public async Task<LENA.Application.Models.PagedResult<Country>> Handle(GetCountriesQuery request, CancellationToken cancellationToken)
         {
-            return await _countryRepository.ListAllAsync(cancellationToken);
+            return await _countryRepository.ListAllAsync(request.Paging, cancellationToken);
         }
     }
 }

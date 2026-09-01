@@ -27,9 +27,9 @@ namespace LENA.API.Controllers
 
         // Item endpoints
         [HttpGet("items")]
-        public async Task<ActionResult<IReadOnlyList<Item>>> GetItems()
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<Item>>> GetItems([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
         {
-            var items = await _mediator.Send(new GetItemsQuery());
+            var items = await _mediator.Send(new GetItemsQuery(paging));
             return Ok(items);
         }
 
@@ -117,9 +117,9 @@ namespace LENA.API.Controllers
 
         // FoodFlavor endpoints
         [HttpGet("foodflavors")]
-        public async Task<ActionResult<IReadOnlyList<FoodFlavor>>> GetFoodFlavors()
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<FoodFlavor>>> GetFoodFlavors([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
         {
-            var foodFlavors = await _mediator.Send(new GetFoodFlavorsQuery());
+            var foodFlavors = await _mediator.Send(new GetFoodFlavorsQuery(paging));
             return Ok(foodFlavors);
         }
 
@@ -186,9 +186,9 @@ namespace LENA.API.Controllers
 
         // FoodNutrient endpoints
         [HttpGet("foodnutrients")]
-        public async Task<ActionResult<IReadOnlyList<FoodNutrient>>> GetFoodNutrients()
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<FoodNutrient>>> GetFoodNutrients([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
         {
-            var foodNutrients = await _mediator.Send(new GetFoodNutrientsQuery());
+            var foodNutrients = await _mediator.Send(new GetFoodNutrientsQuery(paging));
             return Ok(foodNutrients);
         }
 
@@ -255,9 +255,9 @@ namespace LENA.API.Controllers
 
         // NutrientType endpoints
         [HttpGet("nutrienttypes")]
-        public async Task<ActionResult<IReadOnlyList<NutrientType>>> GetNutrientTypes()
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<NutrientType>>> GetNutrientTypes([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
         {
-            var nutrientTypes = await _mediator.Send(new GetNutrientTypesQuery());
+            var nutrientTypes = await _mediator.Send(new GetNutrientTypesQuery(paging));
             return Ok(nutrientTypes);
         }
 
@@ -310,9 +310,9 @@ namespace LENA.API.Controllers
 
         // FlavorProfile endpoints
         [HttpGet("flavorprofiles")]
-        public async Task<ActionResult<IReadOnlyList<FlavorProfile>>> GetFlavorProfiles()
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<FlavorProfile>>> GetFlavorProfiles([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
         {
-            var flavorProfiles = await _mediator.Send(new GetFlavorProfilesQuery());
+            var flavorProfiles = await _mediator.Send(new GetFlavorProfilesQuery(paging));
             return Ok(flavorProfiles);
         }
 

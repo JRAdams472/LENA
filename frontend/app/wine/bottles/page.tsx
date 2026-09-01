@@ -15,7 +15,7 @@ import Typography from "@mui/material/Typography";
 import { api, asEntity } from "@/lib/api";
 import DataTable from "@/app/components/DataTable";
 import CrudDialog from "@/app/components/CrudDialog";
-import { Bottle } from "@/lib/types";
+import { Bottle, PagedResult } from "@/lib/types";
 
 const bottleFields = [
   { key: "bottleNumber", label: "Bottle Number", type: "number" as const },
@@ -52,6 +52,8 @@ export default function BottlesPage() {
   const [vintageYear, setVintageYear] = useState<string>("");
   const [favorites, setFavorites] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState<Record<string, unknown>>({});
@@ -59,22 +61,22 @@ export default function BottlesPage() {
 
   const countriesQuery = useQuery({
     queryKey: ["countries"],
-    queryFn: api.getCountries,
+    queryFn: () => api.getCountries(1, 1000).then((r) => r.items),
   });
   const regionsQuery = useQuery({
     queryKey: ["regions"],
-    queryFn: api.getRegions,
+    queryFn: () => api.getRegions(1, 1000).then((r) => r.items),
   });
   const typesQuery = useQuery({
     queryKey: ["types"],
-    queryFn: api.getTypes,
+    queryFn: () => api.getTypes(1, 1000).then((r) => r.items),
   });
   const vintagesQuery = useQuery({
     queryKey: ["vintages"],
-    queryFn: api.getVintages,
+    queryFn: () => api.getVintages(1, 1000).then((r) => r.items),
   });
 
-  const listQuery = useQuery({
+  const listQuery = useQuery<Bottle[] | PagedResult<Bottle>>({
     queryKey: [
       "bottles",
       countryId,
@@ -83,6 +85,8 @@ export default function BottlesPage() {
       vintageYear,
       favorites,
       searchTerm,
+      page,
+      pageSize,
     ],
     queryFn: () => {
       if (favorites) return api.getFavoriteBottles();
@@ -91,7 +95,7 @@ export default function BottlesPage() {
       if (regionId) return api.getBottlesByRegionId(Number(regionId));
       if (typeId) return api.getBottlesByTypeId(Number(typeId));
       if (vintageYear) return api.getBottlesByVintageYear(Number(vintageYear));
-      return api.getBottles();
+      return api.getBottles(page, pageSize);
     },
   });
 
@@ -151,6 +155,11 @@ export default function BottlesPage() {
   const regions = regionsQuery.data ?? [];
   const types = typesQuery.data ?? [];
   const vintages = vintagesQuery.data ?? [];
+
+  const listData = listQuery.data;
+  const pagedData = listData && !Array.isArray(listData) ? (listData as PagedResult<Bottle>) : undefined;
+  const rows = pagedData?.items ?? (listData as Bottle[] | undefined) ?? [];
+  const totalCount = pagedData?.totalCount;
 
   return (
     <Box>
@@ -261,12 +270,17 @@ export default function BottlesPage() {
 
       <DataTable
         title="Bottles"
-        rows={listQuery.data ?? []}
+        rows={rows}
         isLoading={listQuery.isLoading}
         error={listQuery.error as Error | null}
         onCreate={handleCreate}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        page={page}
+        pageSize={pageSize}
+        totalCount={totalCount}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
       />
 
       <CrudDialog

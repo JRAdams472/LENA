@@ -15,6 +15,7 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PaginationFooter from "./PaginationFooter";
 import { ReactNode } from "react";
 
 interface DataTableProps<T extends object> {
@@ -26,6 +27,11 @@ interface DataTableProps<T extends object> {
   onEdit: (row: T) => void;
   onDelete: (row: T) => void;
   extraActions?: (row: T) => ReactNode;
+  page?: number;
+  pageSize?: number;
+  totalCount?: number;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
 }
 
 export default function DataTable<T extends object>({
@@ -37,6 +43,11 @@ export default function DataTable<T extends object>({
   onEdit,
   onDelete,
   extraActions,
+  page,
+  pageSize,
+  totalCount,
+  onPageChange,
+  onPageSizeChange,
 }: DataTableProps<T>) {
   const columns = rows.length > 0 ? Object.keys(rows[0]) : [];
 
@@ -103,6 +114,15 @@ export default function DataTable<T extends object>({
             </TableBody>
           </Table>
         </TableContainer>
+      )}
+      {totalCount !== undefined && page !== undefined && pageSize !== undefined && onPageChange && onPageSizeChange && (
+        <PaginationFooter
+          page={page}
+          pageSize={pageSize}
+          totalCount={totalCount}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+        />
       )}
     </Box>
   );

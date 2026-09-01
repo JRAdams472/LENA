@@ -18,9 +18,9 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("vintages")]
-        public async Task<ActionResult<IReadOnlyList<Vintage>>> GetVintages()
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<Vintage>>> GetVintages([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
         {
-            var vintages = await _mediator.Send(new GetVintagesQuery());
+            var vintages = await _mediator.Send(new GetVintagesQuery(paging));
             return Ok(vintages);
         }
 

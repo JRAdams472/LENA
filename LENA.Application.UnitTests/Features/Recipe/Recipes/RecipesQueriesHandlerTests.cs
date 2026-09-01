@@ -1,3 +1,4 @@
+using LENA.Application.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,12 +20,12 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
         public async Task GetRecipesQuery_Should_Return_All_Recipes()
         {
             IReadOnlyList<RecipeEntity> recipes = new List<RecipeEntity> { new() { RecipeName = "Soup" } };
-            _repo.Setup(r => r.ListAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(recipes);
+            _repo.Setup(r => r.ListAllAsync(It.IsAny<PaginationRequest?>(), It.IsAny<CancellationToken>())).ReturnsAsync(new PagedResult<RecipeEntity> { Items = recipes });
 
             var result = await new GetRecipesQueryHandler(_repo.Object)
                 .Handle(new GetRecipesQuery(), CancellationToken.None);
 
-            result.Should().BeEquivalentTo(recipes);
+            result.Items.Should().BeEquivalentTo(recipes);
         }
 
         [Fact]

@@ -46,8 +46,8 @@ namespace LENA.Application.Repositories
         public override Task<GroceryList?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
             => Task.FromResult<GroceryList?>(null);
 
-        public override async Task<IReadOnlyList<GroceryList>> ListAllAsync(CancellationToken cancellationToken = default)
-            => await QueryListAsync<GroceryList>("[MealPlan].[usp_GroceryList_ListAll]", cancellationToken: cancellationToken);
+        public override async Task<LENA.Application.Models.PagedResult<GroceryList>> ListAllAsync(LENA.Application.Models.PaginationRequest? paging = null, CancellationToken cancellationToken = default)
+            => await QueryPagedAsync<GroceryList>("[MealPlan].[usp_GroceryList_ListAll]", paging, cancellationToken);
 
         public override Task<GroceryList> UpdateAsync(GroceryList entity, CancellationToken cancellationToken = default)
             => throw new NotSupportedException("Grocery lists are not updated directly; regenerate or modify list items.");

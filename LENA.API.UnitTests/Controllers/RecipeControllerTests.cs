@@ -1,3 +1,4 @@
+using LENA.Application.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace LENA.API.UnitTests.Controllers
         public async Task GetRecipes_Should_Return_Ok()
         {
             _mediator.Setup(m => m.Send(It.IsAny<GetRecipesQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<RecipeEntity>().AsReadOnly());
+                .ReturnsAsync(new PagedResult<RecipeEntity> { Items = new List<RecipeEntity>() });
 
             var result = await _sut.GetRecipes();
 

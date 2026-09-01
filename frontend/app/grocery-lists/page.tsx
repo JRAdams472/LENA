@@ -28,10 +28,12 @@ export default function GroceryListsPage() {
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState<Record<string, unknown>>({});
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const listQuery = useQuery({
-    queryKey: ["groceryLists"],
-    queryFn: api.getGroceryLists,
+    queryKey: ["groceryLists", page, pageSize],
+    queryFn: () => api.getGroceryLists(page, pageSize),
   });
 
   const generateMutation = useMutation({
@@ -69,13 +71,18 @@ export default function GroceryListsPage() {
     <Box>
       <DataTable
         title="Grocery Lists"
-        rows={(listQuery.data ?? []).map(toRow)}
+        rows={(listQuery.data?.items ?? []).map(toRow)}
         isLoading={listQuery.isLoading}
         error={listQuery.error as Error | null}
         onCreate={handleCreate}
         onEdit={() => {}}
         onDelete={() => {}}
         extraActions={extraActions}
+        page={page}
+        pageSize={pageSize}
+        totalCount={listQuery.data?.totalCount ?? 0}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
       />
       <CrudDialog
         open={dialogOpen}

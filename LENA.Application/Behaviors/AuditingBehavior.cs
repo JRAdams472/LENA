@@ -1,3 +1,4 @@
+using LENA.Domain.Entity.Common;
 using LENA.Application.Contracts.Auditing;
 using MediatR;
 

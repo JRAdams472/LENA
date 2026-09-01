@@ -4,9 +4,9 @@ using MediatR;
 
 namespace LENA.Application.Features.Wine.Bottles.Queries
 {
-    public record GetBottlesQuery : IRequest<IReadOnlyList<Bottle>>;
+    public record GetBottlesQuery(LENA.Application.Models.PaginationRequest? Paging = null) : IRequest<LENA.Application.Models.PagedResult<Bottle>>;
 
-    public class GetBottlesQueryHandler : IRequestHandler<GetBottlesQuery, IReadOnlyList<Bottle>>
+    public class GetBottlesQueryHandler : IRequestHandler<GetBottlesQuery, LENA.Application.Models.PagedResult<Bottle>>
     {
         private readonly IBottleRepository _bottleRepository;
 
@@ -15,9 +15,9 @@ namespace LENA.Application.Features.Wine.Bottles.Queries
             _bottleRepository = bottleRepository;
         }
 
-        public async Task<IReadOnlyList<Bottle>> Handle(GetBottlesQuery request, CancellationToken cancellationToken)
+        public async Task<LENA.Application.Models.PagedResult<Bottle>> Handle(GetBottlesQuery request, CancellationToken cancellationToken)
         {
-            return await _bottleRepository.ListAllAsync(cancellationToken);
+            return await _bottleRepository.ListAllAsync(request.Paging, cancellationToken);
         }
     }
 }

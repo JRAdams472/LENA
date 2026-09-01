@@ -18,9 +18,9 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("regions")]
-        public async Task<ActionResult<IReadOnlyList<Region>>> GetRegions()
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<Region>>> GetRegions([FromQuery] LENA.Application.Models.PaginationRequest? paging = null)
         {
-            var regions = await _mediator.Send(new GetRegionsQuery());
+            var regions = await _mediator.Send(new GetRegionsQuery(paging));
             return Ok(regions);
         }
 

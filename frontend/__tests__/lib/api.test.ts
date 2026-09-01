@@ -12,19 +12,25 @@ describe("api client", () => {
       ok: true,
       status: 200,
       headers: { get: (name: string) => (name === "content-type" ? "application/json" : null) },
-      json: async () => [{ itemID: 1, name: "Milk" }],
+      json: async () => ({
+        items: [{ itemID: 1, name: "Milk" }],
+        pageNumber: 1,
+        pageSize: 25,
+        totalCount: 1,
+        totalPages: 1,
+      }),
     });
 
-    const items = await api.getItems();
+    const result = await api.getItems();
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "http://localhost:5059/api/Item/items",
+      "http://localhost:5059/api/Item/items?pageNumber=1&pageSize=25",
       expect.objectContaining({
         headers: expect.objectContaining({ Accept: "application/json" }),
       })
     );
-    expect(items).toHaveLength(1);
-    expect(items[0].name).toBe("Milk");
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].name).toBe("Milk");
   });
 
   it("throws ApiError on non-ok responses", async () => {

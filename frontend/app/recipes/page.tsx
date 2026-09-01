@@ -36,10 +36,12 @@ export default function RecipesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState<Record<string, unknown>>({});
   const [isCreate, setIsCreate] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const listQuery = useQuery({
-    queryKey: ["recipes"],
-    queryFn: api.getRecipes,
+    queryKey: ["recipes", page, pageSize],
+    queryFn: () => api.getRecipes(page, pageSize),
   });
 
   const createMutation = useMutation({
@@ -101,13 +103,18 @@ export default function RecipesPage() {
     <Box>
       <DataTable
         title="Recipes"
-        rows={(listQuery.data ?? []).map(toRow)}
+        rows={(listQuery.data?.items ?? []).map(toRow)}
         isLoading={listQuery.isLoading}
         error={listQuery.error as Error | null}
         onCreate={handleCreate}
         onEdit={handleEdit}
         onDelete={handleDelete}
         extraActions={extraActions}
+        page={page}
+        pageSize={pageSize}
+        totalCount={listQuery.data?.totalCount ?? 0}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
       />
       <CrudDialog
         open={dialogOpen}

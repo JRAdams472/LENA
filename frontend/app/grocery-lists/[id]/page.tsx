@@ -121,7 +121,7 @@ export default function GroceryListDetailPage({
 
   const itemsQuery = useQuery({
     queryKey: ["items"],
-    queryFn: api.getItems,
+    queryFn: () => api.getItems(1, 1000).then((r) => r.items),
   });
 
   const [manual, setManual] = useState<ManualForm>({

@@ -32,10 +32,12 @@ export default function MealPlansPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState<Record<string, unknown>>({});
   const [isCreate, setIsCreate] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const listQuery = useQuery({
-    queryKey: ["mealPlans"],
-    queryFn: api.getMealPlans,
+    queryKey: ["mealPlans", page, pageSize],
+    queryFn: () => api.getMealPlans(page, pageSize),
   });
 
   const createMutation = useMutation({
@@ -97,13 +99,18 @@ export default function MealPlansPage() {
     <Box>
       <DataTable
         title="Meal Plans"
-        rows={(listQuery.data ?? []).map(toRow)}
+        rows={(listQuery.data?.items ?? []).map(toRow)}
         isLoading={listQuery.isLoading}
         error={listQuery.error as Error | null}
         onCreate={handleCreate}
         onEdit={handleEdit}
         onDelete={handleDelete}
         extraActions={extraActions}
+        page={page}
+        pageSize={pageSize}
+        totalCount={listQuery.data?.totalCount ?? 0}
+        onPageChange={setPage}
+        onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
       />
       <CrudDialog
         open={dialogOpen}

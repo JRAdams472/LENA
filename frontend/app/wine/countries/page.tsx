@@ -8,7 +8,7 @@ export default function CountriesPage() {
     <CrudPage
       title="Countries"
       queryKey={["countries"]}
-      listFn={api.getCountries}
+      pagedListFn={api.getCountries}
       activeOnlyFn={api.getActiveCountries}
       fields={[
         { key: "countryName", label: "Country Name" },

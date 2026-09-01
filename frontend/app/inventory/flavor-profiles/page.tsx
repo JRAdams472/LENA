@@ -8,7 +8,7 @@ export default function FlavorProfilesPage() {
     <CrudPage
       title="Flavor Profiles"
       queryKey={["flavor-profiles"]}
-      listFn={api.getFlavorProfiles}
+      pagedListFn={api.getFlavorProfiles}
       activeOnlyFn={api.getActiveFlavorProfiles}
       fields={[
         { key: "flavorName", label: "Flavor Name" },

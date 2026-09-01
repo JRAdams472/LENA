@@ -9,6 +9,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
+import { PagedResult } from "@/lib/types";
 import DataTable from "./DataTable";
 import CrudDialog, { FieldDef } from "./CrudDialog";
 
@@ -21,7 +22,8 @@ interface FilterDef<T> {
 interface CrudPageProps<T extends object> {
   title: string;
   queryKey: string[];
-  listFn: () => Promise<T[]>;
+  listFn?: () => Promise<T[]>;
+  pagedListFn?: (page: number, pageSize: number) => Promise<PagedResult<T>>;
   activeOnlyFn?: () => Promise<T[]>;
   filterBy?: FilterDef<T>;
   fields: FieldDef<T>[];
@@ -35,6 +37,7 @@ export default function CrudPage<T extends object>({
   title,
   queryKey,
   listFn,
+  pagedListFn,
   activeOnlyFn,
   filterBy,
   fields,
@@ -51,13 +54,16 @@ export default function CrudPage<T extends object>({
   const [filterId, setFilterId] = useState<string>("");
   const [dialogError, setDialogError] = useState<Error | null>(null);
   const [tableError, setTableError] = useState<Error | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
-  const listQuery = useQuery<T[]>({
-    queryKey: [...queryKey, activeOnly, filterId],
+  const listQuery = useQuery<T[] | PagedResult<T>>({
+    queryKey: [...queryKey, activeOnly, filterId, ...(pagedListFn ? [page, pageSize] : [])],
     queryFn: () => {
       if (activeOnly && activeOnlyFn) return activeOnlyFn();
       if (filterBy && filterId) return filterBy.filterFn(Number(filterId));
-      return listFn();
+      if (pagedListFn) return pagedListFn(page, pageSize);
+      return listFn!();
     },
   });
 
@@ -96,7 +102,10 @@ export default function CrudPage<T extends object>({
     onError: (err: unknown) => setTableError(err as Error),
   });
 
-  const rows = listQuery.data ?? [];
+  const data = listQuery.data;
+  const isPaged = !!data && !Array.isArray(data);
+  const rows = isPaged ? (data as PagedResult<T>).items : (data as T[] | undefined) ?? [];
+  const totalCount = isPaged ? (data as PagedResult<T>).totalCount : undefined;
 
   const handleCreate = () => {
     setIsCreate(true);
@@ -177,6 +186,11 @@ export default function CrudPage<T extends object>({
         onCreate={handleCreate}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        page={pagedListFn ? page : undefined}
+        pageSize={pagedListFn ? pageSize : undefined}
+        totalCount={totalCount}
+        onPageChange={pagedListFn ? setPage : undefined}
+        onPageSizeChange={pagedListFn ? (newSize) => { setPageSize(newSize); setPage(1); } : undefined}
       />
 
       <CrudDialog

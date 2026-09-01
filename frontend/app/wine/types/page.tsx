@@ -8,7 +8,7 @@ export default function TypesPage() {
     <CrudPage
       title="Types"
       queryKey={["types"]}
-      listFn={api.getTypes}
+      pagedListFn={api.getTypes}
       fields={[
         { key: "typeName", label: "Type Name" },
         { key: "description", label: "Description" },
