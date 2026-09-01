@@ -42,10 +42,10 @@ namespace LENA.Application.Repositories
             return entity;
         }
 
-        public override async Task<Vintage> DeleteAsync(Vintage entitey, CancellationToken cancellationToken = default)
+        public override async Task<Vintage> DeleteAsync(Vintage entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteRequiringMatchAsync("[Wine].[usp_Vintage_Delete]", new { entitey.VintageID }, nameof(Vintage), entitey.VintageID, cancellationToken);
-            return entitey;
+            await ExecuteRequiringMatchAsync("[Wine].[usp_Vintage_Delete]", new { entity.VintageID }, nameof(Vintage), entity.VintageID, cancellationToken);
+            return entity;
         }
 
         public override async Task<Vintage?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
