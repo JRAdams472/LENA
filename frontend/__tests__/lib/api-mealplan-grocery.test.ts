@@ -87,17 +87,26 @@ describe("meal plan and grocery api client", () => {
     expect(list.groceryListID).toBe(2);
   });
 
-  it("getGroceryLists fetches all lists", async () => {
-    mockFetch.mockResolvedValueOnce(mockJson([{ groceryListID: 1 }]));
+  it("getGroceryLists fetches paged lists", async () => {
+    mockFetch.mockResolvedValueOnce(
+      mockJson({
+        items: [{ groceryListID: 1 }],
+        pageNumber: 1,
+        pageSize: 25,
+        totalCount: 1,
+        totalPages: 1,
+      })
+    );
 
-    const lists = await api.getGroceryLists();
+    const result = await api.getGroceryLists();
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "http://localhost:5059/api/GroceryList",
+      "http://localhost:5059/api/GroceryList?pageNumber=1&pageSize=25",
       expect.objectContaining({
         headers: expect.objectContaining({ Accept: "application/json" }),
       })
     );
-    expect(lists).toHaveLength(1);
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].groceryListID).toBe(1);
   });
 });

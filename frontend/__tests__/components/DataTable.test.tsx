@@ -65,4 +65,64 @@ describe("DataTable", () => {
 
     expect(screen.getByRole("alert")).toHaveTextContent("Connection failed");
   });
+
+  it("renders pagination footer with correct defaults and disabled controls", () => {
+    const onPageChange = jest.fn();
+    const onPageSizeChange = jest.fn();
+
+    render(
+      <DataTable
+        title="Items"
+        rows={rows}
+        isLoading={false}
+        error={null}
+        onCreate={jest.fn()}
+        onEdit={jest.fn()}
+        onDelete={jest.fn()}
+        pagination={{
+          pageNumber: 1,
+          pageSize: 25,
+          totalCount: 50,
+          totalPages: 5,
+          onPageChange,
+          onPageSizeChange,
+        }}
+      />
+    );
+
+    expect(screen.getByRole("combobox")).toHaveTextContent("25");
+    expect(screen.getByText(/Page 1 of 5 \(50 total\)/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "<" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: ">" })).not.toBeDisabled();
+
+    fireEvent.mouseDown(screen.getByLabelText("Rows per page"));
+    const options = screen.getAllByRole("option");
+    expect(options).toHaveLength(4);
+    expect(options.map((o) => o.textContent)).toEqual(["10", "25", "50", "100"]);
+  });
+
+  it("disables the next button on the last page", () => {
+    render(
+      <DataTable
+        title="Items"
+        rows={rows}
+        isLoading={false}
+        error={null}
+        onCreate={jest.fn()}
+        onEdit={jest.fn()}
+        onDelete={jest.fn()}
+        pagination={{
+          pageNumber: 5,
+          pageSize: 25,
+          totalCount: 50,
+          totalPages: 5,
+          onPageChange: jest.fn(),
+          onPageSizeChange: jest.fn(),
+        }}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: ">" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "<" })).not.toBeDisabled();
+  });
 });
