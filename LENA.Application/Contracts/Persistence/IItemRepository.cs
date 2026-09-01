@@ -24,6 +24,6 @@ namespace LENA.Application.Contracts.Persistence
 
         Task<IReadOnlyList<Item>> SearchAsync(string search, string? brand, int limit, CancellationToken ct = default);
 
-        Task<IReadOnlyList<string>> GetBrandsAsync(CancellationToken ct = default);
+        Task<IReadOnlyList<string>> GetBrandsAsync(string? search = null, CancellationToken ct = default);
     }
 }

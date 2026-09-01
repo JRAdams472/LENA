@@ -52,8 +52,8 @@ export default function RecipeDetailPage() {
   });
 
   const brandsQuery = useQuery({
-    queryKey: ["item-brands"],
-    queryFn: () => api.getBrands(),
+    queryKey: ["item-brands", brandInput],
+    queryFn: () => api.getBrands(brandInput),
   });
 
   useEffect(() => {
@@ -238,18 +238,9 @@ export default function RecipeDetailPage() {
               setItemSearch("");
               setDebouncedItemSearch("");
             }}
-            filterOptions={(options, state) =>
-              state.inputValue.length < 1
-                ? []
-                : options.filter((b) =>
-                    b.toLowerCase().includes(state.inputValue.toLowerCase())
-                  )
-            }
-            noOptionsText={
-              brandInput.length < 1
-                ? "Type at least 1 character"
-                : "No brands found"
-            }
+            filterOptions={(options) => options}
+            loading={brandsQuery.isLoading}
+            noOptionsText="No brands found"
             renderInput={(params) => (
               <TextField {...params} label="Brand" size="small" />
             )}

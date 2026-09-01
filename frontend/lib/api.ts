@@ -95,7 +95,8 @@ export const api = {
     request<PagedResult<Item>>(`/api/Item/items/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
   searchItems: (search: string, brand?: string, limit: number = 50) =>
     request<Item[]>(`/api/Item/items/search?search=${encodeURIComponent(search)}&brand=${encodeURIComponent(brand ?? '')}&limit=${limit}`),
-  getBrands: () => request<string[]>(`/api/Item/brands`),
+  getBrands: (search?: string) =>
+    request<string[]>(`/api/Item/brands?search=${encodeURIComponent(search ?? '')}`),
   getItem: (id: number) => request<Item>(`/api/Item/items/${id}`),
   createItem: (item: Omit<Item, keyof AuditableEntity>) =>
     request<Item>("/api/Item/items", { method: "POST", body: JSON.stringify(item) }),

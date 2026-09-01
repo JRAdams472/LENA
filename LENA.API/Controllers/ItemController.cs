@@ -44,9 +44,9 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("brands")]
-        public async Task<ActionResult<IReadOnlyList<string>>> GetBrands()
+        public async Task<ActionResult<IReadOnlyList<string>>> GetBrands([FromQuery] string? search = null)
         {
-            var brands = await _mediator.Send(new GetItemBrandsQuery());
+            var brands = await _mediator.Send(new GetItemBrandsQuery(search));
             return Ok(brands);
         }
 

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace LENA.Application.Features.Inventory.Items.Queries
 {
-    public record GetItemBrandsQuery : IRequest<IReadOnlyList<string>>;
+    public record GetItemBrandsQuery(string? Search) : IRequest<IReadOnlyList<string>>;
 
     public class GetItemBrandsQueryHandler : IRequestHandler<GetItemBrandsQuery, IReadOnlyList<string>>
     {
@@ -15,6 +15,6 @@ namespace LENA.Application.Features.Inventory.Items.Queries
         }
 
         public async Task<IReadOnlyList<string>> Handle(GetItemBrandsQuery request, CancellationToken cancellationToken)
-            => await _itemRepository.GetBrandsAsync(cancellationToken);
+            => await _itemRepository.GetBrandsAsync(request.Search, cancellationToken);
     }
 }
