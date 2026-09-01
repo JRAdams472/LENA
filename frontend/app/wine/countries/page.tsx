@@ -11,10 +11,9 @@ export default function CountriesPage() {
       pagedListFn={api.getCountriesPaged}
       activeOnlyFn={api.getActiveCountries}
       fields={[
-        { key: "countryName", label: "Country Name" },
-        { key: "isoCode", label: "ISO Code" },
-        { key: "description", label: "Description" },
-        { key: "isActive", label: "Active", type: "boolean" },
+        { key: "countryName", label: "Country Name", sortable: true },
+        { key: "isoCode", label: "Country Code", sortable: true },
+        { key: "isActive", label: "Active", type: "boolean", sortable: true },
       ]}
       createFn={(row) => api.createCountry(asEntity(row))}
       updateFn={(row) =>

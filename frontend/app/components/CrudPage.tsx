@@ -182,6 +182,7 @@ export default function CrudPage<T extends object>({
       <DataTable
         title={title}
         rows={rows}
+        fields={fields}
         isLoading={listQuery.isLoading}
         error={tableError || (listQuery.error as Error | null)}
         onCreate={handleCreate}

@@ -15,6 +15,7 @@ export interface FieldDef<T = Record<string, unknown>> {
   key: Extract<keyof T, string>;
   label: string;
   type?: "text" | "number" | "boolean" | "date";
+  sortable?: boolean;
 }
 
 interface CrudDialogProps<T> {

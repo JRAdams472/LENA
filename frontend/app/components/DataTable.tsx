@@ -19,7 +19,9 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { ReactNode } from "react";
+import { ReactNode, useMemo, useState } from "react";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import { FieldDef } from "./CrudDialog";
 
 interface DataTableProps<T extends object> {
   title: string;
@@ -43,6 +45,7 @@ interface DataTableProps<T extends object> {
     onPageChange: (page: number) => void;
     onPageSizeChange: (size: number) => void;
   };
+  fields?: FieldDef<T>[];
 }
 
 export default function DataTable<T extends object>({
@@ -60,8 +63,44 @@ export default function DataTable<T extends object>({
   onPageChange,
   onPageSizeChange,
   pagination,
+  fields,
 }: DataTableProps<T>) {
-  const columns = rows.length > 0 ? Object.keys(rows[0]) : [];
+  const columnDefs: FieldDef<T>[] = fields && fields.length > 0
+    ? fields
+    : rows.length > 0
+      ? (Object.keys(rows[0]) as Extract<keyof T, string>[]).map((key) => ({ key, label: key, sortable: true }))
+      : [];
+
+  const [sortField, setSortField] = useState<Extract<keyof T, string> | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const displayRows = useMemo(() => {
+    if (!sortField) return rows;
+    const sorted = [...rows];
+    sorted.sort((a, b) => {
+      const aVal = (a as Record<string, unknown>)[sortField];
+      const bVal = (b as Record<string, unknown>)[sortField];
+      let comparison = 0;
+
+      if (aVal === null || aVal === undefined) comparison = 1;
+      else if (bVal === null || bVal === undefined) comparison = -1;
+      else if (typeof aVal === "number" && typeof bVal === "number") comparison = aVal - bVal;
+      else if (typeof aVal === "boolean" && typeof bVal === "boolean") comparison = Number(aVal) - Number(bVal);
+      else comparison = String(aVal).localeCompare(String(bVal));
+
+      return sortDirection === "asc" ? comparison : -comparison;
+    });
+    return sorted;
+  }, [rows, sortField, sortDirection]);
+
+  const handleSort = (key: Extract<keyof T, string>) => {
+    if (sortField === key) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(key);
+      setSortDirection("asc");
+    }
+  };
 
   const paginationData =
     pagination ??
@@ -104,19 +143,31 @@ export default function DataTable<T extends object>({
           <Table size="small">
             <TableHead>
               <TableRow>
-                {columns.map((col) => (
-                  <TableCell key={col}>{col}</TableCell>
+                {columnDefs.map((col) => (
+                  <TableCell key={col.key}>
+                    {col.sortable !== false ? (
+                      <TableSortLabel
+                        active={sortField === col.key}
+                        direction={sortDirection}
+                        onClick={() => handleSort(col.key)}
+                      >
+                        {col.label}
+                      </TableSortLabel>
+                    ) : (
+                      col.label
+                    )}
+                  </TableCell>
                 ))}
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row, i) => (
+              {displayRows.map((row, i) => (
                 <TableRow key={i}>
-                  {columns.map((col) => {
-                    const value = (row as Record<string, unknown>)[col];
+                  {columnDefs.map((col) => {
+                    const value = (row as Record<string, unknown>)[col.key];
                     return (
-                      <TableCell key={col}>
+                      <TableCell key={col.key}>
                         {value === null || value === undefined
                           ? ""
                           : typeof value === "object"
