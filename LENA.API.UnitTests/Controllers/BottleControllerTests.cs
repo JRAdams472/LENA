@@ -13,12 +13,12 @@ using Xunit;
 
 namespace LENA.API.UnitTests.Controllers
 {
-    public class WineControllerTests
+    public class BottleControllerTests
     {
         private readonly Mock<IMediator> _mediator = new();
-        private readonly WineController _sut;
+        private readonly BottleController _sut;
 
-        public WineControllerTests() => _sut = new WineController(_mediator.Object);
+        public BottleControllerTests() => _sut = new BottleController(_mediator.Object);
 
         [Fact]
         public async Task GetBottles_Should_Return_Ok_And_Send_GetBottlesQuery()
