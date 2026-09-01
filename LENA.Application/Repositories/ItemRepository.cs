@@ -12,8 +12,8 @@ namespace LENA.Application.Repositories
         public override async Task<IReadOnlyList<Item>> ListAllAsync(CancellationToken cancellationToken = default)
             => await QueryListAsync<Item>("[Inventory].[usp_Item_ListAll]", cancellationToken: cancellationToken);
 
-        public async Task<LENA.Application.Models.PagedResult<Item>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default)
-            => await QueryPagedListAsync<Item>("[Inventory].[usp_Item_ListAllPaged]", pageNumber, pageSize, ct: ct);
+        public async Task<LENA.Application.Models.PagedResult<Item>> ListPagedAsync(int pageNumber, int pageSize, string? search = null, string? brand = null, bool inStock = false, bool isFavorite = false, CancellationToken ct = default)
+            => await QueryPagedListAsync<Item>("[Inventory].[usp_Item_ListAllPaged]", pageNumber, pageSize, new { Search = search, Brand = brand, InStock = inStock, IsFavorite = isFavorite }, ct);
 
         public async Task<IReadOnlyList<Item>> SearchAsync(string search, string? brand, int limit, CancellationToken cancellationToken = default)
             => await QueryListAsync<Item>("[Inventory].[usp_Item_Search]", new { Search = search, Brand = brand, Limit = limit }, cancellationToken);

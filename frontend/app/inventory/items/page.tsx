@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import { api, asEntity } from "@/lib/api";
 import DataTable from "@/app/components/DataTable";
 import CrudDialog from "@/app/components/CrudDialog";
@@ -31,10 +35,30 @@ export default function ItemsPage() {
   const [isCreate, setIsCreate] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [brand, setBrand] = useState<string | "">("");
+  const [brandInput, setBrandInput] = useState("");
+  const [inStock, setInStock] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
+    setPageNumber(1);
+  }, [debouncedSearch, brand, inStock, isFavorite]);
+
+  const brandsQuery = useQuery({
+    queryKey: ["item-brands", brandInput],
+    queryFn: () => api.getBrands(brandInput),
+  });
 
   const listQuery = useQuery({
-    queryKey: ["items", pageNumber, pageSize],
-    queryFn: () => api.getItemsPaged(pageNumber, pageSize),
+    queryKey: ["items", pageNumber, pageSize, debouncedSearch, brand, inStock, isFavorite],
+    queryFn: () => api.getItemsPaged(pageNumber, pageSize, debouncedSearch, brand, inStock, isFavorite),
     placeholderData: (prev) => prev,
   });
 
@@ -57,18 +81,6 @@ export default function ItemsPage() {
   const changeCategoryMutation = useMutation({
     mutationFn: ({ id, categoryId }: { id: number; categoryId: number }) =>
       api.changeItemCategory(id, categoryId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["items"] }),
-  });
-
-  const setUPC12Mutation = useMutation({
-    mutationFn: ({ id, upc12 }: { id: number; upc12: string }) =>
-      api.setItemUPC12(id, upc12),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["items"] }),
-  });
-
-  const setUPC14Mutation = useMutation({
-    mutationFn: ({ id, upc14 }: { id: number; upc14: string }) =>
-      api.setItemUPC14(id, upc14),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["items"] }),
   });
 
@@ -129,18 +141,6 @@ export default function ItemsPage() {
     changeCategoryMutation.mutate({ id, categoryId });
   };
 
-  const handleUPC12 = (id: number) => {
-    const upc12 = window.prompt("Enter UPC12");
-    if (upc12 === null) return;
-    setUPC12Mutation.mutate({ id, upc12 });
-  };
-
-  const handleUPC14 = (id: number) => {
-    const upc14 = window.prompt("Enter UPC14");
-    if (upc14 === null) return;
-    setUPC14Mutation.mutate({ id, upc14 });
-  };
-
   const handleAdjustQuantity = (id: number) => {
     const value = window.prompt("Enter quantity adjustment");
     if (value === null) return;
@@ -171,12 +171,6 @@ export default function ItemsPage() {
       >
         Category
       </Button>
-      <Button size="small" onClick={() => handleUPC12(row.itemID)}>
-        UPC12
-      </Button>
-      <Button size="small" onClick={() => handleUPC14(row.itemID)}>
-        UPC14
-      </Button>
       <Button
         size="small"
         onClick={() => handleAdjustQuantity(row.itemID)}
@@ -196,6 +190,60 @@ export default function ItemsPage() {
 
   return (
     <Box>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          flexWrap: "wrap",
+          mb: 2,
+        }}
+      >
+        <TextField
+          size="small"
+          label="Search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{ minWidth: 200 }}
+        />
+        <Autocomplete
+          size="small"
+          options={brandsQuery.data ?? []}
+          getOptionLabel={(b) => b ?? ""}
+          isOptionEqualToValue={(a, b) => a === b}
+          inputValue={brandInput}
+          onInputChange={(_, value) => setBrandInput(value)}
+          value={brand === "" ? null : brand}
+          onChange={(_, value) => {
+            setBrand(value ?? "");
+            setBrandInput(value ?? "");
+          }}
+          filterOptions={(options) => options}
+          loading={brandsQuery.isLoading}
+          noOptionsText="No brands found"
+          renderInput={(params) => (
+            <TextField {...params} label="Brand" size="small" />
+          )}
+          sx={{ minWidth: 180 }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={inStock}
+              onChange={(e) => setInStock(e.target.checked)}
+            />
+          }
+          label="In Stock"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isFavorite}
+              onChange={(e) => setIsFavorite(e.target.checked)}
+            />
+          }
+          label="Favorites"
+        />
+      </Box>
       <DataTable
         title="Items"
         rows={listQuery.data?.items ?? []}

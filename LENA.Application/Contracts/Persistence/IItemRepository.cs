@@ -20,7 +20,7 @@ namespace LENA.Application.Contracts.Persistence
         // Set the favorite flag of an item
         Task SetFavoriteAsync(int itemId, bool isFavorite, CancellationToken cancellationToken = default);
 
-        Task<PagedResult<Item>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default);
+        Task<PagedResult<Item>> ListPagedAsync(int pageNumber, int pageSize, string? search = null, string? brand = null, bool inStock = false, bool isFavorite = false, CancellationToken ct = default);
 
         Task<IReadOnlyList<Item>> SearchAsync(string search, string? brand, int limit, CancellationToken ct = default);
 

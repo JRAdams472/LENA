@@ -91,8 +91,17 @@ export const api = {
 
   // Items
   getItems: () => request<Item[]>(`/api/Item/items`),
-  getItemsPaged: (pageNumber: number, pageSize: number) =>
-    request<PagedResult<Item>>(`/api/Item/items/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
+  getItemsPaged: (pageNumber: number, pageSize: number, search?: string, brand?: string, inStock?: boolean, isFavorite?: boolean) => {
+    const qs = new URLSearchParams({
+      pageNumber: String(pageNumber),
+      pageSize: String(pageSize),
+      search: search ?? '',
+      brand: brand ?? '',
+      inStock: inStock ? 'true' : 'false',
+      isFavorite: isFavorite ? 'true' : 'false',
+    });
+    return request<PagedResult<Item>>(`/api/Item/items/paged?${qs.toString()}`);
+  },
   searchItems: (search: string, brand?: string, limit: number = 50) =>
     request<Item[]>(`/api/Item/items/search?search=${encodeURIComponent(search)}&brand=${encodeURIComponent(brand ?? '')}&limit=${limit}`),
   getBrands: (search?: string) =>

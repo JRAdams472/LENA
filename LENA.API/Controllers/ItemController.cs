@@ -51,10 +51,16 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("items/paged")]
-        public async Task<ActionResult<LENA.Application.Models.PagedResult<Item>>> GetItemsPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<Item>>> GetItemsPaged(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 25,
+            [FromQuery] string? search = null,
+            [FromQuery] string? brand = null,
+            [FromQuery] bool inStock = false,
+            [FromQuery] bool isFavorite = false)
         {
             (pageNumber, pageSize) = LENA.Application.Models.PaginationRequest.Clamp(pageNumber, pageSize);
-            var items = await _mediator.Send(new GetItemsPagedQuery(pageNumber, pageSize));
+            var items = await _mediator.Send(new GetItemsPagedQuery(pageNumber, pageSize, search, brand, inStock, isFavorite));
             return Ok(items);
         }
 
