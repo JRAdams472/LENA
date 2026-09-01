@@ -24,6 +24,13 @@ namespace LENA.API.Controllers
             return Ok(bottles);
         }
 
+        [HttpGet("bottles/paged")]
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<Bottle>>> GetBottlesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
+        {
+            var bottles = await _mediator.Send(new GetBottlesPagedQuery(pageNumber, pageSize));
+            return Ok(bottles);
+        }
+
         [HttpGet("bottles/{id}")]
         public async Task<ActionResult<Bottle?>> GetBottleById(int id)
         {

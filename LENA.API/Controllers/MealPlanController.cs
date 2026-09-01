@@ -32,6 +32,13 @@ namespace LENA.API.Controllers
             return Ok(plans);
         }
 
+        [HttpGet("plans/paged")]
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<MealPlanEntity>>> GetMealPlansPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
+        {
+            var plans = await _mediator.Send(new GetMealPlansPagedQuery(pageNumber, pageSize));
+            return Ok(plans);
+        }
+
         [HttpGet("plans/{id}")]
         public async Task<ActionResult<MealPlanEntity?>> GetMealPlanById(int id)
         {

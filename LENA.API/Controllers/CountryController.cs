@@ -24,6 +24,13 @@ namespace LENA.API.Controllers
             return Ok(countries);
         }
 
+        [HttpGet("countries/paged")]
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<Country>>> GetCountriesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
+        {
+            var countries = await _mediator.Send(new GetCountriesPagedQuery(pageNumber, pageSize));
+            return Ok(countries);
+        }
+
         [HttpGet("countries/active")]
         public async Task<ActionResult<IReadOnlyList<Country>>> GetActiveCountries()
         {

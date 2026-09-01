@@ -28,6 +28,13 @@ namespace LENA.API.Controllers
             return Ok(recipes);
         }
 
+        [HttpGet("recipes/paged")]
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<Recipe>>> GetRecipesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
+        {
+            var recipes = await _mediator.Send(new GetRecipesPagedQuery(pageNumber, pageSize));
+            return Ok(recipes);
+        }
+
         [HttpGet("recipes/{id}")]
         public async Task<ActionResult<Recipe?>> GetRecipeById(int id)
         {

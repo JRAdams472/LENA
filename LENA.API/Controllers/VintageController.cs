@@ -24,6 +24,13 @@ namespace LENA.API.Controllers
             return Ok(vintages);
         }
 
+        [HttpGet("vintages/paged")]
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<Vintage>>> GetVintagesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
+        {
+            var vintages = await _mediator.Send(new GetVintagesPagedQuery(pageNumber, pageSize));
+            return Ok(vintages);
+        }
+
         [HttpGet("vintages/active")]
         public async Task<ActionResult<IReadOnlyList<Vintage>>> GetActiveVintages()
         {

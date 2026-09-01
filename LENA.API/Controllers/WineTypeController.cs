@@ -25,6 +25,13 @@ namespace LENA.API.Controllers
             return Ok(types);
         }
 
+        [HttpGet("types/paged")]
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<TypeEntity>>> GetTypesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
+        {
+            var types = await _mediator.Send(new GetTypesPagedQuery(pageNumber, pageSize));
+            return Ok(types);
+        }
+
         [HttpGet("types/{id}")]
         public async Task<ActionResult<TypeEntity?>> GetTypeById(int id)
         {
