@@ -106,7 +106,6 @@ export default function CrudPage<T extends object>({
   const data = listQuery.data;
   const isPaged = !!data && !Array.isArray(data);
   const rows = isPaged ? (data as PagedResult<T>).items : (data as T[] | undefined) ?? [];
-  const totalCount = isPaged ? (data as PagedResult<T>).totalCount : undefined;
 
   const handleCreate = () => {
     setIsCreate(true);

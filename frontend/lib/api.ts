@@ -25,15 +25,6 @@ import {
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5059";
 
-export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
-
-if (!GOOGLE_CLIENT_ID) {
-  throw new Error(
-    "NEXT_PUBLIC_GOOGLE_CLIENT_ID is required. " +
-      "Add it to the build environment or frontend/.env."
-  );
-}
-
 export class ApiError extends Error {
   status: number;
 
