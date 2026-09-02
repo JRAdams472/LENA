@@ -5,8 +5,10 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { ApiError, GOOGLE_CLIENT_ID } from "@/lib/api";
+import { ApiError } from "@/lib/api";
 import { AuthProvider } from "@/app/auth/AuthProvider";
+
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 
 const theme = createTheme();
 
