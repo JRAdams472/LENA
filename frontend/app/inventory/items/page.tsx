@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import Checkbox from "@mui/material/Checkbox";
+import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { api, asEntity } from "@/lib/api";
 import DataTable from "@/app/components/DataTable";
@@ -227,7 +227,7 @@ export default function ItemsPage() {
         />
         <FormControlLabel
           control={
-            <Checkbox
+            <Switch
               checked={inStock}
               onChange={(e) => setInStock(e.target.checked)}
             />
@@ -236,7 +236,7 @@ export default function ItemsPage() {
         />
         <FormControlLabel
           control={
-            <Checkbox
+            <Switch
               checked={isFavorite}
               onChange={(e) => setIsFavorite(e.target.checked)}
             />
