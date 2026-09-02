@@ -1,4 +1,4 @@
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, setAuthTokenGetter } from "@/lib/api";
 
 const mockFetch = global.fetch as jest.Mock;
 
@@ -65,5 +65,53 @@ describe("api client", () => {
     expect(error).toBeInstanceOf(ApiError);
     expect((error as ApiError).status).toBe(400);
     expect((error as ApiError).message).toContain("Bad Request");
+  });
+
+  it("omits the Authorization header when no token is set", async () => {
+    setAuthTokenGetter(() => null);
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      headers: {
+        get: (name: string) =>
+          name === "content-type" ? "application/json" : null,
+      },
+      json: async () => [],
+    });
+
+    await api.getItems();
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "http://localhost:5059/api/Item/items",
+      expect.objectContaining({
+        headers: expect.not.objectContaining({
+          Authorization: expect.any(String),
+        }),
+      })
+    );
+  });
+
+  it("adds the Authorization header when a token is set", async () => {
+    setAuthTokenGetter(() => "google_id_token");
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      headers: {
+        get: (name: string) =>
+          name === "content-type" ? "application/json" : null,
+      },
+      json: async () => [],
+    });
+
+    await api.getItems();
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "http://localhost:5059/api/Item/items",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: "Bearer google_id_token",
+        }),
+      })
+    );
   });
 });

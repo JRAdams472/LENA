@@ -110,7 +110,7 @@ export default function AdminLayout({
 }) {
   const theme = useTheme();
   const pathname = usePathname() ?? "";
-  const { user, signIn, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(

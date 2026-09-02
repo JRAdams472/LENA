@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
   useCallback,
   ReactNode,
@@ -55,40 +56,37 @@ function isTokenExpired(token: string): boolean {
   return payload.exp < Math.floor(Date.now() / 1000);
 }
 
+function getStoredToken(): string | null {
+  if (typeof window === "undefined") return null;
+  const stored = localStorage.getItem(TOKEN_KEY);
+  if (!stored) return null;
+  if (isTokenExpired(stored)) {
+    localStorage.removeItem(TOKEN_KEY);
+    return null;
+  }
+  return stored;
+}
+
+function getUserFromToken(token: string | null): AuthUser | null {
+  if (!token) return null;
+  const payload = decodeJwtPayload(token);
+  return payload?.email ? { email: payload.email, sub: payload.sub } : null;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const tokenRef = useRef<string | null>(null);
+  const [token, setToken] = useState<string | null>(() => getStoredToken());
+  const tokenRef = useRef<string | null>(token);
+  const user = useMemo(() => getUserFromToken(token), [token]);
 
   const signIn = useCallback((credential: string) => {
     localStorage.setItem(TOKEN_KEY, credential);
-    tokenRef.current = credential;
-    const payload = decodeJwtPayload(credential);
     setToken(credential);
-    setUser(
-      payload?.email
-        ? { email: payload.email, sub: payload.sub }
-        : null
-    );
   }, []);
 
   const signOut = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
-    tokenRef.current = null;
     setToken(null);
-    setUser(null);
   }, []);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(TOKEN_KEY);
-    if (stored) {
-      if (isTokenExpired(stored)) {
-        localStorage.removeItem(TOKEN_KEY);
-      } else {
-        signIn(stored);
-      }
-    }
-  }, [signIn]);
 
   useEffect(() => {
     setAuthTokenGetter(() => tokenRef.current);
