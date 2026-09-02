@@ -1,4 +1,4 @@
-﻿CREATE OR ALTER PROCEDURE [Inventory].[usp_Item_ListAll]
+﻿CREATE PROCEDURE [Inventory].[usp_Item_ListAll]
     @PageNumber INT = 1,
     @PageSize INT = 25
 AS

@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE [Recipe].[usp_Recipe_Create]
+﻿CREATE PROCEDURE [Recipe].[usp_Recipe_Create]
     @RecipeName NVARCHAR(200),
     @Description NVARCHAR(500) = NULL,
     @Servings INT = NULL,

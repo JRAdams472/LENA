@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE [Inventory].[usp_Item_GetBrands]
+﻿CREATE PROCEDURE [Inventory].[usp_Item_GetBrands]
     @Search NVARCHAR(100) = NULL
 AS
 BEGIN

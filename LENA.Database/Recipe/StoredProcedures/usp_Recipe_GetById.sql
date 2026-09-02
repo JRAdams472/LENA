@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE [Recipe].[usp_Recipe_GetById]
+﻿CREATE PROCEDURE [Recipe].[usp_Recipe_GetById]
     @RecipeID INT
 AS
 BEGIN

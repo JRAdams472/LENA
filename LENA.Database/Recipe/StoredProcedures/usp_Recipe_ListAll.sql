@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE [Recipe].[usp_Recipe_ListAll]
+﻿CREATE PROCEDURE [Recipe].[usp_Recipe_ListAll]
     @PageNumber INT = 1,
     @PageSize INT = 25
 AS

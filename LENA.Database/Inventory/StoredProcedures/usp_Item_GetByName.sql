@@ -1,4 +1,4 @@
-﻿CREATE OR ALTER PROCEDURE [Inventory].[usp_Item_GetByName]
+﻿CREATE PROCEDURE [Inventory].[usp_Item_GetByName]
     @Name NVARCHAR(200)
 AS
 BEGIN

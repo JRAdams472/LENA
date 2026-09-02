@@ -1,4 +1,4 @@
-﻿CREATE OR ALTER PROCEDURE [Inventory].[usp_Item_Update]
+﻿CREATE PROCEDURE [Inventory].[usp_Item_Update]
     @ItemID INT,
     @Name NVARCHAR(200),
     @Brand NVARCHAR(100) = NULL,

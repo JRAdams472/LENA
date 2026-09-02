@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE [Inventory].[usp_Item_Search]
+﻿CREATE PROCEDURE [Inventory].[usp_Item_Search]
     @Search NVARCHAR(200),
     @Brand NVARCHAR(100) = NULL,
     @Limit INT = 50

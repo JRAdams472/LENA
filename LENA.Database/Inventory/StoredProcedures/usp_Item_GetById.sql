@@ -1,4 +1,4 @@
-﻿CREATE OR ALTER PROCEDURE [Inventory].[usp_Item_GetById]
+﻿CREATE PROCEDURE [Inventory].[usp_Item_GetById]
     @Id INT
 AS
 BEGIN
