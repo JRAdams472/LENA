@@ -42,7 +42,7 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Server=db;Database=LENA;User Id=sa;Password=P@ssw0rd!;TrustServerCertificate=True;
       - Cors__AllowedOrigins__0=http://localhost
-      - Authentication__Google__ClientId=__YOUR_GOOGLE_CLIENT_ID__
+      - Authentication__Google__ClientId=${GOOGLE_CLIENT_ID:?GOOGLE_CLIENT_ID must be set in .env or environment}
       - Swagger__Enabled=true
       - Swagger__RoutePrefix=api/swagger
     depends_on:
@@ -56,8 +56,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_BASE_URL: ""
-        NEXT_PUBLIC_GOOGLE_CLIENT_ID: __YOUR_GOOGLE_CLIENT_ID__
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost}
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?GOOGLE_CLIENT_ID must be set in .env or environment}
     container_name: lena-ui
     depends_on:
       - api

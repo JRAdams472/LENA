@@ -48,7 +48,18 @@ For the Flutter `google_sign_in` plugin you also need a Google Services config f
 
 For iOS, create an **iOS** client ID and use `GoogleService-Info.plist` in `mobile/ios/Runner/`.
 
-## 6. Common error: `invalid_client`
+## 6. Docker Compose
+
+For `docker compose up --build`, create a `.env` file in the repo root with the same Web client ID:
+
+```ini
+GOOGLE_CLIENT_ID=<your-web-client-id>
+NEXT_PUBLIC_API_BASE_URL=http://localhost
+```
+
+`docker-compose.yml` uses `GOOGLE_CLIENT_ID` for both the API `Authentication:Google:ClientId` and the `ui` build arg `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. The `.env` file is ignored by Git, so the secret stays local.
+
+## 7. Common error: `invalid_client`
 
 This error from the Google sign-in popup means the client ID passed to Google does not exist, is not a Web client ID, or the calling origin is not in **Authorized JavaScript origins**. Double-check that:
 
