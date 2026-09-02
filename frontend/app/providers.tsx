@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ApiError, GOOGLE_CLIENT_ID } from "@/lib/api";
-import { AuthProvider } from "@/lib/auth";
+import { AuthProvider } from "@/app/auth/AuthProvider";
 
 const theme = createTheme();
 
@@ -28,15 +28,15 @@ export default function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(makeQueryClient);
 
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <AuthProvider>
+    <AuthProvider>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
             {children}
           </ThemeProvider>
         </QueryClientProvider>
-      </AuthProvider>
-    </GoogleOAuthProvider>
+      </GoogleOAuthProvider>
+    </AuthProvider>
   );
 }

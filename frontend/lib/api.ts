@@ -44,14 +44,24 @@ export class ApiError extends Error {
   }
 }
 
-function getIdToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("lena_id_token");
+let authTokenGetter: (() => string | null) | null = null;
+let onUnauthorized: (() => void) | null = null;
+
+export function setAuthTokenGetter(getter: () => string | null) {
+  authTokenGetter = getter;
+}
+
+export function setOnUnauthorized(handler: () => void) {
+  onUnauthorized = handler;
+}
+
+function getAuthToken(): string | null {
+  return authTokenGetter ? authTokenGetter() : null;
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE_URL}${path}`;
-  const idToken = getIdToken();
+  const idToken = getAuthToken();
 
   const res = await fetch(url, {
     ...options,
@@ -64,6 +74,9 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   });
 
   if (!res.ok) {
+    if (res.status === 401) {
+      onUnauthorized?.();
+    }
     const text = await res.text().catch(() => "");
     throw new ApiError(res.status, text || `HTTP ${res.status}`);
   }

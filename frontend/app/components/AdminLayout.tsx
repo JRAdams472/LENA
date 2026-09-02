@@ -27,7 +27,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GoogleLogin } from "@react-oauth/google";
 import Button from "@mui/material/Button";
-import { useAuth } from "@/lib/auth";
+import { useAuth } from "@/app/auth/AuthProvider";
 
 const DRAWER_WIDTH = 260;
 
