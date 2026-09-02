@@ -4,6 +4,8 @@ using LENA.API.Services;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Formatting.Compact;
 
@@ -59,6 +61,32 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<LENA.API.ExceptionHandling.GlobalExceptionHandler>();
+
+// Google-issued JWT bearer token authentication.
+var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
+if (string.IsNullOrWhiteSpace(googleClientId))
+{
+    throw new InvalidOperationException(
+        "A Google client id is required under 'Authentication:Google:ClientId'. " +
+        "Add it to LENA.API/appsettings.json or LENA.API/appsettings.Development.json.");
+}
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://accounts.google.com";
+        options.Audience = googleClientId;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuers = new[] { "https://accounts.google.com", "accounts.google.com" },
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            ValidateLifetime = true,
+            NameClaimType = "email"
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddValidatorsFromAssembly(typeof(LENA.Application.Features.Wine.Bottles.Commands.CreateBottleCommand).Assembly);
 
@@ -121,6 +149,9 @@ if (!app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 
 app.UseCors("AllowExternal");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseSerilogRequestLogging();
 
