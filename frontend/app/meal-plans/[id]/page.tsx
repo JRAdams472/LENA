@@ -22,11 +22,9 @@ import { api, asEntity } from "@/lib/api";
 import CrudDialog, { FieldDef } from "@/app/components/CrudDialog";
 import {
   AuditableEntity,
-  MealPlan,
   MealSlot,
   MealSlotItem,
   Recipe,
-  Item,
   MealPlanNutrition,
 } from "@/lib/types";
 
@@ -527,7 +525,6 @@ export default function MealPlanDetailPage({
 }) {
   const { id } = use(params);
   const planId = Number(id);
-  const queryClient = useQueryClient();
   const router = useRouter();
   const [slotDialog, setSlotDialog] = useState<SlotDialogState | null>(null);
 

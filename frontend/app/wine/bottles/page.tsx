@@ -160,7 +160,6 @@ export default function BottlesPage() {
   const listData = listQuery.data;
   const pagedData = listData && !Array.isArray(listData) ? (listData as PagedResult<Bottle>) : undefined;
   const rows = pagedData?.items ?? (listData as Bottle[] | undefined) ?? [];
-  const totalCount = pagedData?.totalCount;
   const isDefaultList =
     !favorites &&
     !searchTerm.trim() &&

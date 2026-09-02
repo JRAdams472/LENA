@@ -15,7 +15,7 @@ import TablePagination from "@mui/material/TablePagination";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import { api } from "@/lib/api";
-import { GroceryList, GroceryListItem } from "@/lib/types";
+import { GroceryListItem } from "@/lib/types";
 
 interface ManualForm {
   manualItemName: string;

@@ -1,4 +1,4 @@
-import { api, ApiError } from "@/lib/api";
+import { api } from "@/lib/api";
 
 const mockFetch = global.fetch as jest.Mock;
 
