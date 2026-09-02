@@ -57,6 +57,7 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_BASE_URL: ""
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: __YOUR_GOOGLE_CLIENT_ID__
     container_name: lena-ui
     depends_on:
       - api

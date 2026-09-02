@@ -25,6 +25,9 @@ import RestaurantIcon from "@mui/icons-material/Restaurant";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { GoogleLogin } from "@react-oauth/google";
+import Button from "@mui/material/Button";
+import { useAuth } from "@/lib/auth";
 
 const DRAWER_WIDTH = 260;
 
@@ -107,6 +110,7 @@ export default function AdminLayout({
 }) {
   const theme = useTheme();
   const pathname = usePathname() ?? "";
+  const { user, signIn, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
@@ -124,6 +128,34 @@ export default function AdminLayout({
   const toggleGroup = (label: string) => {
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
   };
+
+  if (!user) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          gap: 2,
+        }}
+      >
+        <Typography variant="h4">LENA</Typography>
+        <Typography>Please sign in to continue</Typography>
+        <GoogleLogin
+          onSuccess={(response) => {
+            if (response.credential) {
+              signIn(response.credential);
+            }
+          }}
+          onError={() => {
+            // noop
+          }}
+        />
+      </Box>
+    );
+  }
 
   const drawerContent = (
     <Box sx={{ overflow: "auto" }}>
@@ -238,6 +270,16 @@ export default function AdminLayout({
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             LENA
           </Typography>
+          {user && (
+            <>
+              <Typography variant="body2" sx={{ mr: 2 }}>
+                {user.email}
+              </Typography>
+              <Button color="inherit" onClick={signOut}>
+                Sign out
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
 

@@ -4,7 +4,9 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
-import { ApiError } from "@/lib/api";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { ApiError, GOOGLE_CLIENT_ID } from "@/lib/api";
+import { AuthProvider } from "@/lib/auth";
 
 const theme = createTheme();
 
@@ -26,11 +28,15 @@ export default function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(makeQueryClient);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {children}
-      </ThemeProvider>
-    </QueryClientProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            {children}
+          </ThemeProvider>
+        </QueryClientProvider>
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }

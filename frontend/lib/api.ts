@@ -25,6 +25,15 @@ import {
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5059";
 
+export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
+
+if (!GOOGLE_CLIENT_ID) {
+  throw new Error(
+    "NEXT_PUBLIC_GOOGLE_CLIENT_ID is required. " +
+      "Add it to the build environment or frontend/.env."
+  );
+}
+
 export class ApiError extends Error {
   status: number;
 
@@ -35,13 +44,20 @@ export class ApiError extends Error {
   }
 }
 
+function getIdToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("lena_id_token");
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE_URL}${path}`;
+  const idToken = getIdToken();
 
   const res = await fetch(url, {
     ...options,
     headers: {
       Accept: "application/json",
+      ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
       ...(options?.body ? { "Content-Type": "application/json" } : {}),
       ...options?.headers,
     },
