@@ -25,9 +25,9 @@ import RestaurantIcon from "@mui/icons-material/Restaurant";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GoogleLogin } from "@react-oauth/google";
 import Button from "@mui/material/Button";
 import { useAuth } from "@/app/auth/AuthProvider";
+import LoginScreen from "@/app/components/LoginScreen";
 
 const DRAWER_WIDTH = 260;
 
@@ -130,31 +130,7 @@ export default function AdminLayout({
   };
 
   if (!user) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-          gap: 2,
-        }}
-      >
-        <Typography variant="h4">LENA</Typography>
-        <Typography>Please sign in to continue</Typography>
-        <GoogleLogin
-          onSuccess={(response) => {
-            if (response.credential) {
-              signIn(response.credential);
-            }
-          }}
-          onError={() => {
-            // noop
-          }}
-        />
-      </Box>
-    );
+    return <LoginScreen />;
   }
 
   const drawerContent = (
