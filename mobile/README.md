@@ -22,6 +22,8 @@ A Flutter companion app for LENA. It replaces the legacy native Android app with
 
 3. Configure the Google Sign-In Web/Server client ID. This value must match the API's `Authentication:Google:ClientId` so the returned ID token's `aud` is accepted.
 
+   See [docs/google-oauth-client-id.md](../docs/google-oauth-client-id.md) for how to create the client ID and download `google-services.json` / `GoogleService-Info.plist`.
+
    - For Android: add `GOOGLE_SERVER_CLIENT_ID` as a `--dart-define` when running:
 
      ```bash

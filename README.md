@@ -103,6 +103,16 @@ By default the API listens on `http://localhost:5059` as configured in `LENA.API
 
 The API includes Swagger UI in development at `http://localhost:5059/swagger`. Outside development it is off unless `Swagger:Enabled` is `true`; `Swagger:RoutePrefix` moves it behind a reverse proxy subpath (the Docker stack sets both, serving it at `http://localhost/api/swagger`).
 
+### Configure Google Sign-In
+
+Login requires a Google OAuth Web client ID that is shared by the API, frontend, and mobile app. See [docs/google-oauth-client-id.md](docs/google-oauth-client-id.md) for how to create the client ID and add the authorized origins.
+
+Use the same client ID in these three places:
+
+- `LENA.API/appsettings.Development.json` or user secrets: `Authentication:Google:ClientId`
+- `frontend/.env.local`: `NEXT_PUBLIC_GOOGLE_CLIENT_ID`
+- Mobile: `GOOGLE_SERVER_CLIENT_ID` dart-define
+
 ### 3. Run the Frontend
 
 From the `frontend/` directory:
