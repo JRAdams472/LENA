@@ -60,7 +60,7 @@ namespace LENA.IntegrationTests
 
             return await connection.QuerySingleAsync<int>(
                 @"INSERT INTO [Inventory].[Item]
-                  (Name, Brand, UPC12, UPC14, CategoryID, Unit, CurrentQuantity, MinQuantity, PurchaseDate, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate)
+                  (Name, BrandID, UPC12, UPC14, CategoryID, Unit, CurrentQuantity, MinQuantity, PurchaseDate, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate)
                   OUTPUT INSERTED.ItemID
                   VALUES (@uniqueName, NULL, @upc12, @upc14, @categoryId, @unit, @currentQuantity, @minQuantity, SYSUTCDATETIME(), 'test', SYSUTCDATETIME(), @lastUpdatedBy, @lastUpdatedDate);",
                 new

@@ -252,6 +252,9 @@ export const api = {
     request<Recipe>(`/api/Recipe/recipes/${id}`, { method: "PUT", body: JSON.stringify({ ...recipe, recipeID: id }) }),
   deleteRecipe: (id: number) => request<Recipe | null>(`/api/Recipe/recipes/${id}`, { method: "DELETE" }),
 
+  setRecipeFavorite: (id: number, isFavorite: boolean) =>
+    request<void>(`/api/Recipe/recipes/${id}/favorite?isFavorite=${isFavorite}`, { method: "POST" }),
+
   getRecipeItems: (recipeId: number) => request<RecipeItem[]>(`/api/Recipe/recipes/${recipeId}/items`),
   addRecipeItem: (recipeId: number, item: { itemId: number; portion: number; unit: string | null; isOptional: boolean }) =>
     request<RecipeItem>(`/api/Recipe/recipes/${recipeId}/items`, { method: "POST", body: JSON.stringify(item) }),

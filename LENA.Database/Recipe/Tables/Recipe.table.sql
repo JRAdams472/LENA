@@ -6,7 +6,6 @@ CREATE TABLE [Recipe].[Recipe] (
     [PrepTimeMinutes] INT NULL,
     [CookTimeMinutes] INT NULL,
     [IsActive] BIT DEFAULT 1 NOT NULL,
-    [IsFavorite] BIT DEFAULT 0 NOT NULL,
     [CreatedBy] NVARCHAR(100) NOT NULL,
     [CreateDate] DATETIME2 NOT NULL,
     [LastUpdatedBy] NVARCHAR(100) NULL,

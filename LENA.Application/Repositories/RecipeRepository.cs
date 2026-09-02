@@ -1,3 +1,4 @@
+using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Recipe;
 
@@ -5,8 +6,11 @@ namespace LENA.Application.Repositories
 {
     public class RecipeRepository : BaseRepository<Recipe>, IRecipeRepository
     {
-        public RecipeRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
+        private readonly ICurrentUserService _currentUser;
+
+        public RecipeRepository(IDbConnectionFactory connectionFactory, ICurrentUserService currentUser) : base(connectionFactory)
         {
+            _currentUser = currentUser;
         }
 
         public override async Task<Recipe> CreateAsync(Recipe entity, CancellationToken cancellationToken = default)
@@ -19,24 +23,26 @@ namespace LENA.Application.Repositories
                 entity.PrepTimeMinutes,
                 entity.CookTimeMinutes,
                 entity.IsActive,
-                entity.IsFavorite,
                 entity.CreatedBy,
                 entity.CreateDate
             }, cancellationToken);
+
+            await SetFavoriteAsync(entity.RecipeID, entity.IsFavorite, cancellationToken);
+
             return entity;
         }
 
         public override async Task<Recipe?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-            => await QueryFirstAsync<Recipe>("[Recipe].[usp_Recipe_GetById]", new { RecipeID = id }, cancellationToken);
+            => await QueryFirstAsync<Recipe>("[Recipe].[usp_Recipe_GetById]", new { RecipeID = id, UserID = _currentUser.UserID }, cancellationToken);
 
         public async Task<Recipe?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-            => await QueryFirstAsync<Recipe>("[Recipe].[usp_Recipe_GetByName]", new { RecipeName = name }, cancellationToken);
+            => await QueryFirstAsync<Recipe>("[Recipe].[usp_Recipe_GetByName]", new { RecipeName = name, UserID = _currentUser.UserID }, cancellationToken);
 
         public override async Task<IReadOnlyList<Recipe>> ListAllAsync(CancellationToken cancellationToken = default)
-            => await QueryListAsync<Recipe>("[Recipe].[usp_Recipe_ListAll]", cancellationToken: cancellationToken);
+            => await QueryListAsync<Recipe>("[Recipe].[usp_Recipe_ListAll]", new { UserID = _currentUser.UserID }, cancellationToken);
 
         public async Task<LENA.Application.Models.PagedResult<Recipe>> ListPagedAsync(int pageNumber, int pageSize, string? search = null, bool isFavorite = false, CancellationToken ct = default)
-            => await QueryPagedListAsync<Recipe>("[Recipe].[usp_Recipe_ListAllPaged]", pageNumber, pageSize, new { Search = search, IsFavorite = isFavorite }, ct);
+            => await QueryPagedListAsync<Recipe>("[Recipe].[usp_Recipe_ListAllPaged]", pageNumber, pageSize, new { UserID = _currentUser.UserID, Search = search, IsFavorite = isFavorite }, ct);
 
         public override async Task<Recipe> UpdateAsync(Recipe entity, CancellationToken cancellationToken = default)
         {
@@ -49,10 +55,12 @@ namespace LENA.Application.Repositories
                 entity.PrepTimeMinutes,
                 entity.CookTimeMinutes,
                 entity.IsActive,
-                entity.IsFavorite,
                 entity.LastUpdatedBy,
                 entity.LastUpdatedDate
             }, nameof(Recipe), entity.RecipeID, cancellationToken);
+
+            await SetFavoriteAsync(entity.RecipeID, entity.IsFavorite, cancellationToken);
+
             return entity;
         }
 
@@ -60,6 +68,21 @@ namespace LENA.Application.Repositories
         {
             await ExecuteRequiringMatchAsync("[Recipe].[usp_Recipe_Delete]", new { entity.RecipeID }, nameof(Recipe), entity.RecipeID, cancellationToken);
             return entity;
+        }
+
+        public async Task SetFavoriteAsync(int recipeId, bool isFavorite, CancellationToken cancellationToken = default)
+        {
+            var now = DateTime.UtcNow;
+            await ExecuteCommandAsync("[Recipe].[usp_UserRecipePreference_SetFavorite]", new
+            {
+                UserID = _currentUser.UserID,
+                RecipeID = recipeId,
+                IsFavorite = isFavorite,
+                CreatedBy = _currentUser.UserName,
+                CreateDate = now,
+                LastUpdatedBy = _currentUser.UserName,
+                LastUpdatedDate = now
+            }, cancellationToken);
         }
 
         public async Task<IReadOnlyList<RecipeItem>> GetItemsByRecipeIdAsync(int recipeId, CancellationToken cancellationToken = default)

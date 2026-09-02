@@ -1,8 +1,14 @@
 ﻿CREATE PROCEDURE [Recipe].[usp_Recipe_GetById]
-    @RecipeID INT
+    @RecipeID INT,
+    @UserID INT
 AS
 BEGIN
-    SELECT RecipeID, RecipeName, Description, Servings, PrepTimeMinutes, CookTimeMinutes, IsActive, IsFavorite, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate
-    FROM [Recipe].[Recipe]
-    WHERE RecipeID = @RecipeID;
+    SET NOCOUNT ON;
+
+    SELECT r.RecipeID, r.RecipeName, r.Description, r.Servings, r.PrepTimeMinutes, r.CookTimeMinutes, r.IsActive,
+           COALESCE(urp.IsFavorite, 0) AS IsFavorite,
+           r.CreatedBy, r.CreateDate, r.LastUpdatedBy, r.LastUpdatedDate
+    FROM [Recipe].[Recipe] r
+    LEFT JOIN [Recipe].[UserRecipePreference] urp ON r.RecipeID = urp.RecipeID AND urp.UserID = @UserID
+    WHERE r.RecipeID = @RecipeID;
 END
