@@ -19,22 +19,29 @@ BEGIN
 
     CREATE INDEX [IX_UserRecipePreference_UserID] ON [Recipe].[UserRecipePreference] ([UserID], [IsFavorite]);
 END
+GO
 
-DECLARE @DefaultUserID INT;
-SELECT @DefaultUserID = [UserID] FROM [Identity].[User] WHERE [Provider] = 'google' AND [ExternalSubject] = 'legacy-default';
+IF OBJECT_ID('tempdb..#DefaultUserID') IS NOT NULL DROP TABLE #DefaultUserID;
+GO
+
+SELECT [UserID] INTO #DefaultUserID FROM [Identity].[User] WHERE [Provider] = 'google' AND [ExternalSubject] = 'legacy-default';
+GO
 
 -- Backfill existing recipe favorites for the legacy default user
-IF @DefaultUserID IS NOT NULL AND COL_LENGTH(N'[Recipe].[Recipe]', N'IsFavorite') IS NOT NULL
+IF (SELECT COUNT(*) FROM #DefaultUserID) > 0 AND COL_LENGTH(N'[Recipe].[Recipe]', N'IsFavorite') IS NOT NULL
 BEGIN
+    EXEC('
     INSERT INTO [Recipe].[UserRecipePreference] ([UserID], [RecipeID], [IsFavorite], [CreatedBy], [CreateDate], [LastUpdatedBy], [LastUpdatedDate])
-    SELECT @DefaultUserID, [RecipeID], 1, 'migration', SYSUTCDATETIME(), 'migration', SYSUTCDATETIME()
+    SELECT (SELECT [UserID] FROM #DefaultUserID), [RecipeID], 1, ''migration'', SYSUTCDATETIME(), ''migration'', SYSUTCDATETIME()
     FROM [Recipe].[Recipe]
     WHERE [IsFavorite] = 1
       AND NOT EXISTS (
           SELECT 1 FROM [Recipe].[UserRecipePreference]
-          WHERE [UserID] = @DefaultUserID AND [RecipeID] = [Recipe].[RecipeID]
+          WHERE [UserID] = (SELECT [UserID] FROM #DefaultUserID) AND [RecipeID] = [Recipe].[RecipeID]
       );
+    ');
 END
+GO
 
 -- Drop the now-extracted IsFavorite column
 IF COL_LENGTH(N'[Recipe].[Recipe]', N'IsFavorite') IS NOT NULL
@@ -51,5 +58,5 @@ BEGIN
     IF @ConstraintName IS NOT NULL
         EXEC('ALTER TABLE [Recipe].[Recipe] DROP CONSTRAINT [' + @ConstraintName + ']');
 
-    ALTER TABLE [Recipe].[Recipe] DROP COLUMN [IsFavorite];
+    EXEC('ALTER TABLE [Recipe].[Recipe] DROP COLUMN [IsFavorite]');
 END

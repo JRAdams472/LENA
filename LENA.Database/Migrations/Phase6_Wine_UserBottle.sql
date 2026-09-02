@@ -29,22 +29,50 @@ BEGIN
 
     CREATE INDEX [IX_UserBottle_BottleID] ON [Wine].[UserBottle] ([BottleID]);
 END
+GO
 
-DECLARE @DefaultUserID INT;
-SELECT @DefaultUserID = [UserID] FROM [Identity].[User] WHERE [Provider] = 'google' AND [ExternalSubject] = 'legacy-default';
+IF OBJECT_ID('tempdb..#DefaultUserID') IS NOT NULL DROP TABLE #DefaultUserID;
+GO
+
+SELECT [UserID] INTO #DefaultUserID FROM [Identity].[User] WHERE [Provider] = 'google' AND [ExternalSubject] = 'legacy-default';
+GO
 
 -- Backfill existing per-user bottle data for the legacy default user
-IF @DefaultUserID IS NOT NULL
+IF (SELECT COUNT(*) FROM #DefaultUserID) > 0
    AND COL_LENGTH(N'[Wine].[Bottle]', N'Quantity') IS NOT NULL
 BEGIN
+    EXEC('
     INSERT INTO [Wine].[UserBottle] ([UserID], [BottleID], [BottleNumber], [BottleSize], [Quantity], [PurchaseDate], [PurchasePrice], [StorageTemp], [Location], [Notes], [IsFavorite], [CreatedBy], [CreateDate], [LastUpdatedBy], [LastUpdatedDate])
-    SELECT @DefaultUserID, [BottleID], [BottleNumber], [BottleSize], [Quantity], [PurchaseDate], [PurchasePrice], [StorageTemp], [Location], [Notes], [IsFavorite], [CreatedBy], [CreateDate], [LastUpdatedBy], [LastUpdatedDate]
+    SELECT (SELECT [UserID] FROM #DefaultUserID), [BottleID], [BottleNumber], [BottleSize], [Quantity], [PurchaseDate], [PurchasePrice], [StorageTemp], [Location], [Notes], [IsFavorite], [CreatedBy], [CreateDate], [LastUpdatedBy], [LastUpdatedDate]
     FROM [Wine].[Bottle]
     WHERE NOT EXISTS (
         SELECT 1 FROM [Wine].[UserBottle]
-        WHERE [UserID] = @DefaultUserID AND [BottleID] = [Wine].[Bottle].[BottleID]
+        WHERE [UserID] = (SELECT [UserID] FROM #DefaultUserID) AND [BottleID] = [Wine].[Bottle].[BottleID]
     );
+    ');
 END
+GO
+
+-- Drop legacy indexes that referenced the per-user columns about to be removed
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Bottle_CountryID_BottleNumber' AND OBJECT_NAME(object_id) = 'Bottle' AND OBJECT_SCHEMA_NAME(object_id) = 'Wine')
+    DROP INDEX [IX_Bottle_CountryID_BottleNumber] ON [Wine].[Bottle];
+GO
+
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Bottle_RegionID_BottleNumber' AND OBJECT_NAME(object_id) = 'Bottle' AND OBJECT_SCHEMA_NAME(object_id) = 'Wine')
+    DROP INDEX [IX_Bottle_RegionID_BottleNumber] ON [Wine].[Bottle];
+GO
+
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Bottle_TypeID_BottleNumber' AND OBJECT_NAME(object_id) = 'Bottle' AND OBJECT_SCHEMA_NAME(object_id) = 'Wine')
+    DROP INDEX [IX_Bottle_TypeID_BottleNumber] ON [Wine].[Bottle];
+GO
+
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Bottle_VintageYear_BottleNumber' AND OBJECT_NAME(object_id) = 'Bottle' AND OBJECT_SCHEMA_NAME(object_id) = 'Wine')
+    DROP INDEX [IX_Bottle_VintageYear_BottleNumber] ON [Wine].[Bottle];
+GO
+
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Bottle_IsFavorite_BottleNumber' AND OBJECT_NAME(object_id) = 'Bottle' AND OBJECT_SCHEMA_NAME(object_id) = 'Wine')
+    DROP INDEX [IX_Bottle_IsFavorite_BottleNumber] ON [Wine].[Bottle];
+GO
 
 -- Drop the per-user columns from the catalog Bottle table
 IF COL_LENGTH(N'[Wine].[Bottle]', N'IsFavorite') IS NOT NULL
@@ -61,8 +89,9 @@ BEGIN
     IF @IsFavoriteConstraint IS NOT NULL
         EXEC('ALTER TABLE [Wine].[Bottle] DROP CONSTRAINT [' + @IsFavoriteConstraint + ']');
 
-    ALTER TABLE [Wine].[Bottle] DROP COLUMN [IsFavorite];
+    EXEC('ALTER TABLE [Wine].[Bottle] DROP COLUMN [IsFavorite]');
 END
+GO
 
 IF COL_LENGTH(N'[Wine].[Bottle]', N'BottleSize') IS NOT NULL
 BEGIN
@@ -78,8 +107,9 @@ BEGIN
     IF @BottleSizeConstraint IS NOT NULL
         EXEC('ALTER TABLE [Wine].[Bottle] DROP CONSTRAINT [' + @BottleSizeConstraint + ']');
 
-    ALTER TABLE [Wine].[Bottle] DROP COLUMN [BottleSize];
+    EXEC('ALTER TABLE [Wine].[Bottle] DROP COLUMN [BottleSize]');
 END
+GO
 
 IF COL_LENGTH(N'[Wine].[Bottle]', N'Quantity') IS NOT NULL
 BEGIN
@@ -95,39 +125,30 @@ BEGIN
     IF @QuantityConstraint IS NOT NULL
         EXEC('ALTER TABLE [Wine].[Bottle] DROP CONSTRAINT [' + @QuantityConstraint + ']');
 
-    ALTER TABLE [Wine].[Bottle] DROP COLUMN [Quantity];
+    EXEC('ALTER TABLE [Wine].[Bottle] DROP COLUMN [Quantity]');
 END
+GO
 
 IF COL_LENGTH(N'[Wine].[Bottle]', N'BottleNumber') IS NOT NULL
-    ALTER TABLE [Wine].[Bottle] DROP COLUMN [BottleNumber];
+    EXEC('ALTER TABLE [Wine].[Bottle] DROP COLUMN [BottleNumber]');
+GO
 
 IF COL_LENGTH(N'[Wine].[Bottle]', N'PurchaseDate') IS NOT NULL
-    ALTER TABLE [Wine].[Bottle] DROP COLUMN [PurchaseDate];
+    EXEC('ALTER TABLE [Wine].[Bottle] DROP COLUMN [PurchaseDate]');
+GO
 
 IF COL_LENGTH(N'[Wine].[Bottle]', N'PurchasePrice') IS NOT NULL
-    ALTER TABLE [Wine].[Bottle] DROP COLUMN [PurchasePrice];
+    EXEC('ALTER TABLE [Wine].[Bottle] DROP COLUMN [PurchasePrice]');
+GO
 
 IF COL_LENGTH(N'[Wine].[Bottle]', N'StorageTemp') IS NOT NULL
-    ALTER TABLE [Wine].[Bottle] DROP COLUMN [StorageTemp];
+    EXEC('ALTER TABLE [Wine].[Bottle] DROP COLUMN [StorageTemp]');
+GO
 
 IF COL_LENGTH(N'[Wine].[Bottle]', N'Location') IS NOT NULL
-    ALTER TABLE [Wine].[Bottle] DROP COLUMN [Location];
+    EXEC('ALTER TABLE [Wine].[Bottle] DROP COLUMN [Location]');
+GO
 
 IF COL_LENGTH(N'[Wine].[Bottle]', N'Notes') IS NOT NULL
-    ALTER TABLE [Wine].[Bottle] DROP COLUMN [Notes];
-
--- Drop legacy indexes that referenced the removed per-user columns
-IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Bottle_CountryID_BottleNumber' AND OBJECT_NAME(object_id) = 'Bottle' AND OBJECT_SCHEMA_NAME(object_id) = 'Wine')
-    DROP INDEX [IX_Bottle_CountryID_BottleNumber] ON [Wine].[Bottle];
-
-IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Bottle_RegionID_BottleNumber' AND OBJECT_NAME(object_id) = 'Bottle' AND OBJECT_SCHEMA_NAME(object_id) = 'Wine')
-    DROP INDEX [IX_Bottle_RegionID_BottleNumber] ON [Wine].[Bottle];
-
-IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Bottle_TypeID_BottleNumber' AND OBJECT_NAME(object_id) = 'Bottle' AND OBJECT_SCHEMA_NAME(object_id) = 'Wine')
-    DROP INDEX [IX_Bottle_TypeID_BottleNumber] ON [Wine].[Bottle];
-
-IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Bottle_VintageYear_BottleNumber' AND OBJECT_NAME(object_id) = 'Bottle' AND OBJECT_SCHEMA_NAME(object_id) = 'Wine')
-    DROP INDEX [IX_Bottle_VintageYear_BottleNumber] ON [Wine].[Bottle];
-
-IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Bottle_IsFavorite_BottleNumber' AND OBJECT_NAME(object_id) = 'Bottle' AND OBJECT_SCHEMA_NAME(object_id) = 'Wine')
-    DROP INDEX [IX_Bottle_IsFavorite_BottleNumber] ON [Wine].[Bottle];
+    EXEC('ALTER TABLE [Wine].[Bottle] DROP COLUMN [Notes]');
+GO

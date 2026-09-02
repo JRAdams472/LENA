@@ -26,22 +26,29 @@ BEGIN
 
     CREATE INDEX [IX_UserItem_ItemID] ON [Inventory].[UserItem] ([ItemID]);
 END
+GO
 
-DECLARE @DefaultUserID INT;
-SELECT @DefaultUserID = [UserID] FROM [Identity].[User] WHERE [Provider] = 'google' AND [ExternalSubject] = 'legacy-default';
+IF OBJECT_ID('tempdb..#DefaultUserID') IS NOT NULL DROP TABLE #DefaultUserID;
+GO
+
+SELECT [UserID] INTO #DefaultUserID FROM [Identity].[User] WHERE [Provider] = 'google' AND [ExternalSubject] = 'legacy-default';
+GO
 
 -- Backfill existing per-user item data for the legacy default user
-IF @DefaultUserID IS NOT NULL
+IF (SELECT COUNT(*) FROM #DefaultUserID) > 0
    AND COL_LENGTH(N'[Inventory].[Item]', N'CurrentQuantity') IS NOT NULL
 BEGIN
+    EXEC('
     INSERT INTO [Inventory].[UserItem] ([UserID], [ItemID], [CurrentQuantity], [MinQuantity], [PurchaseDate], [ExpiryDate], [Notes], [IsFavorite], [CreatedBy], [CreateDate], [LastUpdatedBy], [LastUpdatedDate])
-    SELECT @DefaultUserID, [ItemID], [CurrentQuantity], [MinQuantity], [PurchaseDate], [ExpiryDate], [Notes], [IsFavorite], [CreatedBy], [CreateDate], [LastUpdatedBy], [LastUpdatedDate]
+    SELECT (SELECT [UserID] FROM #DefaultUserID), [ItemID], [CurrentQuantity], [MinQuantity], [PurchaseDate], [ExpiryDate], [Notes], [IsFavorite], [CreatedBy], [CreateDate], [LastUpdatedBy], [LastUpdatedDate]
     FROM [Inventory].[Item]
     WHERE NOT EXISTS (
         SELECT 1 FROM [Inventory].[UserItem]
-        WHERE [UserID] = @DefaultUserID AND [ItemID] = [Inventory].[Item].[ItemID]
+        WHERE [UserID] = (SELECT [UserID] FROM #DefaultUserID) AND [ItemID] = [Inventory].[Item].[ItemID]
     );
+    ');
 END
+GO
 
 -- Drop the per-user columns from the catalog Item table
 IF COL_LENGTH(N'[Inventory].[Item]', N'IsFavorite') IS NOT NULL
@@ -58,23 +65,29 @@ BEGIN
     IF @IsFavoriteConstraint IS NOT NULL
         EXEC('ALTER TABLE [Inventory].[Item] DROP CONSTRAINT [' + @IsFavoriteConstraint + ']');
 
-    ALTER TABLE [Inventory].[Item] DROP COLUMN [IsFavorite];
+    EXEC('ALTER TABLE [Inventory].[Item] DROP COLUMN [IsFavorite]');
 END
+GO
 
 IF COL_LENGTH(N'[Inventory].[Item]', N'CurrentQuantity') IS NOT NULL
-    ALTER TABLE [Inventory].[Item] DROP COLUMN [CurrentQuantity];
+    EXEC('ALTER TABLE [Inventory].[Item] DROP COLUMN [CurrentQuantity]');
+GO
 
 IF COL_LENGTH(N'[Inventory].[Item]', N'MinQuantity') IS NOT NULL
-    ALTER TABLE [Inventory].[Item] DROP COLUMN [MinQuantity];
+    EXEC('ALTER TABLE [Inventory].[Item] DROP COLUMN [MinQuantity]');
+GO
 
 IF COL_LENGTH(N'[Inventory].[Item]', N'PurchaseDate') IS NOT NULL
-    ALTER TABLE [Inventory].[Item] DROP COLUMN [PurchaseDate];
+    EXEC('ALTER TABLE [Inventory].[Item] DROP COLUMN [PurchaseDate]');
+GO
 
 IF COL_LENGTH(N'[Inventory].[Item]', N'ExpiryDate') IS NOT NULL
-    ALTER TABLE [Inventory].[Item] DROP COLUMN [ExpiryDate];
+    EXEC('ALTER TABLE [Inventory].[Item] DROP COLUMN [ExpiryDate]');
+GO
 
 IF COL_LENGTH(N'[Inventory].[Item]', N'Notes') IS NOT NULL
-    ALTER TABLE [Inventory].[Item] DROP COLUMN [Notes];
+    EXEC('ALTER TABLE [Inventory].[Item] DROP COLUMN [Notes]');
+GO
 
 -- Drop the legacy InStock table (superseded by UserItem)
 IF OBJECT_ID(N'[Inventory].[InStock]', N'U') IS NOT NULL

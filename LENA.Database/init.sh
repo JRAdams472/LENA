@@ -138,6 +138,15 @@ for file in "$ROOT"/*/Seed/*.sql "$ROOT"/SeedData/*.sql; do
     run_file "$file"
 done
 
+echo "Migrations (data)..."
+for file in "$ROOT"/Migrations/*.sql; do
+    [ -e "$file" ] || continue
+    case $(basename "$file") in
+        *Verification*) continue ;;
+    esac
+    run_file "$file"
+done
+
 echo "Stored procedures..."
 for domain in "${DOMAINS[@]}"; do
     for file in "$ROOT/$domain"/StoredProcedures/*.sql; do
@@ -151,8 +160,8 @@ for domain in "${DOMAINS[@]}"; do
     done
 done
 
-echo "Migrations..."
-for file in "$ROOT"/Migrations/*.sql; do
+echo "Migrations (verification)..."
+for file in "$ROOT"/Migrations/*Verification*.sql; do
     [ -e "$file" ] || continue
     run_file "$file"
 done
