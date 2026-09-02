@@ -438,20 +438,25 @@ function SlotDialog({
           </Button>
         </Box>
 
-        {adhoc.map((a, i) => (
-          <Box
-            key={i}
-            sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}
-          >
-            <Typography variant="body2">
-              {itemsQuery.data?.find((it) => it.itemID === a.itemID)?.name ?? a.itemID} -
-              {a.quantity} {a.unit}
-            </Typography>
-            <IconButton size="small" onClick={() => handleRemoveAdhoc(i)}>
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Box>
-        ))}
+        {adhoc.map((a, i) => {
+          const item = itemsQuery.data?.find((it) => it.itemID === a.itemID);
+          const itemName = item
+            ? (item.brand ? `${item.brand} — ${item.name}` : item.name)
+            : `Item ${a.itemID}`;
+          return (
+            <Box
+              key={i}
+              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}
+            >
+              <Typography variant="body2">
+                {itemName} - {a.quantity} {a.unit}
+              </Typography>
+              <IconButton size="small" onClick={() => handleRemoveAdhoc(i)}>
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          );
+        })}
 
         <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
           <Button
@@ -548,10 +553,21 @@ export default function MealPlanDetailPage({
     },
   });
 
+  const itemsQuery = useQuery({
+    queryKey: ["items"],
+    queryFn: () => api.getItems(),
+  });
+
   const findSlot = (day: number, mealType: number) =>
     planQuery.data?.mealSlots?.find(
       (s) => s.dayOfWeek === day && s.mealType === mealType
     ) ?? null;
+
+  const itemLabel = (itemId: number) => {
+    const item = itemsQuery.data?.find((i) => i.itemID === itemId);
+    if (!item) return `Item ${itemId}`;
+    return item.brand ? `${item.brand} — ${item.name}` : item.name;
+  };
 
   const recipeName = (rid: number | null) =>
     recipesQuery.data?.find((r) => r.recipeID === rid)?.recipeName ??
@@ -649,7 +665,7 @@ export default function MealPlanDetailPage({
                         {slot.mealSlotItems.map((it) => (
                           <Chip
                             key={it.mealSlotItemID}
-                            label={`${it.itemID}${it.quantity ? ` - ${it.quantity}` : ""}`}
+                            label={`${itemLabel(it.itemID)}${it.quantity ? ` - ${it.quantity} ${it.unitOfMeasure ?? ""}`.trim() : ""}`}
                             size="small"
                             sx={{ mr: 0.5, mb: 0.5 }}
                           />
