@@ -1,6 +1,22 @@
 ﻿CREATE PROCEDURE [Wine].[usp_Bottle_GetByName]
+    @UserID INT,
     @Name NVARCHAR(200)
 AS
 BEGIN
-    SELECT * FROM [Wine].[Bottle] WHERE Vineyard = @Name;
+    SET NOCOUNT ON;
+
+    SELECT b.[BottleID], b.[TypeID], b.[CountryID], b.[RegionID], b.[VintageYear], b.[Vineyard], b.[ABV], b.[Acidity], b.[TanninLevel], b.[Body], b.[Sweetness], b.[OakIntegration],
+           COALESCE(ub.[BottleNumber], b.[BottleID]) AS [BottleNumber],
+           COALESCE(ub.[BottleSize], '750ml') AS [BottleSize],
+           COALESCE(ub.[Quantity], 0) AS [Quantity],
+           ub.[PurchaseDate],
+           ub.[PurchasePrice],
+           ub.[StorageTemp],
+           ub.[Location],
+           ub.[Notes],
+           COALESCE(ub.[IsFavorite], 0) AS [IsFavorite],
+           b.[CreatedBy], b.[CreateDate], b.[LastUpdatedBy], b.[LastUpdatedDate]
+    FROM [Wine].[Bottle] b
+    INNER JOIN [Wine].[UserBottle] ub ON ub.BottleID = b.BottleID AND ub.UserID = @UserID
+    WHERE b.Vineyard = @Name;
 END

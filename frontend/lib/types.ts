@@ -83,7 +83,7 @@ export interface Bottle extends AuditableEntity {
   oakIntegration: boolean | null;
   bottleSize: string;
   quantity: number;
-  purchaseDate: string;
+  purchaseDate: string | null;
   purchasePrice: number | null;
   storageTemp: number | null;
   location: string | null;

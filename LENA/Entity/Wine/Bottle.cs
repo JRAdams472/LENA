@@ -22,7 +22,7 @@ namespace LENA.Domain.Entity.Wine
         public bool? OakIntegration { get; set; }   // Boolean flag for oak aging
         public string BottleSize { get; set; } = "750ml";
         public int Quantity { get; set; } = 1;
-        public DateTime PurchaseDate { get; set; }
+        public DateTime? PurchaseDate { get; set; }
         public decimal? PurchasePrice { get; set; }
         public decimal? StorageTemp { get; set; }
         public string? Location { get; set; }
