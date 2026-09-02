@@ -10,8 +10,9 @@ A small Android app that lets you read an existing grocery list, check off items
 
 ## API endpoints used
 
+- `GET /api/auth/me` - current user profile
 - `GET /api/GroceryList/{id}` - loads the list
-- `POST /api/Item/{id}/quantity?quantity=...&purchaseDate=...` - increments stock for each checked item
+- `POST /api/Item/items/{id}/quantity?quantity=...&purchaseDate=...` - increments stock for each checked item
 
 ## Setup
 

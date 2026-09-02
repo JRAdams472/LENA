@@ -13,6 +13,14 @@ export interface AuditableEntity {
   lastUpdatedDate: string | null;
 }
 
+export interface User {
+  userID: number;
+  email: string;
+  displayName: string | null;
+  externalSubject: string | null;
+  provider: string | null;
+}
+
 export interface Category extends AuditableEntity {
   categoryID: number;
   categoryName: string;

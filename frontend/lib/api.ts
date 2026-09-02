@@ -1,5 +1,6 @@
 import {
   AuditableEntity,
+  User,
   Item,
   Bottle,
   Country,
@@ -91,6 +92,9 @@ export function asEntity<T extends object>(row: unknown): T {
 
 export const api = {
   get: <T>(path: string) => request<T>(path),
+
+  // Auth
+  getMe: () => request<User>("/api/auth/me"),
 
   post: <T>(path: string, body: unknown) =>
     request<T>(path, {
@@ -200,6 +204,8 @@ export const api = {
   getFavoriteBottles: () => request<Bottle[]>("/api/Wine/bottles/favorites"),
   searchBottles: (searchTerm: string) => request<Bottle[]>(`/api/Wine/bottles/search?searchTerm=${encodeURIComponent(searchTerm)}`),
   getBottleCount: () => request<number>("/api/Wine/bottles/count"),
+  setBottleFavorite: (id: number, isFavorite: boolean) =>
+    request<void>(`/api/Wine/bottles/${id}/favorite?isFavorite=${isFavorite}`, { method: "POST" }),
 
   // Wine reference data
   getCountries: () => request<Country[]>(`/api/Wine/countries`),
