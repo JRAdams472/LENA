@@ -16,5 +16,6 @@
   <ItemGroup>
     <Build Remove="SeedData\*.sql" />
     <Build Remove="Wine\Seed\*.sql" />
+    <Build Remove="tmp\*.sql" />
   </ItemGroup>
 </Project>
