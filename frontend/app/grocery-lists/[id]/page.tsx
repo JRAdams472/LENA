@@ -11,10 +11,11 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import TablePagination from "@mui/material/TablePagination";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import { api } from "@/lib/api";
-import { GroceryList, GroceryListItem, Item } from "@/lib/types";
+import { GroceryList, GroceryListItem } from "@/lib/types";
 
 interface ManualForm {
   manualItemName: string;
@@ -31,11 +32,9 @@ const SOURCE_LABELS: Record<string, string> = {
 
 export function ItemRow({
   item,
-  items,
   listId,
 }: {
   item: GroceryListItem;
-  items: Item[] | undefined;
   listId: number;
 }) {
   const queryClient = useQueryClient();
@@ -56,7 +55,6 @@ export function ItemRow({
   const itemName =
     item.itemName ??
     item.manualItemName ??
-    items?.find((i) => i.itemID === item.itemID)?.name ??
     `Item ${item.itemID}`;
 
   return (
@@ -119,16 +117,13 @@ export default function GroceryListDetailPage({
     queryFn: () => api.getGroceryList(listId),
   });
 
-  const itemsQuery = useQuery({
-    queryKey: ["items"],
-    queryFn: () => api.getItems(),
-  });
-
   const [manual, setManual] = useState<ManualForm>({
     manualItemName: "",
     quantityNeeded: "",
     unitOfMeasure: "",
   });
+
+  const [pages, setPages] = useState<Record<string, { page: number; pageSize: number }>>({});
 
   const addManualMutation = useMutation({
     mutationFn: () =>
@@ -230,19 +225,36 @@ export default function GroceryListDetailPage({
       {SOURCE_ORDER.map((source) => {
         const items = grouped[source] ?? [];
         if (items.length === 0) return null;
+        const { page = 0, pageSize = 25 } = pages[source] ?? {};
+        const start = page * pageSize;
+        const paged = items.slice(start, start + pageSize);
         return (
           <Paper key={source} sx={{ p: 3, mb: 3 }}>
             <Typography variant="h5" gutterBottom>
               {SOURCE_LABELS[source] ?? source}
             </Typography>
-            {items.map((item) => (
+            {paged.map((item) => (
               <ItemRow
                 key={item.groceryListItemID}
                 item={item}
-                items={itemsQuery.data}
                 listId={listId}
               />
             ))}
+            <TablePagination
+              component="div"
+              count={items.length}
+              page={page}
+              onPageChange={(_, newPage) =>
+                setPages((prev) => ({ ...prev, [source]: { page: newPage, pageSize } }))
+              }
+              rowsPerPage={pageSize}
+              onRowsPerPageChange={(e) =>
+                setPages((prev) => ({
+                  ...prev,
+                  [source]: { page: 0, pageSize: Number(e.target.value) },
+                }))
+              }
+            />
           </Paper>
         );
       })}
