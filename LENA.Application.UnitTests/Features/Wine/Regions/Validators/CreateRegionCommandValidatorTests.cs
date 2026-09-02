@@ -1,4 +1,3 @@
-using FluentAssertions;
 using FluentValidation;
 using LENA.Application.Features.Wine.Regions.Commands;
 using LENA.Application.Features.Wine.Regions.Validators;
@@ -16,7 +15,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Regions.Validators
         {
             var command = new CreateRegionCommand(new Region { RegionName = "Test" });
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeTrue();
+Assert.True(            result.IsValid);
         }
 
         [Fact]
@@ -24,7 +23,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Regions.Validators
         {
             var command = new CreateRegionCommand(null!);
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeFalse();
+Assert.False(            result.IsValid);
         }
     }
 }

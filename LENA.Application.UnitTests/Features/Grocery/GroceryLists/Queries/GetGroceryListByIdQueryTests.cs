@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Grocery.GroceryLists.Queries;
 using LENA.Domain.Entity.Grocery;
@@ -31,8 +31,8 @@ namespace LENA.Application.UnitTests.Features.Grocery.GroceryLists.Queries
             var handler = new GetGroceryListByIdQueryHandler(_repository.Object);
             var result = await handler.Handle(new GetGroceryListByIdQuery(1), CancellationToken.None);
 
-            result.Should().NotBeNull();
-            result!.GroceryListID.Should().Be(1);
+Assert.NotNull(            result);
+Assert.Equal(1,             result!.GroceryListID);
         }
 
         [Fact]
@@ -56,16 +56,17 @@ namespace LENA.Application.UnitTests.Features.Grocery.GroceryLists.Queries
             var handler = new GetGroceryListByIdQueryHandler(_repository.Object);
             var result = await handler.Handle(new GetGroceryListByIdQuery(1), CancellationToken.None);
 
-            result!.GroceryListItems.Should().SatisfyRespectively(
+            Assert.Collection(
+                result!.GroceryListItems!,
                 first =>
                 {
-                    first.ItemName.Should().Be("Flour");
-                    first.ManualItemName.Should().BeNull();
+                    Assert.Equal("Flour", first.ItemName);
+                    Assert.Null(first.ManualItemName);
                 },
                 second =>
                 {
-                    second.ItemName.Should().BeNull();
-                    second.ManualItemName.Should().Be("Napkins");
+                    Assert.Null(second.ItemName);
+                    Assert.Equal("Napkins", second.ManualItemName);
                 });
         }
 
@@ -79,7 +80,7 @@ namespace LENA.Application.UnitTests.Features.Grocery.GroceryLists.Queries
             var handler = new GetGroceryListByIdQueryHandler(_repository.Object);
             var result = await handler.Handle(new GetGroceryListByIdQuery(1), CancellationToken.None);
 
-            result.Should().BeNull();
+Assert.Null(            result);
         }
     }
 }

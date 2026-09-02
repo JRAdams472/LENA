@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using FluentAssertions;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Database
@@ -22,7 +22,7 @@ namespace LENA.Application.UnitTests.Database
                 directory = directory.Parent;
             }
 
-            directory.Should().NotBeNull("the LENA.Database project must be locatable from the test output directory");
+Assert.NotNull(            directory);
             return directory!;
         }
 
@@ -30,7 +30,7 @@ namespace LENA.Application.UnitTests.Database
         {
             var sql = File.ReadAllText(path);
 
-            sql.Should().Contain("@@ROWCOUNT", because: $"{path} must capture the affected row count");
+            Assert.Contains("@@ROWCOUNT", sql);
 
             // Normalize whitespace and find the last statement before the trailing END.
             var normalized = Regex.Replace(sql, @"\s+", " ").Trim();
@@ -39,9 +39,7 @@ namespace LENA.Application.UnitTests.Database
                 @"(?:.*;\s*)?(.*?);\s*END\s*$",
                 RegexOptions.Singleline | RegexOptions.IgnoreCase).Groups[1].Value.Trim();
 
-            lastStatement.Should().MatchRegex(
-                @"^SELECT\s+(?:@@ROWCOUNT|@\w+)\s*$",
-                because: $"{path} must end with a SELECT returning the affected row count so ExecuteRequiringMatchAsync can read it");
+            Assert.Matches(@"^SELECT\s+(?:@@ROWCOUNT|@\w+)\s*$", lastStatement);
         }
 
         [Fact]
@@ -53,7 +51,7 @@ namespace LENA.Application.UnitTests.Database
                 "usp_*_Delete.sql",
                 SearchOption.AllDirectories);
 
-            deleteProcedures.Should().NotBeEmpty();
+Assert.NotEmpty(            deleteProcedures);
 
             foreach (var path in deleteProcedures)
             {
@@ -70,7 +68,7 @@ namespace LENA.Application.UnitTests.Database
                 "usp_*_Update.sql",
                 SearchOption.AllDirectories);
 
-            updateProcedures.Should().NotBeEmpty();
+Assert.NotEmpty(            updateProcedures);
 
             foreach (var path in updateProcedures)
             {

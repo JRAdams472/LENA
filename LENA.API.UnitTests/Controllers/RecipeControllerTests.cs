@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.API.Controllers;
 using LENA.Application.Features.Recipe.RecipeItems.Commands;
 using LENA.Application.Features.Recipe.Recipes.Commands;
@@ -31,7 +31,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = await _sut.GetRecipes();
 
-            result.Result.Should().BeOfType<OkObjectResult>();
+Assert.IsType<OkObjectResult>(            result.Result);
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = await _sut.GetRecipeById(1);
 
-            result.Result.Should().BeOfType<NotFoundResult>();
+Assert.IsType<NotFoundResult>(            result.Result);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = await _sut.CreateRecipe(recipe);
 
-            result.Result.Should().BeOfType<CreatedAtActionResult>();
+Assert.IsType<CreatedAtActionResult>(            result.Result);
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace LENA.API.UnitTests.Controllers
         {
             var result = await _sut.UpdateRecipe(2, new RecipeEntity { RecipeID = 1, RecipeName = "Soup" });
 
-            result.Result.Should().BeOfType<BadRequestResult>();
+Assert.IsType<BadRequestResult>(            result.Result);
             _mediator.Verify(m => m.Send(It.IsAny<UpdateRecipeCommand>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
@@ -76,8 +76,8 @@ namespace LENA.API.UnitTests.Controllers
 
             await _sut.AddRecipeStep(1, new RecipeStepRequest(1, "Boil"));
 
-            sent!.CreatedBy.Should().BeEmpty();
-            sent.CreateDate.Should().Be(default);
+Assert.Empty(            sent!.CreatedBy);
+Assert.Equal(default,             sent.CreateDate);
         }
 
         [Fact]

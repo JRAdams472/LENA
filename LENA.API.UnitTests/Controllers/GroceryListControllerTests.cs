@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.API.Controllers;
 using LENA.Application.Features.Grocery.GroceryLists.Commands;
 using LENA.Application.Features.Grocery.GroceryLists.Queries;
@@ -28,7 +28,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = await _sut.GetGroceryLists();
 
-            result.Result.Should().BeOfType<OkObjectResult>();
+Assert.IsType<OkObjectResult>(            result.Result);
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = await _sut.GetGroceryListById(1);
 
-            result.Result.Should().BeOfType<NotFoundResult>();
+Assert.IsType<NotFoundResult>(            result.Result);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = await _sut.GenerateGroceryList(5);
 
-            result.Result.Should().BeOfType<CreatedAtActionResult>();
+Assert.IsType<CreatedAtActionResult>(            result.Result);
         }
 
         [Fact]
@@ -64,9 +64,9 @@ namespace LENA.API.UnitTests.Controllers
 
             await _sut.AddGroceryListItem(1, new GroceryListItem { ManualItemName = "Eggs", QuantityNeeded = 12 });
 
-            sent.Should().NotBeNull();
-            sent!.GroceryListID.Should().Be(1);
-            sent.Source.Should().Be("Manual");
+Assert.NotNull(            sent);
+Assert.Equal(1,             sent!.GroceryListID);
+Assert.Equal("Manual",             sent.Source);
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace LENA.API.UnitTests.Controllers
             var result = await _sut.ToggleGroceryItemChecked(1);
 
             _mediator.Verify(m => m.Send(It.Is<ToggleGroceryListItemCheckedCommand>(c => c.GroceryListItemId == 1), It.IsAny<CancellationToken>()), Times.Once);
-            result.Result.Should().BeOfType<OkObjectResult>();
+Assert.IsType<OkObjectResult>(            result.Result);
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace LENA.API.UnitTests.Controllers
             var result = await _sut.DeleteGroceryItem(1);
 
             _mediator.Verify(m => m.Send(It.Is<DeleteGroceryListItemCommand>(c => c.GroceryListItemId == 1), It.IsAny<CancellationToken>()), Times.Once);
-            result.Should().BeOfType<NoContentResult>();
+Assert.IsType<NoContentResult>(            result);
         }
     }
 }

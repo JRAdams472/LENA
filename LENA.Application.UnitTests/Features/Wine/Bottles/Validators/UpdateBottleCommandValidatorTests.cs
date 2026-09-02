@@ -1,4 +1,3 @@
-using FluentAssertions;
 using FluentValidation;
 using LENA.Application.Features.Wine.Bottles.Commands;
 using LENA.Application.Features.Wine.Bottles.Validators;
@@ -16,7 +15,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Bottles.Validators
         {
             var command = new UpdateBottleCommand(new Bottle());
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeTrue();
+Assert.True(            result.IsValid);
         }
 
         [Fact]
@@ -24,7 +23,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Bottles.Validators
         {
             var command = new UpdateBottleCommand(null!);
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeFalse();
+Assert.False(            result.IsValid);
         }
     }
 }

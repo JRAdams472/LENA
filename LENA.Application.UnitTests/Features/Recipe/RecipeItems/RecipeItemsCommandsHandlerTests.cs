@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Recipe.RecipeItems.Commands;
 using LENA.Domain.Entity.Recipe;
@@ -23,7 +23,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.RecipeItems
             var result = await new AddOrUpdateRecipeItemCommandHandler(_repo.Object)
                 .Handle(new AddOrUpdateRecipeItemCommand(input), CancellationToken.None);
 
-            result.Should().BeSameAs(persisted);
+Assert.Same(persisted,             result);
         }
 
         [Fact]

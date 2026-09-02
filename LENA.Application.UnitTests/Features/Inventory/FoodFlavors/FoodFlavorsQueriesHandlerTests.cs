@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Inventory.FoodFlavors.Queries;
 using LENA.Domain.Entity.Inventory;
@@ -27,7 +27,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.FoodFlavors
 
             // Assert
             mockRepo.Verify(r => r.GetByFoodAndFlavorIdAsync(It.Is<int>(x => x == request.FoodId), It.Is<int>(x => x == request.FlavorId)), Times.Once);
-            result.Should().NotBeNull();
+Assert.NotNull(            result);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.FoodFlavors
 
             // Assert
             mockRepo.Verify(r => r.GetByIdAsync(It.Is<int>(x => x == request.FoodFlavorId)), Times.Once);
-            result.Should().NotBeNull();
+Assert.NotNull(            result);
         }
     }
 }

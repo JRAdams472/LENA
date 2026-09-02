@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.API.Controllers;
 using LENA.Application.Features.MealPlan.MealPlans.Commands;
 using LENA.Application.Features.MealPlan.MealPlans.Queries;
@@ -30,7 +30,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = await _sut.GetMealPlans();
 
-            result.Result.Should().BeOfType<OkObjectResult>();
+Assert.IsType<OkObjectResult>(            result.Result);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = await _sut.GetMealPlanById(1);
 
-            result.Result.Should().BeOfType<NotFoundResult>();
+Assert.IsType<NotFoundResult>(            result.Result);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = await _sut.CreateMealPlan(plan);
 
-            result.Result.Should().BeOfType<CreatedAtActionResult>();
+Assert.IsType<CreatedAtActionResult>(            result.Result);
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace LENA.API.UnitTests.Controllers
         {
             var result = await _sut.UpdateMealPlan(2, new MealPlanEntity { MealPlanID = 1, PlanName = "Weekly" });
 
-            result.Result.Should().BeOfType<BadRequestResult>();
+Assert.IsType<BadRequestResult>(            result.Result);
             _mediator.Verify(m => m.Send(It.IsAny<UpdateMealPlanCommand>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
@@ -73,7 +73,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = await _sut.GetMealPlanNutrition(1);
 
-            result.Result.Should().BeOfType<OkObjectResult>();
+Assert.IsType<OkObjectResult>(            result.Result);
         }
     }
 }

@@ -1,4 +1,3 @@
-using FluentAssertions;
 using LENA.Application.Models;
 using Xunit;
 
@@ -24,7 +23,7 @@ public class PaginationRequestTests
     {
         var (clampedPageNumber, clampedPageSize) = PaginationRequest.Clamp(pageNumber, pageSize);
 
-        clampedPageNumber.Should().Be(expectedPageNumber);
-        clampedPageSize.Should().Be(expectedPageSize);
+Assert.Equal(expectedPageNumber,         clampedPageNumber);
+Assert.Equal(expectedPageSize,         clampedPageSize);
     }
 }

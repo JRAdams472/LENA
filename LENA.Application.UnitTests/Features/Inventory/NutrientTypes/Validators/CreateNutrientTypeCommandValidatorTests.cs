@@ -1,4 +1,3 @@
-using FluentAssertions;
 using FluentValidation;
 using LENA.Application.Features.Inventory.NutrientTypes.Commands;
 using LENA.Application.Features.Inventory.NutrientTypes.Validators;
@@ -16,7 +15,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.NutrientTypes.Validators
         {
             var command = new CreateNutrientTypeCommand(new NutrientType { NutrientName = "Test", UnitOfMeasure = "mg" });
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeTrue();
+Assert.True(            result.IsValid);
         }
 
         [Fact]
@@ -24,7 +23,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.NutrientTypes.Validators
         {
             var command = new CreateNutrientTypeCommand(null!);
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeFalse();
+Assert.False(            result.IsValid);
         }
     }
 }

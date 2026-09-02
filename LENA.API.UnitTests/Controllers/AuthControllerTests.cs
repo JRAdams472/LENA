@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using FluentAssertions;
+
 using LENA.API.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -31,7 +31,7 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = _sut.Me();
 
-            result.Should().BeOfType<OkObjectResult>();
+Assert.IsType<OkObjectResult>(            result);
         }
 
         [Fact]
@@ -44,16 +44,15 @@ namespace LENA.API.UnitTests.Controllers
 
             var result = _sut.Me();
 
-            result.Should().BeOfType<UnauthorizedResult>();
+Assert.IsType<UnauthorizedResult>(            result);
         }
 
         [Fact]
         public void Me_Should_Be_Decorated_With_AuthorizeAttribute()
         {
             var method = typeof(AuthController).GetMethod("Me");
-            method.Should().NotBeNull();
-            method!.GetCustomAttributes(typeof(AuthorizeAttribute), false)
-                .Should().ContainSingle();
+            Assert.NotNull(method);
+            Assert.Single(method!.GetCustomAttributes(typeof(AuthorizeAttribute), false));
         }
     }
 }

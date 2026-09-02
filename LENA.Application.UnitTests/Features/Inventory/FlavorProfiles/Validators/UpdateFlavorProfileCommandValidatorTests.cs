@@ -1,4 +1,3 @@
-using FluentAssertions;
 using FluentValidation;
 using LENA.Application.Features.Inventory.FlavorProfiles.Commands;
 using LENA.Application.Features.Inventory.FlavorProfiles.Validators;
@@ -16,7 +15,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.FlavorProfiles.Validator
         {
             var command = new UpdateFlavorProfileCommand(new FlavorProfile { FlavorName = "Test" });
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeTrue();
+Assert.True(            result.IsValid);
         }
 
         [Fact]
@@ -24,7 +23,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.FlavorProfiles.Validator
         {
             var command = new UpdateFlavorProfileCommand(null!);
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeFalse();
+Assert.False(            result.IsValid);
         }
     }
 }

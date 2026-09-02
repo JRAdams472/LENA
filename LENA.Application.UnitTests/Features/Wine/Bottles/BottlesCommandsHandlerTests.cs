@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Wine.Bottles.Commands;
 using LENA.Domain.Entity.Wine;
@@ -27,7 +27,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Bottles
 
             // Assert
             mockRepo.Verify(r => r.CreateAsync(It.Is<Bottle>(x => x == request.Bottle)), Times.Once);
-            result.Should().NotBeNull();
+Assert.NotNull(            result);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Bottles
 
             // Assert
             mockRepo.Verify(r => r.DeleteAsync(It.IsAny<Bottle>()), Times.Once);
-            result.Should().NotBeNull();
+Assert.NotNull(            result);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Bottles
 
             // Assert
             mockRepo.Verify(r => r.UpdateAsync(It.Is<Bottle>(x => x == request.Bottle)), Times.Once);
-            result.Should().NotBeNull();
+Assert.NotNull(            result);
         }
     }
 }

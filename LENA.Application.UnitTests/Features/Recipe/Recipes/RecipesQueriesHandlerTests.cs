@@ -2,7 +2,7 @@ using LENA.Application.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Recipe.Recipes.Queries;
 using LENA.Domain.Entity.Recipe;
@@ -25,23 +25,25 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
             var result = await new GetRecipesQueryHandler(_repo.Object)
                 .Handle(new GetRecipesQuery(), CancellationToken.None);
 
-            result.Should().BeEquivalentTo(recipes);
+            Assert.Single(result);
+            Assert.Equal(recipes[0].RecipeName, result[0].RecipeName);
         }
 
         [Fact]
         public async Task GetRecipesPagedQuery_Should_Return_PagedResult_And_Pass_Through_Page_And_Size()
         {
             IReadOnlyList<RecipeEntity> recipes = new List<RecipeEntity> { new() { RecipeName = "Soup" } };
-            _repo.Setup(r => r.ListPagedAsync(2, 10, It.IsAny<CancellationToken>()))
+            _repo.Setup(r => r.ListPagedAsync(2, 10, It.IsAny<string?>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PagedResult<RecipeEntity> { Items = recipes, PageNumber = 2, PageSize = 10, TotalCount = 1 });
 
             var result = await new GetRecipesPagedQueryHandler(_repo.Object)
-                .Handle(new GetRecipesPagedQuery(2, 10), CancellationToken.None);
+                .Handle(new GetRecipesPagedQuery(2, 10, null, false), CancellationToken.None);
 
-            result.Items.Should().BeEquivalentTo(recipes);
-            result.PageNumber.Should().Be(2);
-            result.PageSize.Should().Be(10);
-            _repo.Verify(r => r.ListPagedAsync(2, 10, It.IsAny<CancellationToken>()), Times.Once);
+            Assert.Single(result.Items);
+            Assert.Equal(recipes[0].RecipeName, result.Items[0].RecipeName);
+            Assert.Equal(2, result.PageNumber);
+            Assert.Equal(10, result.PageSize);
+            _repo.Verify(r => r.ListPagedAsync(2, 10, It.IsAny<string?>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -57,8 +59,8 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
             var result = await new GetRecipeByIdQueryHandler(_repo.Object)
                 .Handle(new GetRecipeByIdQuery(1), CancellationToken.None);
 
-            result!.RecipeItems.Should().HaveCount(1);
-            result.RecipeSteps.Should().HaveCount(1);
+            Assert.Single(result!.RecipeItems!);
+            Assert.Single(result.RecipeSteps!);
         }
 
         [Fact]
@@ -69,7 +71,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
             var result = await new GetRecipeByIdQueryHandler(_repo.Object)
                 .Handle(new GetRecipeByIdQuery(9), CancellationToken.None);
 
-            result.Should().BeNull();
+Assert.Null(            result);
             _repo.Verify(r => r.GetItemsByRecipeIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }

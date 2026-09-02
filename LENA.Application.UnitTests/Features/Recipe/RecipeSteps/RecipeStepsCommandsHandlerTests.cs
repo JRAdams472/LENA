@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Recipe.RecipeSteps.Commands;
 using LENA.Domain.Entity.Recipe;
@@ -23,7 +23,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.RecipeSteps
             var result = await new AddRecipeStepCommandHandler(_repo.Object)
                 .Handle(new AddRecipeStepCommand(step), CancellationToken.None);
 
-            result.RecipeStepID.Should().Be(42);
+Assert.Equal(42,             result.RecipeStepID);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.RecipeSteps
             var result = await new UpdateRecipeStepCommandHandler(_repo.Object)
                 .Handle(new UpdateRecipeStepCommand(step), CancellationToken.None);
 
-            result.Should().BeSameAs(step);
+Assert.Same(step,             result);
             _repo.Verify(r => r.UpdateStepAsync(step, It.IsAny<CancellationToken>()), Times.Once);
         }
 

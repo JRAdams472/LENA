@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Grocery.GroceryLists.Commands;
 using LENA.Domain.Entity.Grocery;
@@ -33,7 +33,7 @@ namespace LENA.Application.UnitTests.Features.Grocery.GroceryLists.Commands
                     It.Is<GroceryList>(g => g.MealPlanID == 5),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
-            result.GroceryListID.Should().Be(1);
+Assert.Equal(1,             result.GroceryListID);
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace LENA.Application.UnitTests.Features.Grocery.GroceryLists.Commands
                     It.Is<GroceryList>(g => g.MealPlanID == null),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
-            result.GroceryListID.Should().Be(2);
+Assert.Equal(2,             result.GroceryListID);
         }
     }
 }

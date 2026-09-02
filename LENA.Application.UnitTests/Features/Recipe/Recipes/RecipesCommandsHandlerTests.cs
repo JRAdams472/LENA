@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Recipe.Recipes.Commands;
 using Moq;
@@ -22,7 +22,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
             var result = await new CreateRecipeCommandHandler(_repo.Object)
                 .Handle(new CreateRecipeCommand(recipe), CancellationToken.None);
 
-            result.Should().BeSameAs(recipe);
+Assert.Same(recipe,             result);
             _repo.Verify(r => r.CreateAsync(recipe, It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -35,7 +35,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
             var result = await new UpdateRecipeCommandHandler(_repo.Object)
                 .Handle(new UpdateRecipeCommand(recipe), CancellationToken.None);
 
-            result.Should().BeSameAs(recipe);
+Assert.Same(recipe,             result);
             _repo.Verify(r => r.UpdateAsync(recipe, It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -47,7 +47,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
             var result = await new DeleteRecipeCommandHandler(_repo.Object)
                 .Handle(new DeleteRecipeCommand(7), CancellationToken.None);
 
-            result.Should().BeNull();
+Assert.Null(            result);
             _repo.Verify(r => r.DeleteAsync(It.IsAny<RecipeEntity>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
@@ -61,7 +61,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
             var result = await new DeleteRecipeCommandHandler(_repo.Object)
                 .Handle(new DeleteRecipeCommand(7), CancellationToken.None);
 
-            result.Should().BeSameAs(recipe);
+Assert.Same(recipe,             result);
         }
     }
 }

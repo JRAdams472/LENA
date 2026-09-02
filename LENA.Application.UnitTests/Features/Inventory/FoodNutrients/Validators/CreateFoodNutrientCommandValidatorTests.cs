@@ -1,4 +1,3 @@
-using FluentAssertions;
 using FluentValidation;
 using LENA.Application.Features.Inventory.FoodNutrients.Commands;
 using LENA.Application.Features.Inventory.FoodNutrients.Validators;
@@ -16,7 +15,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.FoodNutrients.Validators
         {
             var command = new CreateFoodNutrientCommand(new FoodNutrient());
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeTrue();
+Assert.True(            result.IsValid);
         }
 
         [Fact]
@@ -24,7 +23,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.FoodNutrients.Validators
         {
             var command = new CreateFoodNutrientCommand(null!);
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeFalse();
+Assert.False(            result.IsValid);
         }
     }
 }

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.MealPlan.Queries;
 using Moq;
@@ -47,11 +47,11 @@ namespace LENA.Application.UnitTests.Features.MealPlan.Queries
             var handler = new GetMealPlanNutritionQueryHandler(_repository.Object);
             var result = await handler.Handle(new GetMealPlanNutritionQuery(1), CancellationToken.None);
 
-            result.Should().NotBeNull();
-            result.MealPlanId.Should().Be(1);
-            result.DailyTotals.Should().ContainSingle();
-            result.Meals.Should().ContainSingle();
-            result.Meals[0].Nutrients.Should().ContainSingle(n => n.NutrientName == "Protein");
+Assert.NotNull(            result);
+Assert.Equal(1,             result.MealPlanId);
+Assert.Single(            result.DailyTotals);
+Assert.Single(            result.Meals);
+Assert.Single(            result.Meals[0].Nutrients, n => n.NutrientName == "Protein");
         }
     }
 }

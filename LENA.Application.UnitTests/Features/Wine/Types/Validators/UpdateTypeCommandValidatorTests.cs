@@ -1,4 +1,3 @@
-using FluentAssertions;
 using FluentValidation;
 using LENA.Application.Features.Wine.Types.Commands;
 using LENA.Application.Features.Wine.Types.Validators;
@@ -17,7 +16,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Types.Validators
         {
             var command = new UpdateTypeCommand(new TypeEntity { TypeName = "Test" });
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeTrue();
+Assert.True(            result.IsValid);
         }
 
         [Fact]
@@ -25,7 +24,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Types.Validators
         {
             var command = new UpdateTypeCommand(null!);
             var result = _validator.Validate(command);
-            result.IsValid.Should().BeFalse();
+Assert.False(            result.IsValid);
         }
     }
 }
