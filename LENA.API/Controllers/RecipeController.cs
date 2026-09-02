@@ -73,6 +73,13 @@ namespace LENA.API.Controllers
             return Ok(deleted);
         }
 
+        [HttpPost("recipes/{id}/favorite")]
+        public async Task<IActionResult> SetRecipeFavorite(int id, [FromQuery] bool isFavorite)
+        {
+            await _mediator.Send(new SetRecipeFavoriteCommand(id, isFavorite));
+            return NoContent();
+        }
+
         [HttpGet("recipes/{id}/items")]
         public async Task<ActionResult<IReadOnlyList<RecipeItem>>> GetRecipeItems(int id)
         {

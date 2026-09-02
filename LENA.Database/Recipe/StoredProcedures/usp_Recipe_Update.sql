@@ -6,11 +6,12 @@
     @PrepTimeMinutes INT = NULL,
     @CookTimeMinutes INT = NULL,
     @IsActive BIT = 1,
-    @IsFavorite BIT = 0,
     @LastUpdatedBy NVARCHAR(100) = NULL,
     @LastUpdatedDate DATETIME2 = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     UPDATE [Recipe].[Recipe]
     SET RecipeName = @RecipeName,
         Description = @Description,
@@ -18,7 +19,6 @@ BEGIN
         PrepTimeMinutes = @PrepTimeMinutes,
         CookTimeMinutes = @CookTimeMinutes,
         IsActive = @IsActive,
-        IsFavorite = @IsFavorite,
         LastUpdatedBy = @LastUpdatedBy,
         LastUpdatedDate = @LastUpdatedDate
     WHERE RecipeID = @RecipeID;
