@@ -29,10 +29,10 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("recipes/paged")]
-        public async Task<ActionResult<LENA.Application.Models.PagedResult<Recipe>>> GetRecipesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<Recipe>>> GetRecipesPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25, [FromQuery] string? search = null, [FromQuery] bool isFavorite = false)
         {
             (pageNumber, pageSize) = LENA.Application.Models.PaginationRequest.Clamp(pageNumber, pageSize);
-            var recipes = await _mediator.Send(new GetRecipesPagedQuery(pageNumber, pageSize));
+            var recipes = await _mediator.Send(new GetRecipesPagedQuery(pageNumber, pageSize, search, isFavorite));
             return Ok(recipes);
         }
 

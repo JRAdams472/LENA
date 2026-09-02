@@ -13,6 +13,6 @@ namespace LENA.Application.Contracts.Persistence
         Task<RecipeStep> UpdateStepAsync(RecipeStep recipeStep, CancellationToken cancellationToken = default);
         Task DeleteStepAsync(int recipeStepId, int recipeId, CancellationToken cancellationToken = default);
 
-        Task<PagedResult<Recipe>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default);
+        Task<PagedResult<Recipe>> ListPagedAsync(int pageNumber, int pageSize, string? search = null, bool isFavorite = false, CancellationToken ct = default);
     }
 }

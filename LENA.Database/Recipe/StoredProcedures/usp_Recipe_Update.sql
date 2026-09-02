@@ -1,4 +1,4 @@
-CREATE PROCEDURE [Recipe].[usp_Recipe_Update]
+CREATE OR ALTER PROCEDURE [Recipe].[usp_Recipe_Update]
     @RecipeID INT,
     @RecipeName NVARCHAR(200),
     @Description NVARCHAR(500) = NULL,
@@ -6,6 +6,7 @@ CREATE PROCEDURE [Recipe].[usp_Recipe_Update]
     @PrepTimeMinutes INT = NULL,
     @CookTimeMinutes INT = NULL,
     @IsActive BIT = 1,
+    @IsFavorite BIT = 0,
     @LastUpdatedBy NVARCHAR(100) = NULL,
     @LastUpdatedDate DATETIME2 = NULL
 AS
@@ -17,6 +18,7 @@ BEGIN
         PrepTimeMinutes = @PrepTimeMinutes,
         CookTimeMinutes = @CookTimeMinutes,
         IsActive = @IsActive,
+        IsFavorite = @IsFavorite,
         LastUpdatedBy = @LastUpdatedBy,
         LastUpdatedDate = @LastUpdatedDate
     WHERE RecipeID = @RecipeID;

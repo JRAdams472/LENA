@@ -223,8 +223,8 @@ export const api = {
 
   // Recipes
   getRecipes: () => request<Recipe[]>(`/api/Recipe/recipes`),
-  getRecipesPaged: (pageNumber: number, pageSize: number) =>
-    request<PagedResult<Recipe>>(`/api/Recipe/recipes/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`),
+  getRecipesPaged: (pageNumber: number, pageSize: number, search?: string, isFavorite?: boolean) =>
+    request<PagedResult<Recipe>>(`/api/Recipe/recipes/paged?pageNumber=${pageNumber}&pageSize=${pageSize}&search=${encodeURIComponent(search ?? '')}&isFavorite=${isFavorite ? 'true' : 'false'}`),
   getRecipe: (id: number) => request<Recipe>(`/api/Recipe/recipes/${id}`),
   createRecipe: (recipe: Omit<Recipe, keyof AuditableEntity>) =>
     request<Recipe>("/api/Recipe/recipes", { method: "POST", body: JSON.stringify(recipe) }),

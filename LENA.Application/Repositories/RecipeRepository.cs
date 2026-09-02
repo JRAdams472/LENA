@@ -19,6 +19,7 @@ namespace LENA.Application.Repositories
                 entity.PrepTimeMinutes,
                 entity.CookTimeMinutes,
                 entity.IsActive,
+                entity.IsFavorite,
                 entity.CreatedBy,
                 entity.CreateDate
             }, cancellationToken);
@@ -34,8 +35,8 @@ namespace LENA.Application.Repositories
         public override async Task<IReadOnlyList<Recipe>> ListAllAsync(CancellationToken cancellationToken = default)
             => await QueryListAsync<Recipe>("[Recipe].[usp_Recipe_ListAll]", cancellationToken: cancellationToken);
 
-        public async Task<LENA.Application.Models.PagedResult<Recipe>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default)
-            => await QueryPagedListAsync<Recipe>("[Recipe].[usp_Recipe_ListAllPaged]", pageNumber, pageSize, ct: ct);
+        public async Task<LENA.Application.Models.PagedResult<Recipe>> ListPagedAsync(int pageNumber, int pageSize, string? search = null, bool isFavorite = false, CancellationToken ct = default)
+            => await QueryPagedListAsync<Recipe>("[Recipe].[usp_Recipe_ListAllPaged]", pageNumber, pageSize, new { Search = search, IsFavorite = isFavorite }, ct);
 
         public override async Task<Recipe> UpdateAsync(Recipe entity, CancellationToken cancellationToken = default)
         {
@@ -48,6 +49,7 @@ namespace LENA.Application.Repositories
                 entity.PrepTimeMinutes,
                 entity.CookTimeMinutes,
                 entity.IsActive,
+                entity.IsFavorite,
                 entity.LastUpdatedBy,
                 entity.LastUpdatedDate
             }, nameof(Recipe), entity.RecipeID, cancellationToken);

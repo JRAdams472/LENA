@@ -172,6 +172,7 @@ export interface Recipe extends AuditableEntity {
   prepTimeMinutes: number | null;
   cookTimeMinutes: number | null;
   isActive: boolean;
+  isFavorite: boolean;
   recipeItems?: RecipeItem[];
   recipeSteps?: RecipeStep[];
 }

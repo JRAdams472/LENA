@@ -1,35 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Link from "next/link";
 import { api, asEntity } from "@/lib/api";
 import DataTable from "@/app/components/DataTable";
 import CrudDialog, { FieldDef } from "@/app/components/CrudDialog";
 import { Recipe } from "@/lib/types";
 
-const recipeFields: FieldDef<Recipe>[] = [
-  { key: "recipeName", label: "Name" },
-  { key: "description", label: "Description" },
-  { key: "servings", label: "Servings", type: "number" },
-  { key: "prepTimeMinutes", label: "Prep Time (min)", type: "number" },
-  { key: "cookTimeMinutes", label: "Cook Time (min)", type: "number" },
-  { key: "isActive", label: "Active", type: "boolean" },
-];
-
 function toRow(recipe: Recipe) {
   return {
     recipeID: recipe.recipeID,
     recipeName: recipe.recipeName,
     description: recipe.description,
-    servings: recipe.servings,
     prepTimeMinutes: recipe.prepTimeMinutes,
     cookTimeMinutes: recipe.cookTimeMinutes,
     isActive: recipe.isActive,
   };
 }
+
+type RecipeRow = ReturnType<typeof toRow>;
+
+const recipeTableFields: FieldDef<RecipeRow>[] = [
+  { key: "recipeName", label: "Name" },
+  { key: "description", label: "Description" },
+  { key: "prepTimeMinutes", label: "Prep Time", type: "number" },
+  { key: "cookTimeMinutes", label: "Cook Time", type: "number" },
+  { key: "isActive", label: "Active", type: "boolean" },
+];
+
+const recipeFields: FieldDef<Recipe>[] = [
+  ...(recipeTableFields as FieldDef<Recipe>[]),
+  { key: "servings", label: "Servings", type: "number" },
+  { key: "isFavorite", label: "Favorite", type: "boolean" },
+];
 
 export default function RecipesPage() {
   const queryClient = useQueryClient();
@@ -38,10 +47,22 @@ export default function RecipesPage() {
   const [isCreate, setIsCreate] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
+    setPageNumber(1);
+  }, [debouncedSearch, isFavorite]);
 
   const listQuery = useQuery({
-    queryKey: ["recipes", pageNumber, pageSize],
-    queryFn: () => api.getRecipesPaged(pageNumber, pageSize),
+    queryKey: ["recipes", pageNumber, pageSize, debouncedSearch, isFavorite],
+    queryFn: () => api.getRecipesPaged(pageNumber, pageSize, debouncedSearch, isFavorite),
     placeholderData: (prev) => prev,
   });
 
@@ -69,9 +90,11 @@ export default function RecipesPage() {
     setDialogOpen(true);
   };
 
-  const handleEdit = (row: Record<string, unknown>) => {
+  const handleEdit = (row: RecipeRow) => {
+    const full = listQuery.data?.items.find((r) => r.recipeID === row.recipeID);
+    if (!full) return;
     setIsCreate(false);
-    setDialogData({ ...row });
+    setDialogData({ ...full });
     setDialogOpen(true);
   };
 
@@ -102,6 +125,24 @@ export default function RecipesPage() {
 
   return (
     <Box>
+      <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
+        <TextField
+          size="small"
+          label="Search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{ minWidth: 260 }}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isFavorite}
+              onChange={(e) => setIsFavorite(e.target.checked)}
+            />
+          }
+          label="Favorites"
+        />
+      </Box>
       <DataTable
         title="Recipes"
         rows={(listQuery.data?.items ?? []).map(toRow)}
@@ -111,6 +152,7 @@ export default function RecipesPage() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         extraActions={extraActions}
+        fields={recipeTableFields}
         pagination={
           listQuery.data
             ? {
