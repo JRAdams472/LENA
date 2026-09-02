@@ -72,7 +72,7 @@ BEGIN
     SELECT @GroceryListID, i.ItemID, NULL, ISNULL(NULLIF(i.MinQuantity, 0), 1), i.Unit, 'Depleted', 0, @CreatedBy, @CreateDate
     FROM [Inventory].[Item] i
     WHERE i.CurrentQuantity = 0
-      AND (@LastGeneratedDate IS NULL OR i.LastUpdatedDate > @LastGeneratedDate)
+      AND i.LastUpdatedDate > DATEADD(day, -10, @CreateDate)
       AND NOT EXISTS (
           SELECT 1
           FROM [MealPlan].[GroceryListItem] gli
