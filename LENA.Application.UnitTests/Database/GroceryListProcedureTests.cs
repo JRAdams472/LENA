@@ -59,7 +59,7 @@ Assert.Contains("[LastUpdatedBy] = @LastUpdatedBy",                 update);
         [Fact]
         public void Generate_Should_Surface_Items_Depleted_Since_The_Previous_List()
         {
-Assert.Contains("DECLARE @LastGeneratedDate DATETIME2 = (SELECT MAX(GeneratedDate) FROM [MealPlan].[GroceryList])",             GenerateFromMealPlan);
+Assert.Contains("DECLARE @LastGeneratedDate DATETIME2 = (SELECT MAX(GeneratedDate) FROM [MealPlan].[GroceryList] WHERE UserID = @UserID)",             GenerateFromMealPlan);
 Assert.Contains("'Depleted'",             GenerateFromMealPlan);
             Assert.Contains("WHERE i.CurrentQuantity = 0 AND i.LastUpdatedDate > i.CreateDate AND i.LastUpdatedDate > DATEADD(day, -10, @CreateDate)", GenerateFromMealPlan);
         }

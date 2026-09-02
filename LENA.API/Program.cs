@@ -1,5 +1,6 @@
 using FluentValidation;
 using System.Text.Json.Serialization;
+using LENA.API.Middleware;
 using LENA.API.Services;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
@@ -117,6 +118,7 @@ builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<ITypeRepository, TypeRepository>();
 builder.Services.AddScoped<IVintageRepository, VintageRepository>();
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IFoodFlavorRepository, FoodFlavorRepository>();
 builder.Services.AddScoped<IFoodNutrientRepository, FoodNutrientRepository>();
@@ -151,6 +153,7 @@ app.UseExceptionHandler();
 app.UseCors("AllowExternal");
 
 app.UseAuthentication();
+app.UseMiddleware<UserResolutionMiddleware>();
 app.UseAuthorization();
 
 app.UseSerilogRequestLogging();

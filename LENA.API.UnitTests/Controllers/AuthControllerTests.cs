@@ -1,50 +1,73 @@
 using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 using LENA.API.Controllers;
+using LENA.Application.Contracts.Auditing;
+using LENA.Application.Features.Identity.Users.Queries;
+using LENA.Domain.Entity.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using Xunit;
 
 namespace LENA.API.UnitTests.Controllers
 {
     public class AuthControllerTests
     {
-        private readonly AuthController _sut = new();
-
-        [Fact]
-        public void Me_Should_Return_Email_And_Claims_When_Authenticated()
+        private static AuthController CreateSut(User? currentUser = null)
         {
-            var email = "test@example.com";
-            var identity = new ClaimsIdentity(
-                new[] { new Claim("email", email) },
-                "Bearer",
-                "email",
-                "role");
+            var mediator = new Mock<MediatR.IMediator>();
+            mediator
+                .Setup(m => m.Send(It.IsAny<GetCurrentUserQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(currentUser);
 
-            var httpContext = new DefaultHttpContext
-            {
-                User = new ClaimsPrincipal(identity)
-            };
+            var currentUserService = new Mock<ICurrentUserService>();
+            currentUserService.SetupGet(u => u.UserName).Returns(currentUser?.Email ?? string.Empty);
 
-            _sut.ControllerContext = new ControllerContext { HttpContext = httpContext };
-
-            var result = _sut.Me();
-
-Assert.IsType<OkObjectResult>(            result);
+            return new AuthController(mediator.Object, currentUserService.Object);
         }
 
         [Fact]
-        public void Me_Should_Return_Unauthorized_When_No_Email_Claim()
+        public async Task Me_Should_Return_User_When_Authenticated()
         {
-            _sut.ControllerContext = new ControllerContext
+            var email = "test@example.com";
+            var user = new User
             {
-                HttpContext = new DefaultHttpContext()
+                UserID = 1,
+                ExternalSubject = "sub123",
+                Provider = "google",
+                Email = email,
+                DisplayName = "Test User",
             };
 
-            var result = _sut.Me();
+            var sut = CreateSut(user);
+            sut.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("email", email) }, "Bearer")),
+                },
+            };
 
-Assert.IsType<UnauthorizedResult>(            result);
+            var result = await sut.Me(CancellationToken.None);
+
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Me_Should_Return_Unauthorized_When_No_Current_User()
+        {
+            var sut = CreateSut(currentUser: null);
+            sut.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext(),
+            };
+
+            var result = await sut.Me(CancellationToken.None);
+
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]

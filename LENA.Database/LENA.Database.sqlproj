@@ -14,6 +14,7 @@
     <TargetDatabaseSet>True</TargetDatabaseSet>
   </PropertyGroup>
   <ItemGroup>
+    <Build Remove="Migrations\*.sql" />
     <Build Remove="SeedData\*.sql" />
     <Build Remove="Wine\Seed\*.sql" />
     <Build Remove="tmp\*.sql" />

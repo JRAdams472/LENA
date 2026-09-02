@@ -10,7 +10,7 @@ DB_USER="${DB_USER:-sa}"
 DB_PASSWORD="${MSSQL_SA_PASSWORD:-${SA_PASSWORD:-}}"
 DB_NAME="${DB_NAME:-LENA}"
 ROOT="${DB_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
-DOMAINS=(Wine Inventory MealPlan Recipe)
+DOMAINS=(Identity Wine Inventory Recipe MealPlan)
 
 if [ -z "$DB_PASSWORD" ]; then
     echo "MSSQL_SA_PASSWORD (or SA_PASSWORD) must be set" >&2
@@ -149,6 +149,12 @@ for domain in "${DOMAINS[@]}"; do
             | sed -E 's/^([[:space:]]*)CREATE[[:space:]]+PROCEDURE/\1CREATE OR ALTER PROCEDURE/I' \
             | "$SQLCMD" -C -b -S "$DB_HOST" -U "$DB_USER" -P "$DB_PASSWORD" -d "$DB_NAME"
     done
+done
+
+echo "Migrations..."
+for file in "$ROOT"/Migrations/*.sql; do
+    [ -e "$file" ] || continue
+    run_file "$file"
 done
 
 echo "Database $DB_NAME initialization complete."
