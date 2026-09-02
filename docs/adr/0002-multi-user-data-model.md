@@ -542,7 +542,7 @@ Legend for stored procedures: **S** = add `@UserID` and scope; **R** = rewrite t
 | Features | everything under `Features/MealPlan/**` (MealPlans, MealSlots, MealSlotItems, `Queries/GetMealPlanNutritionQuery.cs`) and `Features/Grocery/GroceryLists/**` |
 | Entities | `LENA/Entity/MealPlan/MealPlan.cs`, `LENA/Entity/Grocery/GroceryList.cs` (+UserID) |
 | Frontend | `types.ts`: `MealPlan`, `GroceryList` (+`userId`, optional to expose); `api.ts`: `mealPlans.*`, `groceryLists.*` — no URL changes needed, server scopes by token |
-| Mobile | `android/.../data/ApiService.kt` (`GET api/GroceryList/{id}`) — no contract change beyond auth |
+| Mobile | `mobile/lib/services/api_service.dart` (`GET /api/GroceryList/{id}`) — no contract change beyond auth |
 
 ### 3.2 Recipe
 
@@ -567,7 +567,7 @@ Legend for stored procedures: **S** = add `@UserID` and scope; **R** = rewrite t
 | Entities | `LENA/Entity/Inventory/Item.cs` (catalog only, or keep as a flattened read model), delete `InStock.cs`, new `UserItem.cs` |
 | API | `ItemController.cs` (endpoints keep their routes; `DELETE items/{id}` semantics change) |
 | Frontend | `types.ts`: `Item` (per-user fields become nullable when the user has no row), delete `InStock`; `api.ts`: `items.create/update` payload shape, `items.adjustQuantity`, `items.setFavorite` unchanged in URL |
-| Mobile | `android/.../data/ApiService.kt` (`POST api/Item/{id}/quantity`) — unchanged contract |
+| Mobile | `mobile/lib/services/api_service.dart` (`POST /api/Item/items/{id}/quantity`) — unchanged contract |
 
 ### 3.4 Wine
 
@@ -636,7 +636,7 @@ Ordered easiest-first; each phase is independently shippable and leaves the syst
 | **5** | Inventory split: `UserItem`, slim `Item`, rewrite 12 Item procs + `GenerateFromMealPlan` netting | Larger, but Item procs are already parameter-driven and the UI already has quantity/favorite endpoints |
 | **6** | Wine split: `UserBottle`, slim `Bottle`, rewrite 14 Bottle procs and 6 indexes | Largest surface area; depends on lessons from Phase 5 |
 | **7** | Data backfill (see below) — executed incrementally as part of Phases 3–6, but tracked as its own deliverable with verification queries | |
-| **8** | Frontend + Android: nullable per-user fields, new favorite endpoint, `/me`, remove `InStock` type | Contracts stabilise only after 3–6 |
+| **8** | Frontend + Mobile: nullable per-user fields, new favorite endpoint, `/me`, remove `InStock` type | Contracts stabilise only after 3–6 |
 
 ### 5.1 Backfill strategy: assign existing rows to a single default user
 

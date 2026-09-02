@@ -22,4 +22,8 @@
     <ProjectReference Include="..\LENA.Application\LENA.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="LENA.IntegrationTests" />
+  </ItemGroup>
+
 </Project>

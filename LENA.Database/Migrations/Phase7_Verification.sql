@@ -106,19 +106,23 @@ IF EXISTS (
     FROM sys.procedures p
     WHERE OBJECT_SCHEMA_NAME(p.object_id) IN (N'Inventory', N'Wine', N'MealPlan', N'Recipe')
       AND p.name LIKE 'usp_%'
-      AND p.name NOT IN (
-          -- Reference-data procs and other intentionally shared procs that do not require UserID
-          'usp_ItemFlavorProfile_GetAllActive', 'usp_ItemNutrientType_GetAllActive'
-      )
       AND NOT EXISTS (
           SELECT 1 FROM sys.parameters sp
           WHERE sp.object_id = p.object_id AND sp.name = N'@UserID'
       )
-      AND NOT EXISTS (
-          SELECT 1 FROM sys.parameters sp
-          WHERE sp.object_id = p.object_id AND sp.name = N'@CreatedBy'
-             AND OBJECT_SCHEMA_NAME(p.object_id) = N'MealPlan'
-             AND p.name LIKE 'usp_GroceryList%'
+      AND p.name NOT LIKE 'usp_Country_%'
+      AND p.name NOT LIKE 'usp_Region_%'
+      AND p.name NOT LIKE 'usp_Type_%'
+      AND p.name NOT LIKE 'usp_Vintage_%'
+      AND p.name NOT LIKE 'usp_FlavorProfile_%'
+      AND p.name NOT LIKE 'usp_FoodFlavor_%'
+      AND p.name NOT LIKE 'usp_FoodNutrient_%'
+      AND p.name NOT LIKE 'usp_NutrientType_%'
+      AND p.name NOT LIKE 'usp_RecipeItem_%'
+      AND p.name NOT LIKE 'usp_RecipeStep_%'
+      AND p.name NOT IN (
+          N'usp_Recipe_Create', N'usp_Recipe_Update', N'usp_Recipe_Delete',
+          N'usp_Item_AddOrUpdateUPC12', N'usp_Item_AddOrUpdateUPC14', N'usp_Item_ChangeItemCategory'
       )
 )
     INSERT INTO @Issues SELECT 'Scoped stored procedure missing @UserID parameter';

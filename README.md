@@ -38,6 +38,7 @@ LENA/
 │   ├── lib/                  # Typed API client and types
 │   └── README.md             # Frontend-specific instructions
 ├── LENA.Database/            # SQL Server project: schemas, tables, indexes, seed data, stored procedures
+├── mobile/                   # Flutter mobile app
 └── README.md                 # This file
 ```
 
@@ -88,7 +89,7 @@ The API also requires the browser origins that may call it:
 
 Startup fails when `Cors:AllowedOrigins` is empty, so a deployment cannot silently fall back to allowing any origin.
 
-The API currently has **no authentication or authorization**: every endpoint is open to anyone who can reach it, and CORS only limits which browser origins may call it. Do not expose it beyond a trusted local network until auth is added. Audit fields (`CreatedBy` / `LastUpdatedBy`) are stamped server-side from the request identity and fall back to `system` while the API is unauthenticated.
+The API enforces **fallback authorization**: every controller action requires an authenticated user by default. Endpoints can opt out explicitly with `[AllowAnonymous]` if public access is ever required. The browser origin is also restricted to the configured `Cors:AllowedOrigins` list.
 
 ### 2. Run the API
 
@@ -134,16 +135,15 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### 4. Confirm CORS
 
-The API registers an `AllowExternal` CORS policy allowing any origin, header, and method. If you serve the frontend from a different origin, verify that the API's CORS configuration in `LENA.API/Program.cs` covers it:
+The API registers an `AllowExternal` CORS policy that only allows the origins listed in `Cors:AllowedOrigins` (e.g. `http://localhost:3000` in development). If you serve the frontend from a different origin, add it to `LENA.API/appsettings.json` or `LENA.API/appsettings.Development.json`:
 
-```csharp
-options.AddPolicy("AllowExternal", policy =>
-{
-    policy.AllowAnyOrigin()
-          .AllowAnyHeader()
-          .AllowAnyMethod();
-});
+```json
+"Cors": {
+  "AllowedOrigins": [ "http://localhost:3000" ]
+}
 ```
+
+The configured origins are read at startup and the app will fail to start if the list is empty.
 
 ---
 
