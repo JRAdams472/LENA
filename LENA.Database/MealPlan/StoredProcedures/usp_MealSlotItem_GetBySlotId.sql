@@ -1,10 +1,13 @@
 CREATE PROCEDURE [MealPlan].[usp_MealSlotItem_GetBySlotId]
-    @MealSlotID INT
+    @MealSlotID INT,
+    @UserID INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT MealSlotItemID, MealSlotID, ItemID, Quantity, UnitOfMeasure, IsFromRecipe, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate
-    FROM [MealPlan].[MealSlotItem]
-    WHERE MealSlotID = @MealSlotID;
+    SELECT msi.MealSlotItemID, msi.MealSlotID, msi.ItemID, msi.Quantity, msi.UnitOfMeasure, msi.IsFromRecipe, msi.CreatedBy, msi.CreateDate, msi.LastUpdatedBy, msi.LastUpdatedDate
+    FROM [MealPlan].[MealSlotItem] msi
+    INNER JOIN [MealPlan].[MealSlot] s ON msi.MealSlotID = s.MealSlotID
+    INNER JOIN [MealPlan].[MealPlan] mp ON s.MealPlanID = mp.MealPlanID
+    WHERE msi.MealSlotID = @MealSlotID AND mp.UserID = @UserID;
 END

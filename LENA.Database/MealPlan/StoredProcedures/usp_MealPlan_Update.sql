@@ -4,6 +4,7 @@ CREATE PROCEDURE [MealPlan].[usp_MealPlan_Update]
     @WeekStartDate DATE,
     @WeekStartDayOfWeek TINYINT,
     @IsActive BIT = 1,
+    @UserID INT,
     @LastUpdatedBy NVARCHAR(100) = NULL,
     @LastUpdatedDate DATETIME2 = NULL
 AS
@@ -17,7 +18,7 @@ BEGIN
         IsActive = @IsActive,
         LastUpdatedBy = @LastUpdatedBy,
         LastUpdatedDate = @LastUpdatedDate
-    WHERE MealPlanID = @MealPlanID;
+    WHERE MealPlanID = @MealPlanID AND UserID = @UserID;
 
     SELECT @@ROWCOUNT;
 END

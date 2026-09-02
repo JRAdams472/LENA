@@ -6,10 +6,14 @@
 --     expressed in the item's inventory Unit, so lines carrying a different UnitOfMeasure are
 --     excluded rather than summed on an incompatible basis.
 CREATE PROCEDURE [MealPlan].[usp_MealPlan_GetNutrition]
-    @MealPlanID INT
+    @MealPlanID INT,
+    @UserID INT
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    IF NOT EXISTS (SELECT 1 FROM [MealPlan].[MealPlan] WHERE MealPlanID = @MealPlanID AND UserID = @UserID)
+        RETURN;
 
     WITH SlotItems AS (
         -- Required recipe ingredients

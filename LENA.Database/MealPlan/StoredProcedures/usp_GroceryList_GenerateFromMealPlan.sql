@@ -8,6 +8,7 @@
 --     only netted off the group that is expressed in the item's inventory Unit.
 CREATE PROCEDURE [MealPlan].[usp_GroceryList_GenerateFromMealPlan]
     @MealPlanID INT = NULL,
+    @UserID INT,
     @CreatedBy NVARCHAR(100),
     @CreateDate DATETIME2
 AS
@@ -15,10 +16,15 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
-    DECLARE @LastGeneratedDate DATETIME2 = (SELECT MAX(GeneratedDate) FROM [MealPlan].[GroceryList]);
+    IF @MealPlanID IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [MealPlan].[MealPlan] WHERE MealPlanID = @MealPlanID AND UserID = @UserID)
+    BEGIN
+        THROW 50000, 'Meal plan not found or access denied.', 1;
+    END
 
-    INSERT INTO [MealPlan].[GroceryList] (MealPlanID, GeneratedDate, CreatedBy, CreateDate)
-    VALUES (@MealPlanID, @CreateDate, @CreatedBy, @CreateDate);
+    DECLARE @LastGeneratedDate DATETIME2 = (SELECT MAX(GeneratedDate) FROM [MealPlan].[GroceryList] WHERE UserID = @UserID);
+
+    INSERT INTO [MealPlan].[GroceryList] (MealPlanID, UserID, GeneratedDate, CreatedBy, CreateDate)
+    VALUES (@MealPlanID, @UserID, @CreateDate, @CreatedBy, @CreateDate);
 
     DECLARE @GroceryListID INT = CAST(SCOPE_IDENTITY() AS INT);
 
@@ -81,7 +87,7 @@ BEGIN
             AND gli.ItemID = i.ItemID
       );
 
-    SELECT GroceryListID, MealPlanID, GeneratedDate, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate
+    SELECT GroceryListID, UserID, MealPlanID, GeneratedDate, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate
     FROM [MealPlan].[GroceryList]
     WHERE GroceryListID = @GroceryListID;
 

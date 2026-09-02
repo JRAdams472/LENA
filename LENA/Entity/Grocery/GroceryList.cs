@@ -7,6 +7,7 @@ namespace LENA.Domain.Entity.Grocery
     public class GroceryList : AuditableEntity
     {
         public int GroceryListID { get; set; }
+        public int UserID { get; set; }
         public int? MealPlanID { get; set; }
         public DateTime GeneratedDate { get; set; }
 

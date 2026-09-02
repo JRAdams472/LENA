@@ -6,13 +6,14 @@ CREATE PROCEDURE [MealPlan].[usp_MealSlot_Update]
     @RecipeID INT = NULL,
     @Servings DECIMAL(10,2) = 1,
     @ReplacementNote NVARCHAR(500) = NULL,
+    @UserID INT,
     @LastUpdatedBy NVARCHAR(100) = NULL,
     @LastUpdatedDate DATETIME2 = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    UPDATE [MealPlan].[MealSlot]
+    UPDATE s
     SET MealPlanID = @MealPlanID,
         DayOfWeek = @DayOfWeek,
         MealType = @MealType,
@@ -21,7 +22,12 @@ BEGIN
         ReplacementNote = @ReplacementNote,
         LastUpdatedBy = @LastUpdatedBy,
         LastUpdatedDate = @LastUpdatedDate
-    WHERE MealSlotID = @MealSlotID;
+    FROM [MealPlan].[MealSlot] s
+    INNER JOIN [MealPlan].[MealPlan] currentPlan ON s.MealPlanID = currentPlan.MealPlanID
+    INNER JOIN [MealPlan].[MealPlan] targetPlan ON targetPlan.MealPlanID = @MealPlanID
+    WHERE s.MealSlotID = @MealSlotID
+      AND currentPlan.UserID = @UserID
+      AND targetPlan.UserID = @UserID;
 
     SELECT @@ROWCOUNT;
 END
