@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 using LENA.Application.Contracts.Auditing;
 
 namespace LENA.API.Services
@@ -19,6 +21,35 @@ namespace LENA.API.Services
             {
                 var name = _httpContextAccessor.HttpContext?.User.Identity?.Name;
                 return string.IsNullOrWhiteSpace(name) ? AnonymousUserName : name;
+            }
+        }
+
+        public int UserID
+        {
+            get
+            {
+                var context = _httpContextAccessor.HttpContext;
+                if (context?.Items.TryGetValue("UserID", out var value) == true && value is int userId)
+                {
+                    return userId;
+                }
+
+                return 0;
+            }
+        }
+
+        public string? ExternalSubject
+        {
+            get
+            {
+                var user = _httpContextAccessor.HttpContext?.User;
+                if (user == null)
+                {
+                    return null;
+                }
+
+                return user.FindFirst("sub")?.Value
+                    ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             }
         }
     }
