@@ -5,7 +5,7 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
   useCallback,
   ReactNode,
   useRef,
@@ -56,16 +56,39 @@ function isTokenExpired(token: string): boolean {
   return payload.exp < Math.floor(Date.now() / 1000);
 }
 
-function getStoredToken(): string | null {
-  if (typeof window === "undefined") return null;
-  const stored = localStorage.getItem(TOKEN_KEY);
-  if (!stored) return null;
-  if (isTokenExpired(stored)) {
-    localStorage.removeItem(TOKEN_KEY);
-    return null;
-  }
-  return stored;
-}
+const tokenStore = (() => {
+  const listeners = new Set<() => void>();
+  return {
+    subscribe(callback: () => void) {
+      if (typeof window === "undefined") return () => {};
+      const handler = (e: StorageEvent) => {
+        if (e.key === TOKEN_KEY) callback();
+      };
+      window.addEventListener("storage", handler);
+      listeners.add(callback);
+      return () => {
+        window.removeEventListener("storage", handler);
+        listeners.delete(callback);
+      };
+    },
+    getSnapshot(): string | null {
+      if (typeof window === "undefined") return null;
+      const stored = window.localStorage.getItem(TOKEN_KEY);
+      if (!stored) return null;
+      if (isTokenExpired(stored)) return null;
+      return stored;
+    },
+    setToken(value: string | null) {
+      if (typeof window === "undefined") return;
+      if (value === null) {
+        window.localStorage.removeItem(TOKEN_KEY);
+      } else {
+        window.localStorage.setItem(TOKEN_KEY, value);
+      }
+      listeners.forEach((cb) => cb());
+    },
+  };
+})();
 
 function getUserFromToken(token: string | null): AuthUser | null {
   if (!token) return null;
@@ -74,18 +97,22 @@ function getUserFromToken(token: string | null): AuthUser | null {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => getStoredToken());
+  const token = useSyncExternalStore(
+    tokenStore.subscribe,
+    tokenStore.getSnapshot,
+    () => null
+  );
   const tokenRef = useRef<string | null>(token);
   const user = useMemo(() => getUserFromToken(token), [token]);
 
   const signIn = useCallback((credential: string) => {
-    localStorage.setItem(TOKEN_KEY, credential);
-    setToken(credential);
+    tokenRef.current = credential;
+    tokenStore.setToken(credential);
   }, []);
 
   const signOut = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    setToken(null);
+    tokenRef.current = null;
+    tokenStore.setToken(null);
   }, []);
 
   useEffect(() => {

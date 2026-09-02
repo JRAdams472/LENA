@@ -69,8 +69,9 @@ var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
 if (string.IsNullOrWhiteSpace(googleClientId))
 {
     throw new InvalidOperationException(
-        "A Google client id is required under 'Authentication:Google:ClientId'. " +
-        "Add it to LENA.API/appsettings.json or LENA.API/appsettings.Development.json.");
+        "A real Google OAuth client id is required under 'Authentication:Google:ClientId'. " +
+        "Add it to LENA.API/appsettings.json or LENA.API/appsettings.Development.json, " +
+        "or set it via environment variables / user secrets.");
 }
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

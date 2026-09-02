@@ -30,6 +30,8 @@ A Next.js 16 (App Router) TypeScript frontend for the LENA admin dashboard.
 
    `NEXT_PUBLIC_GOOGLE_CLIENT_ID` must be the same client ID that `LENA.API` uses as the JWT audience (`Authentication:Google:ClientId`).
 
+   See [docs/google-oauth-client-id.md](../docs/google-oauth-client-id.md) for how to create the client ID and add the authorized JavaScript origins.
+
 3. Start the development server:
 
    ```bash

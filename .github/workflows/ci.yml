@@ -25,6 +25,8 @@ jobs:
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: 865434629089-gg6p223alt8qqtjvgbr5hpqbeh414l4c.apps.googleusercontent.com
     defaults:
       run:
         working-directory: frontend

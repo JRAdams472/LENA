@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { GoogleLogin } from "@react-oauth/google";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -7,7 +9,15 @@ import Typography from "@mui/material/Typography";
 import { useAuth } from "@/app/auth/AuthProvider";
 
 export default function LoginScreen() {
-  const { signIn } = useAuth();
+  const { signIn, isAuthenticated } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
 
   return (
     <Box
@@ -40,14 +50,26 @@ export default function LoginScreen() {
         </Typography>
         <GoogleLogin
           onSuccess={(response) => {
+            setError(null);
             if (response.credential) {
               signIn(response.credential);
+            } else {
+              setError(
+                "Google did not return a sign-in credential. Please try again."
+              );
             }
           }}
           onError={() => {
-            // noop
+            setError(
+              "Google sign-in failed. Verify NEXT_PUBLIC_GOOGLE_CLIENT_ID and the authorized JavaScript origin in Google Cloud Console."
+            );
           }}
         />
+        {error && (
+          <Typography color="error" sx={{ mt: 1 }}>
+            {error}
+          </Typography>
+        )}
       </Paper>
     </Box>
   );

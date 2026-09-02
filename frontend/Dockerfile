@@ -6,10 +6,14 @@ COPY package.json package-lock.json* ./
 RUN [ -f package-lock.json ] && npm ci || npm install
 
 COPY . .
-ARG NEXT_PUBLIC_API_BASE_URL=""
+ARG NEXT_PUBLIC_API_BASE_URL="http://localhost"
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
-ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID=""
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
 ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
+RUN if [ -z "$NEXT_PUBLIC_GOOGLE_CLIENT_ID" ] || [ "$NEXT_PUBLIC_GOOGLE_CLIENT_ID" = "__YOUR_GOOGLE_CLIENT_ID__" ]; then \
+        echo "ERROR: NEXT_PUBLIC_GOOGLE_CLIENT_ID build arg is required and cannot be the placeholder value."; \
+        exit 1; \
+    fi
 RUN npm run build
 
 # Runtime stage
