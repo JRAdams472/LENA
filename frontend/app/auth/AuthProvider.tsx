@@ -78,13 +78,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const tokenRef = useRef<string | null>(token);
   const user = useMemo(() => getUserFromToken(token), [token]);
 
+  useEffect(() => {
+    // Hydration-safe: re-read localStorage on the client after SSR.
+    const stored = getStoredToken();
+    if (stored) {
+      setToken(stored);
+    }
+  }, []);
+
   const signIn = useCallback((credential: string) => {
     localStorage.setItem(TOKEN_KEY, credential);
+    tokenRef.current = credential;
     setToken(credential);
   }, []);
 
   const signOut = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
+    tokenRef.current = null;
     setToken(null);
   }, []);
 
