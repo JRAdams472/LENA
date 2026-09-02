@@ -12,6 +12,7 @@ namespace LENA.Application.Contracts.Persistence
         Task<IReadOnlyList<Bottle>> GetFavoritesAsync(CancellationToken cancellationToken = default);
         Task<IReadOnlyList<Bottle>> SearchBottlesAsync(string searchTerm, CancellationToken cancellationToken = default);
         Task<int> GetTotalBottleCountAsync(CancellationToken cancellationToken = default);
+        Task SetFavoriteAsync(int bottleId, bool isFavorite, CancellationToken cancellationToken = default);
 
         Task<PagedResult<Bottle>> ListPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default);
     }

@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [Inventory].[usp_Item_GetBrands]
+    @UserID INT,
     @Search NVARCHAR(100) = NULL
 AS
 BEGIN
@@ -9,9 +10,11 @@ BEGIN
         FROM [Inventory].[ItemBrand] ib
         WHERE EXISTS (
             SELECT 1
-            FROM [Inventory].[Item] i
+            FROM [Inventory].[UserItem] ui
+            JOIN [Inventory].[Item] i ON i.[ItemID] = ui.[ItemID]
             WHERE i.[BrandID] = ib.[ItemBrandID]
-              AND i.[CurrentQuantity] > 0
+              AND ui.[UserID] = @UserID
+              AND ui.[CurrentQuantity] > 0
         )
         ORDER BY ib.[Name];
     ELSE

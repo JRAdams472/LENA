@@ -1,10 +1,11 @@
 ﻿CREATE PROCEDURE [Inventory].[usp_Item_Delete]
-    @ItemID INT
+    @ItemID INT,
+    @UserID INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    DELETE FROM [Inventory].[Item] WHERE [ItemID] = @ItemID;
+    DELETE FROM [Inventory].[UserItem] WHERE [UserID] = @UserID AND [ItemID] = @ItemID;
 
     SELECT @@ROWCOUNT;
 END

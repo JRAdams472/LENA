@@ -1,2 +1,2 @@
-﻿CREATE NONCLUSTERED INDEX [IX_Bottle_TypeID_BottleNumber]
-    ON [Wine].[Bottle] ([TypeID] ASC, [BottleNumber] ASC);
+﻿CREATE NONCLUSTERED INDEX [IX_Bottle_TypeID]
+    ON [Wine].[Bottle] ([TypeID] ASC);

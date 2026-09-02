@@ -33,9 +33,18 @@ namespace LENA.IntegrationTests
             // into the current test's depleted-item checks. GroceryList rows are also cleared
             // so @LastGeneratedDate starts fresh for time-based depletion assertions.
             await connection.ExecuteAsync(
-                "UPDATE [Inventory].[Item] SET CurrentQuantity = 1000, LastUpdatedDate = '2000-01-01', LastUpdatedBy = 'test' WHERE CurrentQuantity = 0;");
+                "UPDATE [Inventory].[UserItem] SET CurrentQuantity = 1000, LastUpdatedDate = '2000-01-01', LastUpdatedBy = 'test' WHERE CurrentQuantity = 0;");
             await connection.ExecuteAsync("DELETE FROM [MealPlan].[GroceryListItem];");
             await connection.ExecuteAsync("DELETE FROM [MealPlan].[GroceryList];");
+        }
+
+        private static async Task<int> InsertUserAsync(SqlConnection connection)
+        {
+            var subject = $"sub-{Guid.NewGuid():N}";
+            var email = $"test-{Guid.NewGuid():N}@example.com";
+            return await connection.QuerySingleAsync<int>(
+                "INSERT INTO [Identity].[User] (ExternalSubject, Provider, Email, DisplayName, CreatedBy, CreateDate) OUTPUT INSERTED.UserID VALUES (@subject, 'google', @email, 'Integration Test', 'test', SYSUTCDATETIME());",
+                new { subject, email });
         }
 
         private static async Task<int> InsertCategoryAsync(SqlConnection connection)
@@ -47,6 +56,7 @@ namespace LENA.IntegrationTests
 
         private static async Task<int> InsertItemAsync(
             SqlConnection connection,
+            int userId,
             int categoryId,
             string name,
             string unit,
@@ -57,24 +67,23 @@ namespace LENA.IntegrationTests
             var uniqueName = $"{name}-{Guid.NewGuid():N}";
             var upc12 = Guid.NewGuid().ToString("N")[..12];
             var upc14 = Guid.NewGuid().ToString("N")[..14];
+            var lastUpdatedBy = lastUpdatedDate.HasValue ? "test" : (string?)null;
+            var createDate = lastUpdatedDate?.AddSeconds(-1) ?? DateTime.UtcNow;
 
-            return await connection.QuerySingleAsync<int>(
+            var itemId = await connection.QuerySingleAsync<int>(
                 @"INSERT INTO [Inventory].[Item]
-                  (Name, BrandID, UPC12, UPC14, CategoryID, Unit, CurrentQuantity, MinQuantity, PurchaseDate, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate)
+                  (Name, BrandID, UPC12, UPC14, CategoryID, Unit, CreatedBy, CreateDate)
                   OUTPUT INSERTED.ItemID
-                  VALUES (@uniqueName, NULL, @upc12, @upc14, @categoryId, @unit, @currentQuantity, @minQuantity, SYSUTCDATETIME(), 'test', SYSUTCDATETIME(), @lastUpdatedBy, @lastUpdatedDate);",
-                new
-                {
-                    uniqueName,
-                    upc12,
-                    upc14,
-                    categoryId,
-                    unit,
-                    currentQuantity,
-                    minQuantity,
-                    lastUpdatedBy = lastUpdatedDate.HasValue ? "test" : (string?)null,
-                    lastUpdatedDate
-                });
+                  VALUES (@uniqueName, NULL, @upc12, @upc14, @categoryId, @unit, 'test', @createDate);",
+                new { uniqueName, upc12, upc14, categoryId, unit, createDate });
+
+            await connection.ExecuteAsync(
+                @"INSERT INTO [Inventory].[UserItem]
+                  (UserID, ItemID, CurrentQuantity, MinQuantity, PurchaseDate, ExpiryDate, Notes, IsFavorite, CreatedBy, CreateDate, LastUpdatedBy, LastUpdatedDate)
+                  VALUES (@userId, @itemId, @currentQuantity, @minQuantity, SYSUTCDATETIME(), NULL, NULL, 0, 'test', @createDate, @lastUpdatedBy, @lastUpdatedDate);",
+                new { userId, itemId, currentQuantity, minQuantity, createDate, lastUpdatedBy, lastUpdatedDate });
+
+            return itemId;
         }
 
         private static async Task<int> InsertRecipeAsync(SqlConnection connection, int servings)
@@ -97,11 +106,11 @@ namespace LENA.IntegrationTests
                 new { recipeId, itemId, quantity, unit, isOptional });
         }
 
-        private static async Task<int> InsertMealPlanAsync(SqlConnection connection)
+        private static async Task<int> InsertMealPlanAsync(SqlConnection connection, int userId)
         {
             return await connection.QuerySingleAsync<int>(
-                "INSERT INTO [MealPlan].[MealPlan] (PlanName, WeekStartDate, WeekStartDayOfWeek, IsActive, CreatedBy, CreateDate) OUTPUT INSERTED.MealPlanID VALUES (@name, @weekStart, 0, 1, 'test', SYSUTCDATETIME());",
-                new { name = $"Plan-{Guid.NewGuid():N}", weekStart = DateTime.UtcNow.Date });
+                "INSERT INTO [MealPlan].[MealPlan] (PlanName, UserID, WeekStartDate, WeekStartDayOfWeek, IsActive, CreatedBy, CreateDate) OUTPUT INSERTED.MealPlanID VALUES (@name, @userId, @weekStart, 0, 1, 'test', SYSUTCDATETIME());",
+                new { name = $"Plan-{Guid.NewGuid():N}", userId, weekStart = DateTime.UtcNow.Date });
         }
 
         private static async Task<int> InsertMealSlotAsync(
@@ -130,12 +139,13 @@ namespace LENA.IntegrationTests
 
         private static async Task<IReadOnlyList<GroceryListItemResult>> GenerateGroceryListAsync(
             SqlConnection connection,
+            int userId,
             int mealPlanId,
             DateTime createDate)
         {
             using var multi = await connection.QueryMultipleAsync(
                 "[MealPlan].[usp_GroceryList_GenerateFromMealPlan]",
-                new { MealPlanID = mealPlanId, CreatedBy = "test", CreateDate = createDate },
+                new { MealPlanID = mealPlanId, UserID = userId, CreatedBy = "test", CreateDate = createDate },
                 commandType: CommandType.StoredProcedure);
 
             _ = await multi.ReadSingleAsync<GroceryListResult>();
@@ -148,15 +158,16 @@ namespace LENA.IntegrationTests
             await using var connection = await GetOpenConnectionAsync();
             await ResetStateAsync(connection);
 
+            var userId = await InsertUserAsync(connection);
             var categoryId = await InsertCategoryAsync(connection);
-            var itemId = await InsertItemAsync(connection, categoryId, "Flour", "g", currentQuantity: 5);
+            var itemId = await InsertItemAsync(connection, userId, categoryId, "Flour", "g", currentQuantity: 5);
             var recipeId = await InsertRecipeAsync(connection, servings: 2);
             await InsertRecipeItemAsync(connection, recipeId, itemId, quantity: 10, unit: "g", isOptional: false);
 
-            var mealPlanId = await InsertMealPlanAsync(connection);
+            var mealPlanId = await InsertMealPlanAsync(connection, userId);
             await InsertMealSlotAsync(connection, mealPlanId, recipeId, servings: 2);
 
-            var items = await GenerateGroceryListAsync(connection, mealPlanId, DateTime.UtcNow);
+            var items = await GenerateGroceryListAsync(connection, userId, mealPlanId, DateTime.UtcNow);
 
             items.Should().ContainSingle();
             items[0].ItemID.Should().Be(itemId);
@@ -171,16 +182,17 @@ namespace LENA.IntegrationTests
             await using var connection = await GetOpenConnectionAsync();
             await ResetStateAsync(connection);
 
+            var userId = await InsertUserAsync(connection);
             var categoryId = await InsertCategoryAsync(connection);
-            var itemId = await InsertItemAsync(connection, categoryId, "Milk", "g", currentQuantity: 5);
+            var itemId = await InsertItemAsync(connection, userId, categoryId, "Milk", "g", currentQuantity: 5);
             var recipeId = await InsertRecipeAsync(connection, servings: 2);
             await InsertRecipeItemAsync(connection, recipeId, itemId, quantity: 10, unit: "g", isOptional: false);
 
-            var mealPlanId = await InsertMealPlanAsync(connection);
+            var mealPlanId = await InsertMealPlanAsync(connection, userId);
             var slotId = await InsertMealSlotAsync(connection, mealPlanId, recipeId, servings: 2);
             await InsertMealSlotItemAsync(connection, slotId, itemId, quantity: 3, unit: "cup", isFromRecipe: false);
 
-            var items = await GenerateGroceryListAsync(connection, mealPlanId, DateTime.UtcNow);
+            var items = await GenerateGroceryListAsync(connection, userId, mealPlanId, DateTime.UtcNow);
 
             items.Should().HaveCount(2);
             items.Should().ContainSingle(i => i.UnitOfMeasure == "g" && i.QuantityNeeded == 5);
@@ -193,16 +205,17 @@ namespace LENA.IntegrationTests
             await using var connection = await GetOpenConnectionAsync();
             await ResetStateAsync(connection);
 
+            var userId = await InsertUserAsync(connection);
             var categoryId = await InsertCategoryAsync(connection);
-            var itemId = await InsertItemAsync(connection, categoryId, "Cheese", "g", currentQuantity: 0);
+            var itemId = await InsertItemAsync(connection, userId, categoryId, "Cheese", "g", currentQuantity: 0);
             var recipeId = await InsertRecipeAsync(connection, servings: 2);
             await InsertRecipeItemAsync(connection, recipeId, itemId, quantity: 10, unit: "g", isOptional: true);
 
-            var mealPlanId = await InsertMealPlanAsync(connection);
+            var mealPlanId = await InsertMealPlanAsync(connection, userId);
             var slotId = await InsertMealSlotAsync(connection, mealPlanId, recipeId, servings: 2);
             await InsertMealSlotItemAsync(connection, slotId, itemId, quantity: 0, unit: "g", isFromRecipe: true);
 
-            var items = await GenerateGroceryListAsync(connection, mealPlanId, DateTime.UtcNow);
+            var items = await GenerateGroceryListAsync(connection, userId, mealPlanId, DateTime.UtcNow);
 
             items.Should().ContainSingle();
             items[0].QuantityNeeded.Should().Be(10);
@@ -215,15 +228,16 @@ namespace LENA.IntegrationTests
             await using var connection = await GetOpenConnectionAsync();
             await ResetStateAsync(connection);
 
+            var userId = await InsertUserAsync(connection);
             var categoryId = await InsertCategoryAsync(connection);
-            var itemId = await InsertItemAsync(connection, categoryId, "Cheese", "g", currentQuantity: 10);
+            var itemId = await InsertItemAsync(connection, userId, categoryId, "Cheese", "g", currentQuantity: 10);
             var recipeId = await InsertRecipeAsync(connection, servings: 2);
             await InsertRecipeItemAsync(connection, recipeId, itemId, quantity: 10, unit: "g", isOptional: true);
 
-            var mealPlanId = await InsertMealPlanAsync(connection);
+            var mealPlanId = await InsertMealPlanAsync(connection, userId);
             await InsertMealSlotAsync(connection, mealPlanId, recipeId, servings: 2);
 
-            var items = await GenerateGroceryListAsync(connection, mealPlanId, DateTime.UtcNow);
+            var items = await GenerateGroceryListAsync(connection, userId, mealPlanId, DateTime.UtcNow);
 
             items.Should().BeEmpty();
         }
@@ -234,14 +248,15 @@ namespace LENA.IntegrationTests
             await using var connection = await GetOpenConnectionAsync();
             await ResetStateAsync(connection);
 
+            var userId = await InsertUserAsync(connection);
             var categoryId = await InsertCategoryAsync(connection);
-            var itemId = await InsertItemAsync(connection, categoryId, "Bananas", "each", currentQuantity: 0);
+            var itemId = await InsertItemAsync(connection, userId, categoryId, "Bananas", "each", currentQuantity: 0);
 
-            var mealPlanId = await InsertMealPlanAsync(connection);
+            var mealPlanId = await InsertMealPlanAsync(connection, userId);
             var slotId = await InsertMealSlotAsync(connection, mealPlanId, recipeId: null, servings: 1);
             await InsertMealSlotItemAsync(connection, slotId, itemId, quantity: 3, unit: "each", isFromRecipe: false);
 
-            var items = await GenerateGroceryListAsync(connection, mealPlanId, DateTime.UtcNow);
+            var items = await GenerateGroceryListAsync(connection, userId, mealPlanId, DateTime.UtcNow);
 
             items.Should().ContainSingle();
             items[0].QuantityNeeded.Should().Be(3);
@@ -255,16 +270,18 @@ namespace LENA.IntegrationTests
             await using var connection = await GetOpenConnectionAsync();
             await ResetStateAsync(connection);
 
-            var mealPlanId = await InsertMealPlanAsync(connection);
+            var userId = await InsertUserAsync(connection);
+            var mealPlanId = await InsertMealPlanAsync(connection, userId);
             var baseline = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
             // First generation - nothing depleted yet.
-            await GenerateGroceryListAsync(connection, mealPlanId, baseline);
+            await GenerateGroceryListAsync(connection, userId, mealPlanId, baseline);
 
             // Item depleted after the first list was generated.
             var categoryId = await InsertCategoryAsync(connection);
             var itemId = await InsertItemAsync(
                 connection,
+                userId,
                 categoryId,
                 "Eggs",
                 "each",
@@ -272,7 +289,7 @@ namespace LENA.IntegrationTests
                 minQuantity: 2,
                 lastUpdatedDate: baseline.AddHours(1));
 
-            var items = await GenerateGroceryListAsync(connection, mealPlanId, baseline.AddHours(2));
+            var items = await GenerateGroceryListAsync(connection, userId, mealPlanId, baseline.AddHours(2));
 
             items.Should().ContainSingle();
             items[0].ItemID.Should().Be(itemId);
@@ -286,16 +303,18 @@ namespace LENA.IntegrationTests
             await using var connection = await GetOpenConnectionAsync();
             await ResetStateAsync(connection);
 
-            var mealPlanId = await InsertMealPlanAsync(connection);
+            var userId = await InsertUserAsync(connection);
+            var mealPlanId = await InsertMealPlanAsync(connection, userId);
             var baseline = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
             // First generation establishes a baseline.
-            await GenerateGroceryListAsync(connection, mealPlanId, baseline);
+            await GenerateGroceryListAsync(connection, userId, mealPlanId, baseline);
 
             // Item was depleted before the baseline, so it should not re-appear.
             var categoryId = await InsertCategoryAsync(connection);
             _ = await InsertItemAsync(
                 connection,
+                userId,
                 categoryId,
                 "Butter",
                 "g",
@@ -303,7 +322,7 @@ namespace LENA.IntegrationTests
                 minQuantity: 1,
                 lastUpdatedDate: baseline.AddHours(-1));
 
-            var items = await GenerateGroceryListAsync(connection, mealPlanId, baseline.AddHours(1));
+            var items = await GenerateGroceryListAsync(connection, userId, mealPlanId, baseline.AddHours(1));
 
             items.Should().BeEmpty();
         }
@@ -314,15 +333,16 @@ namespace LENA.IntegrationTests
             await using var connection = await GetOpenConnectionAsync();
             await ResetStateAsync(connection);
 
+            var userId = await InsertUserAsync(connection);
             var categoryId = await InsertCategoryAsync(connection);
-            var itemId = await InsertItemAsync(connection, categoryId, "Oats", "g", currentQuantity: 0);
+            var itemId = await InsertItemAsync(connection, userId, categoryId, "Oats", "g", currentQuantity: 0);
             var recipeId = await InsertRecipeAsync(connection, servings: 1);
             await InsertRecipeItemAsync(connection, recipeId, itemId, quantity: 10, unit: "g", isOptional: false);
 
-            var mealPlanId = await InsertMealPlanAsync(connection);
+            var mealPlanId = await InsertMealPlanAsync(connection, userId);
             await InsertMealSlotAsync(connection, mealPlanId, recipeId, servings: 1);
 
-            var items = await GenerateGroceryListAsync(connection, mealPlanId, DateTime.UtcNow);
+            var items = await GenerateGroceryListAsync(connection, userId, mealPlanId, DateTime.UtcNow);
 
             items.Should().ContainSingle();
             items[0].Source.Should().Be("MealPlan");

@@ -42,7 +42,7 @@ Assert.True(            File.Exists(path));
         [Fact]
         public void AdjustQuantity_Should_Stamp_Audit_Columns_On_Every_Update()
         {
-            var updates = AdjustQuantity.Split("UPDATE [Inventory].[Item]", StringSplitOptions.RemoveEmptyEntries);
+            var updates = AdjustQuantity.Split("UPDATE [Inventory].[UserItem]", StringSplitOptions.RemoveEmptyEntries);
 
             // one leading segment (the header) plus one segment per UPDATE statement
 Assert.True(            updates.Length > 1);
@@ -61,7 +61,7 @@ Assert.Contains("[LastUpdatedBy] = @LastUpdatedBy",                 update);
         {
 Assert.Contains("DECLARE @LastGeneratedDate DATETIME2 = (SELECT MAX(GeneratedDate) FROM [MealPlan].[GroceryList] WHERE UserID = @UserID)",             GenerateFromMealPlan);
 Assert.Contains("'Depleted'",             GenerateFromMealPlan);
-            Assert.Contains("WHERE i.CurrentQuantity = 0 AND i.LastUpdatedDate > i.CreateDate AND i.LastUpdatedDate > DATEADD(day, -10, @CreateDate)", GenerateFromMealPlan);
+            Assert.Contains("WHERE COALESCE(ui.CurrentQuantity, 0) = 0 AND ui.LastUpdatedDate > ui.CreateDate AND (@LastGeneratedDate IS NULL OR ui.LastUpdatedDate > @LastGeneratedDate) AND ui.LastUpdatedDate > DATEADD(day, -10, @CreateDate)", GenerateFromMealPlan);
         }
 
         [Fact]
@@ -72,8 +72,8 @@ Assert.Contains("GROUP BY ri.ItemID, ri.UnitOfMeasure",             GenerateFrom
 Assert.Contains("GROUP BY msi.ItemID, msi.UnitOfMeasure",             GenerateFromMealPlan);
 
             // on-hand inventory is subtracted only from the group expressed in the item's own unit
-            Assert.Contains("SUM(p.TotalNeeded) - CASE WHEN COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit) = i.Unit THEN i.CurrentQuantity ELSE 0 END AS QuantityNeeded", GenerateFromMealPlan);
-            Assert.Contains("GROUP BY p.ItemID, i.CurrentQuantity, i.Unit, COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit)", GenerateFromMealPlan);
+            Assert.Contains("SUM(p.TotalNeeded) - CASE WHEN COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit) = i.Unit THEN COALESCE(ui.CurrentQuantity, 0) ELSE 0 END AS QuantityNeeded", GenerateFromMealPlan);
+            Assert.Contains("GROUP BY p.ItemID, COALESCE(ui.CurrentQuantity, 0), i.Unit, COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit)", GenerateFromMealPlan);
         }
 
         [Fact]

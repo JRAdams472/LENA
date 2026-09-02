@@ -13,6 +13,14 @@ export interface AuditableEntity {
   lastUpdatedDate: string | null;
 }
 
+export interface User {
+  userID: number;
+  email: string;
+  displayName: string | null;
+  externalSubject: string | null;
+  provider: string | null;
+}
+
 export interface Category extends AuditableEntity {
   categoryID: number;
   categoryName: string;
@@ -42,14 +50,6 @@ export interface FoodNutrient {
   nutrientType: NutrientType | null;
 }
 
-export interface InStock extends AuditableEntity {
-  stockID: number;
-  itemID: number;
-  quantityOnHand: number;
-  lastUpdated: string;
-  item: Item | null;
-}
-
 export interface Item extends AuditableEntity {
   itemID: number;
   name: string;
@@ -60,7 +60,7 @@ export interface Item extends AuditableEntity {
   unit: string;
   currentQuantity: number;
   minQuantity: number | null;
-  purchaseDate: string;
+  purchaseDate: string | null;
   expiryDate: string | null;
   notes: string | null;
   isFavorite: boolean;
@@ -91,7 +91,7 @@ export interface Bottle extends AuditableEntity {
   oakIntegration: boolean | null;
   bottleSize: string;
   quantity: number;
-  purchaseDate: string;
+  purchaseDate: string | null;
   purchasePrice: number | null;
   storageTemp: number | null;
   location: string | null;

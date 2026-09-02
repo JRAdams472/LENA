@@ -108,6 +108,13 @@ namespace LENA.API.Controllers
             return Ok(updated);
         }
 
+        [HttpPost("bottles/{id}/favorite")]
+        public async Task<IActionResult> SetBottleFavorite(int id, [FromQuery] bool isFavorite)
+        {
+            await _mediator.Send(new SetBottleFavoriteCommand(id, isFavorite));
+            return NoContent();
+        }
+
         [HttpDelete("bottles/{id}")]
         public async Task<ActionResult<Bottle?>> DeleteBottle(int id)
         {
