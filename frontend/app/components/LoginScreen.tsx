@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -8,6 +9,7 @@ import { useAuth } from "@/app/auth/AuthProvider";
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <Box
@@ -40,14 +42,22 @@ export default function LoginScreen() {
         </Typography>
         <GoogleLogin
           onSuccess={(response) => {
+            setError(null);
             if (response.credential) {
               signIn(response.credential);
             }
           }}
           onError={() => {
-            // noop
+            setError(
+              "Google sign-in failed. Verify NEXT_PUBLIC_GOOGLE_CLIENT_ID and the authorized JavaScript origin in Google Cloud Console."
+            );
           }}
         />
+        {error && (
+          <Typography color="error" sx={{ mt: 1 }}>
+            {error}
+          </Typography>
+        )}
       </Paper>
     </Box>
   );

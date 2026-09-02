@@ -29,10 +29,12 @@ class AuthService {
   }
 
   Future<String?> signIn() async {
-    if (ApiConfig.googleServerClientId.isEmpty) {
+    const placeholder = '__YOUR_GOOGLE_CLIENT_ID__';
+    if (ApiConfig.googleServerClientId.isEmpty ||
+        ApiConfig.googleServerClientId == placeholder) {
       throw StateError(
         'GOOGLE_SERVER_CLIENT_ID is not configured. '
-        'Provide it via --dart-define=GOOGLE_SERVER_CLIENT_ID=<web-client-id>',
+        'Provide it via --dart-define=GOOGLE_SERVER_CLIENT_ID=<your-web-client-id>',
       );
     }
 
