@@ -63,23 +63,26 @@ BEGIN
             p.ItemID,
             COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit) AS Unit,
             SUM(p.TotalNeeded)
-                - CASE WHEN COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit) = i.Unit THEN i.CurrentQuantity ELSE 0 END AS QuantityNeeded
+                - CASE WHEN COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit) = i.Unit THEN COALESCE(ui.CurrentQuantity, 0) ELSE 0 END AS QuantityNeeded
         FROM PlanItems p
         INNER JOIN [Inventory].[Item] i ON p.ItemID = i.ItemID
-        GROUP BY p.ItemID, i.CurrentQuantity, i.Unit, COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit)
+        LEFT JOIN [Inventory].[UserItem] ui ON ui.ItemID = i.ItemID AND ui.UserID = @UserID
+        GROUP BY p.ItemID, COALESCE(ui.CurrentQuantity, 0), i.Unit, COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit)
         HAVING SUM(p.TotalNeeded)
-            - CASE WHEN COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit) = i.Unit THEN i.CurrentQuantity ELSE 0 END > 0
+            - CASE WHEN COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit) = i.Unit THEN COALESCE(ui.CurrentQuantity, 0) ELSE 0 END > 0
     )
     INSERT INTO [MealPlan].[GroceryListItem] (GroceryListID, ItemID, ManualItemName, QuantityNeeded, UnitOfMeasure, Source, IsChecked, CreatedBy, CreateDate)
     SELECT @GroceryListID, n.ItemID, NULL, n.QuantityNeeded, n.Unit, 'MealPlan', 0, @CreatedBy, @CreateDate
     FROM NetNeeds n;
 
     INSERT INTO [MealPlan].[GroceryListItem] (GroceryListID, ItemID, ManualItemName, QuantityNeeded, UnitOfMeasure, Source, IsChecked, CreatedBy, CreateDate)
-    SELECT @GroceryListID, i.ItemID, NULL, ISNULL(NULLIF(i.MinQuantity, 0), 1), i.Unit, 'Depleted', 0, @CreatedBy, @CreateDate
+    SELECT @GroceryListID, i.ItemID, NULL, ISNULL(NULLIF(ui.MinQuantity, 0), 1), i.Unit, 'Depleted', 0, @CreatedBy, @CreateDate
     FROM [Inventory].[Item] i
-    WHERE i.CurrentQuantity = 0
-      AND i.LastUpdatedDate > i.CreateDate
-      AND i.LastUpdatedDate > DATEADD(day, -10, @CreateDate)
+    LEFT JOIN [Inventory].[UserItem] ui ON ui.ItemID = i.ItemID AND ui.UserID = @UserID
+    WHERE COALESCE(ui.CurrentQuantity, 0) = 0
+      AND ui.LastUpdatedDate > ui.CreateDate
+      AND (@LastGeneratedDate IS NULL OR ui.LastUpdatedDate > @LastGeneratedDate)
+      AND ui.LastUpdatedDate > DATEADD(day, -10, @CreateDate)
       AND NOT EXISTS (
           SELECT 1
           FROM [MealPlan].[GroceryListItem] gli

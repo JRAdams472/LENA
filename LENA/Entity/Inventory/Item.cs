@@ -17,7 +17,7 @@ namespace LENA.Domain.Entity.Inventory
         public required string Unit { get; set; }
         public decimal CurrentQuantity { get; set; }
         public decimal? MinQuantity { get; set; }
-        public DateTime PurchaseDate { get; set; }
+        public DateTime? PurchaseDate { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public string? Notes { get; set; }
         public bool IsFavorite { get; set; } = false;

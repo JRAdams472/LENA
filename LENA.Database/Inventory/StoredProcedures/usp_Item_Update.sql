@@ -6,9 +6,10 @@
     @UPC14 NVARCHAR(14) = NULL,
     @CategoryID INT,
     @Unit NVARCHAR(20),
-    @CurrentQuantity DECIMAL(10, 2),
+    @UserID INT,
+    @CurrentQuantity DECIMAL(10, 2) = 0,
     @MinQuantity DECIMAL(10, 2) = NULL,
-    @PurchaseDate DATETIME2,
+    @PurchaseDate DATETIME2 = NULL,
     @ExpiryDate DATETIME2 = NULL,
     @Notes NVARCHAR(500) = NULL,
     @IsFavorite BIT = 0,
@@ -31,11 +32,26 @@ BEGIN
 
     UPDATE [Inventory].[Item]
     SET [Name] = @Name, [BrandID] = @BrandID, [UPC12] = @UPC12, [UPC14] = @UPC14,
-        [CategoryID] = @CategoryID, [Unit] = @Unit, [CurrentQuantity] = @CurrentQuantity,
-        [MinQuantity] = @MinQuantity, [PurchaseDate] = @PurchaseDate, [ExpiryDate] = @ExpiryDate,
-        [Notes] = @Notes, [IsFavorite] = @IsFavorite,
+        [CategoryID] = @CategoryID, [Unit] = @Unit,
         [LastUpdatedBy] = @LastUpdatedBy, [LastUpdatedDate] = @LastUpdatedDate
     WHERE [ItemID] = @ItemID;
+
+    MERGE [Inventory].[UserItem] AS target
+    USING (VALUES (@UserID, @ItemID, @CurrentQuantity, @MinQuantity, @PurchaseDate, @ExpiryDate, @Notes, @IsFavorite))
+           AS source (UserID, ItemID, CurrentQuantity, MinQuantity, PurchaseDate, ExpiryDate, Notes, IsFavorite)
+    ON target.UserID = source.UserID AND target.ItemID = source.ItemID
+    WHEN MATCHED THEN
+        UPDATE SET CurrentQuantity = source.CurrentQuantity,
+                   MinQuantity = source.MinQuantity,
+                   PurchaseDate = source.PurchaseDate,
+                   ExpiryDate = source.ExpiryDate,
+                   Notes = source.Notes,
+                   IsFavorite = source.IsFavorite,
+                   LastUpdatedBy = @LastUpdatedBy,
+                   LastUpdatedDate = @LastUpdatedDate
+    WHEN NOT MATCHED THEN
+        INSERT ([UserID], [ItemID], [CurrentQuantity], [MinQuantity], [PurchaseDate], [ExpiryDate], [Notes], [IsFavorite], [CreatedBy], [CreateDate])
+        VALUES (source.UserID, source.ItemID, source.CurrentQuantity, source.MinQuantity, source.PurchaseDate, source.ExpiryDate, source.Notes, source.IsFavorite, @LastUpdatedBy, @LastUpdatedDate);
 
     SELECT @@ROWCOUNT;
 END

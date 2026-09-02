@@ -42,14 +42,6 @@ export interface FoodNutrient {
   nutrientType: NutrientType | null;
 }
 
-export interface InStock extends AuditableEntity {
-  stockID: number;
-  itemID: number;
-  quantityOnHand: number;
-  lastUpdated: string;
-  item: Item | null;
-}
-
 export interface Item extends AuditableEntity {
   itemID: number;
   name: string;
@@ -60,7 +52,7 @@ export interface Item extends AuditableEntity {
   unit: string;
   currentQuantity: number;
   minQuantity: number | null;
-  purchaseDate: string;
+  purchaseDate: string | null;
   expiryDate: string | null;
   notes: string | null;
   isFavorite: boolean;

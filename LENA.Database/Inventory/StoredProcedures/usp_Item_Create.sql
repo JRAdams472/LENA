@@ -5,9 +5,10 @@
     @UPC14 NVARCHAR(14) = NULL,
     @CategoryID INT,
     @Unit NVARCHAR(20),
-    @CurrentQuantity DECIMAL(10, 2),
+    @UserID INT,
+    @CurrentQuantity DECIMAL(10, 2) = 0,
     @MinQuantity DECIMAL(10, 2) = NULL,
-    @PurchaseDate DATETIME2,
+    @PurchaseDate DATETIME2 = NULL,
     @ExpiryDate DATETIME2 = NULL,
     @Notes NVARCHAR(500) = NULL,
     @IsFavorite BIT = 0,
@@ -29,10 +30,16 @@ BEGIN
     END
 
     INSERT INTO [Inventory].[Item]
-        ([Name], [BrandID], [UPC12], [UPC14], [CategoryID], [Unit], [CurrentQuantity], [MinQuantity],
-         [PurchaseDate], [ExpiryDate], [Notes], [IsFavorite], [CreatedBy], [CreateDate])
+        ([Name], [BrandID], [UPC12], [UPC14], [CategoryID], [Unit], [CreatedBy], [CreateDate])
     VALUES
-        (@Name, @BrandID, @UPC12, @UPC14, @CategoryID, @Unit, @CurrentQuantity, @MinQuantity,
-         @PurchaseDate, @ExpiryDate, @Notes, @IsFavorite, @CreatedBy, @CreateDate);
-    SELECT CAST(SCOPE_IDENTITY() as int);
+        (@Name, @BrandID, @UPC12, @UPC14, @CategoryID, @Unit, @CreatedBy, @CreateDate);
+
+    DECLARE @ItemID INT = CAST(SCOPE_IDENTITY() AS INT);
+
+    INSERT INTO [Inventory].[UserItem]
+        ([UserID], [ItemID], [CurrentQuantity], [MinQuantity], [PurchaseDate], [ExpiryDate], [Notes], [IsFavorite], [CreatedBy], [CreateDate])
+    VALUES
+        (@UserID, @ItemID, @CurrentQuantity, @MinQuantity, @PurchaseDate, @ExpiryDate, @Notes, @IsFavorite, @CreatedBy, @CreateDate);
+
+    SELECT @ItemID;
 END

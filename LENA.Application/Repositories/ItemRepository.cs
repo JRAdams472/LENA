@@ -1,3 +1,4 @@
+using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 
@@ -5,27 +6,30 @@ namespace LENA.Application.Repositories
 {
     public class ItemRepository : BaseRepository<Item>, IItemRepository
     {
-        public ItemRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory)
+        private readonly ICurrentUserService _currentUser;
+
+        public ItemRepository(IDbConnectionFactory connectionFactory, ICurrentUserService currentUser) : base(connectionFactory)
         {
+            _currentUser = currentUser;
         }
 
         public override async Task<IReadOnlyList<Item>> ListAllAsync(CancellationToken cancellationToken = default)
-            => await QueryListAsync<Item>("[Inventory].[usp_Item_ListAll]", cancellationToken: cancellationToken);
+            => await QueryListAsync<Item>("[Inventory].[usp_Item_ListAll]", new { UserID = _currentUser.UserID }, cancellationToken);
 
         public async Task<LENA.Application.Models.PagedResult<Item>> ListPagedAsync(int pageNumber, int pageSize, string? search = null, string? brand = null, bool inStock = false, bool isFavorite = false, CancellationToken ct = default)
-            => await QueryPagedListAsync<Item>("[Inventory].[usp_Item_ListAllPaged]", pageNumber, pageSize, new { Search = search, Brand = brand, InStock = inStock, IsFavorite = isFavorite }, ct);
+            => await QueryPagedListAsync<Item>("[Inventory].[usp_Item_ListAllPaged]", pageNumber, pageSize, new { UserID = _currentUser.UserID, Search = search, Brand = brand, InStock = inStock, IsFavorite = isFavorite }, ct);
 
         public async Task<IReadOnlyList<Item>> SearchAsync(string search, string? brand, int limit, CancellationToken cancellationToken = default)
-            => await QueryListAsync<Item>("[Inventory].[usp_Item_Search]", new { Search = search, Brand = brand, Limit = limit }, cancellationToken);
+            => await QueryListAsync<Item>("[Inventory].[usp_Item_Search]", new { UserID = _currentUser.UserID, Search = search, Brand = brand, Limit = limit }, cancellationToken);
 
         public async Task<IReadOnlyList<string>> GetBrandsAsync(string? search = null, CancellationToken cancellationToken = default)
-            => await QueryListAsync<string>("[Inventory].[usp_Item_GetBrands]", new { Search = search }, cancellationToken);
+            => await QueryListAsync<string>("[Inventory].[usp_Item_GetBrands]", new { UserID = _currentUser.UserID, Search = search }, cancellationToken);
 
         public override async Task<Item?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-            => await QueryFirstAsync<Item>("[Inventory].[usp_Item_GetById]", new { Id = id }, cancellationToken);
+            => await QueryFirstAsync<Item>("[Inventory].[usp_Item_GetById]", new { Id = id, UserID = _currentUser.UserID }, cancellationToken);
 
         public async Task<Item?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-            => await QueryFirstAsync<Item>("[Inventory].[usp_Item_GetByName]", new { Name = name }, cancellationToken);
+            => await QueryFirstAsync<Item>("[Inventory].[usp_Item_GetByName]", new { Name = name, UserID = _currentUser.UserID }, cancellationToken);
 
         public override async Task<Item> CreateAsync(Item entity, CancellationToken cancellationToken = default)
         {
@@ -37,6 +41,7 @@ namespace LENA.Application.Repositories
                 entity.UPC14,
                 entity.CategoryID,
                 entity.Unit,
+                UserID = _currentUser.UserID,
                 entity.CurrentQuantity,
                 entity.MinQuantity,
                 entity.PurchaseDate,
@@ -60,6 +65,7 @@ namespace LENA.Application.Repositories
                 entity.UPC14,
                 entity.CategoryID,
                 entity.Unit,
+                UserID = _currentUser.UserID,
                 entity.CurrentQuantity,
                 entity.MinQuantity,
                 entity.PurchaseDate,
@@ -74,7 +80,7 @@ namespace LENA.Application.Repositories
 
         public override async Task<Item> DeleteAsync(Item entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteRequiringMatchAsync("[Inventory].[usp_Item_Delete]", new { entity.ItemID }, nameof(Item), entity.ItemID, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Inventory].[usp_Item_Delete]", new { entity.ItemID, UserID = _currentUser.UserID }, nameof(Item), entity.ItemID, cancellationToken);
             return entity;
         }
 
@@ -88,9 +94,21 @@ namespace LENA.Application.Repositories
             => await ExecuteCommandAsync("[Inventory].[usp_Item_AddOrUpdateUPC14]", new { ItemID = itemId, UPC14 = upc14 }, cancellationToken);
 
         public async Task AdjustQuantityAsync(int itemId, decimal quantity, DateTime? purchaseDate = null, string? lastUpdatedBy = null, CancellationToken cancellationToken = default)
-            => await ExecuteCommandAsync("[Inventory].[usp_Item_AdjustQuantity]", new { ItemID = itemId, Quantity = quantity, PurchaseDate = purchaseDate, LastUpdatedBy = lastUpdatedBy }, cancellationToken);
+            => await ExecuteCommandAsync("[Inventory].[usp_Item_AdjustQuantity]", new { ItemID = itemId, UserID = _currentUser.UserID, Quantity = quantity, PurchaseDate = purchaseDate, LastUpdatedBy = lastUpdatedBy }, cancellationToken);
 
         public async Task SetFavoriteAsync(int itemId, bool isFavorite, CancellationToken cancellationToken = default)
-            => await ExecuteCommandAsync("[Inventory].[usp_Item_SetFavorite]", new { ItemID = itemId, IsFavorite = isFavorite }, cancellationToken);
+        {
+            var now = DateTime.UtcNow;
+            await ExecuteCommandAsync("[Inventory].[usp_Item_SetFavorite]", new
+            {
+                ItemID = itemId,
+                UserID = _currentUser.UserID,
+                IsFavorite = isFavorite,
+                CreatedBy = _currentUser.UserName,
+                CreateDate = now,
+                LastUpdatedBy = _currentUser.UserName,
+                LastUpdatedDate = now
+            }, cancellationToken);
+        }
     }
 }
