@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Dapper;
+
 using FluentAssertions;
+
 using Microsoft.Data.SqlClient;
+
 using Xunit;
 
 namespace LENA.IntegrationTests

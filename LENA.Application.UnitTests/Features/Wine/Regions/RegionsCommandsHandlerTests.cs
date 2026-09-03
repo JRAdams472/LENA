@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Wine.Regions.Commands;
 using LENA.Domain.Entity.Wine;
+
+using Microsoft.Extensions.Caching.Memory;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Wine.Regions
@@ -20,14 +24,14 @@ namespace LENA.Application.UnitTests.Features.Wine.Regions
             var mockRepo = new Mock<IRegionRepository>();
 
             mockRepo.Setup(r => r.CreateAsync(It.Is<Region>(x => x == request.Region))).ReturnsAsync(new Region { RegionName = "Test" });
-            var handler = new CreateRegionCommandHandler(mockRepo.Object);
+            var handler = new CreateRegionCommandHandler(mockRepo.Object, new Mock<IMemoryCache>().Object);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             mockRepo.Verify(r => r.CreateAsync(It.Is<Region>(x => x == request.Region)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -38,14 +42,14 @@ Assert.NotNull(            result);
             var mockRepo = new Mock<IRegionRepository>();
             mockRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new Region { RegionName = "Test" });
             mockRepo.Setup(r => r.DeleteAsync(It.IsAny<Region>())).ReturnsAsync(new Region { RegionName = "Test" });
-            var handler = new DeleteRegionCommandHandler(mockRepo.Object);
+            var handler = new DeleteRegionCommandHandler(mockRepo.Object, new Mock<IMemoryCache>().Object);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             mockRepo.Verify(r => r.DeleteAsync(It.IsAny<Region>()), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -56,14 +60,14 @@ Assert.NotNull(            result);
             var mockRepo = new Mock<IRegionRepository>();
 
             mockRepo.Setup(r => r.UpdateAsync(It.Is<Region>(x => x == request.Region))).ReturnsAsync(new Region { RegionName = "Test" });
-            var handler = new UpdateRegionCommandHandler(mockRepo.Object);
+            var handler = new UpdateRegionCommandHandler(mockRepo.Object, new Mock<IMemoryCache>().Object);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             mockRepo.Verify(r => r.UpdateAsync(It.Is<Region>(x => x == request.Region)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

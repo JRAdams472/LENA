@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using LENA.Domain.Entity.Common;
 
 namespace LENA.Domain.Entity.Inventory
@@ -20,7 +21,7 @@ namespace LENA.Domain.Entity.Inventory
         public DateTime? PurchaseDate { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public string? Notes { get; set; }
-        public bool IsFavorite { get; set; } = false;
+        public bool IsFavorite { get; set; }
 
         // Navigation properties
         public Category? Category { get; set; }

@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Inventory.FoodFlavors.Commands;
 using LENA.Domain.Entity.Inventory;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Inventory.FoodFlavors
@@ -27,7 +29,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.FoodFlavors
 
             // Assert
             mockRepo.Verify(r => r.CreateAsync(It.Is<FoodFlavor>(x => x == request.FoodFlavor)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -45,7 +47,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.DeleteAsync(It.IsAny<FoodFlavor>()), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -63,7 +65,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.UpdateAsync(It.Is<FoodFlavor>(x => x == request.FoodFlavor)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

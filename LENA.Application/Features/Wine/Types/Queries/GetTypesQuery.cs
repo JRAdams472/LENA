@@ -1,10 +1,18 @@
+using LENA.Application.Contracts.Caching;
 using LENA.Application.Contracts.Persistence;
+
 using MediatR;
+
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.Features.Wine.Types.Queries
 {
-    public record GetTypesQuery : IRequest<IReadOnlyList<TypeEntity>>;
+    public record GetTypesQuery : IRequest<IReadOnlyList<TypeEntity>>, ICacheableQuery<IReadOnlyList<TypeEntity>>
+    {
+        public string CacheKey => CacheKeys.Types;
+
+        public TimeSpan CacheDuration => TimeSpan.FromMinutes(10);
+    }
 
     public class GetTypesQueryHandler : IRequestHandler<GetTypesQuery, IReadOnlyList<TypeEntity>>
     {

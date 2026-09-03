@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Wine.Types.Queries;
 using LENA.Domain.Entity.Wine;
+
 using Moq;
+
 using Xunit;
+
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.UnitTests.Features.Wine.Types
@@ -28,7 +31,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Types
 
             // Assert
             mockRepo.Verify(r => r.GetByIdAsync(It.Is<int>(x => x == request.TypeId)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -46,7 +49,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.GetByNameAsync(It.Is<string>(x => x == request.Name)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

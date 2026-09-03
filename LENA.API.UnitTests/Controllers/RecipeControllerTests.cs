@@ -2,17 +2,24 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using LENA.API.Contracts.Recipe;
 using LENA.API.Controllers;
+using LENA.Application.Exceptions;
 using LENA.Application.Features.Recipe.RecipeItems.Commands;
 using LENA.Application.Features.Recipe.Recipes.Commands;
 using LENA.Application.Features.Recipe.Recipes.Queries;
 using LENA.Application.Features.Recipe.RecipeSteps.Commands;
-using LENA.Application.Exceptions;
+using LENA.Application.Models;
 using LENA.Domain.Entity.Recipe;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
+
 using Moq;
+
 using Xunit;
+
 using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
 
 namespace LENA.API.UnitTests.Controllers
@@ -27,12 +34,14 @@ namespace LENA.API.UnitTests.Controllers
         [Fact]
         public async Task GetRecipes_Should_Return_Ok()
         {
-            _mediator.Setup(m => m.Send(It.IsAny<GetRecipesQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<RecipeEntity>());
+            _mediator.Setup(m => m.Send(It.IsAny<GetRecipesPagedQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PagedResult<RecipeEntity> { Items = new List<RecipeEntity>() });
 
+#pragma warning disable CS0618
             var result = await _sut.GetRecipes();
+#pragma warning restore CS0618
 
-Assert.IsType<OkObjectResult>(            result.Result);
+            Assert.IsType<OkObjectResult>(result.Result);
         }
 
         [Fact]
@@ -51,17 +60,17 @@ Assert.IsType<OkObjectResult>(            result.Result);
             _mediator.Setup(m => m.Send(It.IsAny<CreateRecipeCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(recipe);
 
-            var result = await _sut.CreateRecipe(recipe);
+            var result = await _sut.CreateRecipe(new CreateRecipeRequest { RecipeName = recipe.RecipeName });
 
-Assert.IsType<CreatedAtActionResult>(            result.Result);
+            Assert.IsType<CreatedAtActionResult>(result.Result);
         }
 
         [Fact]
         public async Task UpdateRecipe_Should_Return_BadRequest_On_Id_Mismatch()
         {
-            var result = await _sut.UpdateRecipe(2, new RecipeEntity { RecipeID = 1, RecipeName = "Soup" });
+            var result = await _sut.UpdateRecipe(2, new UpdateRecipeRequest { RecipeID = 1, RecipeName = "Soup" });
 
-Assert.IsType<BadRequestResult>(            result.Result);
+            Assert.IsType<BadRequestResult>(result.Result);
             _mediator.Verify(m => m.Send(It.IsAny<UpdateRecipeCommand>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
@@ -73,10 +82,10 @@ Assert.IsType<BadRequestResult>(            result.Result);
                 .Callback<object, CancellationToken>((c, _) => sent = ((AddRecipeStepCommand)c).RecipeStep)
                 .ReturnsAsync(new RecipeStep { RecipeStepID = 1, RecipeID = 1, StepNumber = 1, Instruction = "Boil" });
 
-            await _sut.AddRecipeStep(1, new RecipeStepRequest(1, "Boil"));
+            await _sut.AddRecipeStep(1, new CreateRecipeStepRequest { StepNumber = 1, Instruction = "Boil" });
 
-Assert.Empty(            sent!.CreatedBy);
-Assert.Equal(default,             sent.CreateDate);
+            Assert.Empty(sent!.CreatedBy);
+            Assert.Equal(default, sent.CreateDate);
         }
 
         [Fact]
@@ -85,7 +94,7 @@ Assert.Equal(default,             sent.CreateDate);
             _mediator.Setup(m => m.Send(It.IsAny<AddOrUpdateRecipeItemCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new RecipeItem { RecipeID = 1, ItemID = 2, Quantity = 3 });
 
-            await _sut.AddRecipeItem(1, new RecipeItemRequest(2, 3, "g", false));
+            await _sut.AddRecipeItem(1, new CreateRecipeItemRequest { ItemID = 2, Quantity = 3, UnitOfMeasure = "g", IsOptional = false });
 
             _mediator.Verify(m => m.Send(
                 It.Is<AddOrUpdateRecipeItemCommand>(c =>

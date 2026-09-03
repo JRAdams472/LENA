@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Identity;
+
 using MediatR;
 
 namespace LENA.Application.Features.Identity.Users.Queries

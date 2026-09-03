@@ -1,15 +1,14 @@
+using LENA.API.Contracts.MealPlan;
 using LENA.Application.Features.MealPlan.MealPlans.Commands;
 using LENA.Application.Features.MealPlan.MealPlans.Queries;
-using LENA.Application.Features.MealPlan.MealSlots.Commands;
-using LENA.Application.Features.MealPlan.MealSlots.Queries;
 using LENA.Application.Features.MealPlan.MealSlotItems.Commands;
 using LENA.Application.Features.MealPlan.MealSlotItems.Queries;
+using LENA.Application.Features.MealPlan.MealSlots.Commands;
+using LENA.Application.Features.MealPlan.MealSlots.Queries;
 using LENA.Application.Features.MealPlan.Queries;
-using LENA.Domain.Entity.MealPlan;
-using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
-using MealSlot = LENA.Domain.Entity.MealPlan.MealSlot;
-using MealSlotItem = LENA.Domain.Entity.MealPlan.MealSlotItem;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace LENA.API.Controllers
@@ -26,76 +25,92 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("plans")]
-        public async Task<ActionResult<IReadOnlyList<MealPlanEntity>>> GetMealPlans()
+        [Obsolete("Use GET /api/MealPlan/plans/paged instead.")]
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<MealPlanResponse>>> GetMealPlans()
         {
-            var plans = await _mediator.Send(new GetMealPlansQuery());
-            return Ok(plans);
+            var paged = await _mediator.Send(new GetMealPlansPagedQuery(1, 25));
+            return Ok(new LENA.Application.Models.PagedResult<MealPlanResponse>
+            {
+                Items = paged.Items.Select(MealPlanResponse.FromEntity).ToList(),
+                TotalCount = paged.TotalCount,
+                PageNumber = paged.PageNumber,
+                PageSize = paged.PageSize,
+            });
         }
 
         [HttpGet("plans/paged")]
-        public async Task<ActionResult<LENA.Application.Models.PagedResult<MealPlanEntity>>> GetMealPlansPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<MealPlanResponse>>> GetMealPlansPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
         {
             (pageNumber, pageSize) = LENA.Application.Models.PaginationRequest.Clamp(pageNumber, pageSize);
-            var plans = await _mediator.Send(new GetMealPlansPagedQuery(pageNumber, pageSize));
-            return Ok(plans);
+            var paged = await _mediator.Send(new GetMealPlansPagedQuery(pageNumber, pageSize));
+            return Ok(new LENA.Application.Models.PagedResult<MealPlanResponse>
+            {
+                Items = paged.Items.Select(MealPlanResponse.FromEntity).ToList(),
+                TotalCount = paged.TotalCount,
+                PageNumber = paged.PageNumber,
+                PageSize = paged.PageSize,
+            });
         }
 
         [HttpGet("plans/{id}")]
-        public async Task<ActionResult<MealPlanEntity?>> GetMealPlanById(int id)
+        public async Task<ActionResult<MealPlanResponse?>> GetMealPlanById(int id)
         {
             var plan = await _mediator.Send(new GetMealPlanByIdQuery(id));
-
-            return Ok(plan);
+            return Ok(MealPlanResponse.FromEntity(plan!));
         }
 
         [HttpPost("plans")]
-        public async Task<ActionResult<MealPlanEntity>> CreateMealPlan([FromBody] MealPlanEntity mealPlan)
+        public async Task<ActionResult<MealPlanResponse>> CreateMealPlan([FromBody] CreateMealPlanRequest request)
         {
-            var created = await _mediator.Send(new CreateMealPlanCommand(mealPlan));
-            return CreatedAtAction(nameof(GetMealPlanById), new { id = created.MealPlanID }, created);
+            var entity = request.ToEntity();
+            var created = await _mediator.Send(new CreateMealPlanCommand(entity));
+            return CreatedAtAction(nameof(GetMealPlanById), new { id = created.MealPlanID }, MealPlanResponse.FromEntity(created!));
         }
 
         [HttpPut("plans/{id}")]
-        public async Task<ActionResult<MealPlanEntity>> UpdateMealPlan(int id, [FromBody] MealPlanEntity mealPlan)
+        public async Task<ActionResult<MealPlanResponse>> UpdateMealPlan(int id, [FromBody] UpdateMealPlanRequest request)
         {
-            if (id != mealPlan.MealPlanID)
+            if (id != request.MealPlanID)
                 return BadRequest();
 
-            var updated = await _mediator.Send(new UpdateMealPlanCommand(mealPlan));
-            return Ok(updated);
+            var entity = request.ToEntity();
+            var updated = await _mediator.Send(new UpdateMealPlanCommand(entity));
+            return Ok(MealPlanResponse.FromEntity(updated!));
         }
 
         [HttpDelete("plans/{id}")]
-        public async Task<ActionResult<MealPlanEntity?>> DeleteMealPlan(int id)
+        public async Task<ActionResult<MealPlanResponse?>> DeleteMealPlan(int id)
         {
             var deleted = await _mediator.Send(new DeleteMealPlanCommand(id));
-
-            return Ok(deleted);
+            return Ok(MealPlanResponse.FromEntity(deleted!));
         }
 
         [HttpGet("plans/{id}/slots")]
-        public async Task<ActionResult<IReadOnlyList<MealSlot>>> GetMealSlots(int id)
+        public async Task<ActionResult<IReadOnlyList<MealSlotResponse>>> GetMealSlots(int id)
         {
             var slots = await _mediator.Send(new GetMealSlotsByMealPlanIdQuery(id));
-            return Ok(slots);
+            return Ok(slots.Select(MealSlotResponse.FromEntity).ToList());
         }
 
         [HttpPost("plans/{id}/slots")]
-        public async Task<ActionResult<MealSlot>> AddMealSlot(int id, [FromBody] MealSlot mealSlot)
+        public async Task<ActionResult<MealSlotResponse>> AddMealSlot(int id, [FromBody] CreateMealSlotRequest request)
         {
-            mealSlot.MealPlanID = id;
-            var created = await _mediator.Send(new CreateMealSlotCommand(mealSlot));
-            return Ok(created);
+            var entity = request.ToEntity();
+            entity.MealPlanID = id;
+            var created = await _mediator.Send(new CreateMealSlotCommand(entity));
+            return Ok(MealSlotResponse.FromEntity(created!));
         }
 
         [HttpPut("plans/{id}/slots/{slotId}")]
-        public async Task<ActionResult<MealSlot>> UpdateMealSlot(int id, int slotId, [FromBody] MealSlot mealSlot)
+        public async Task<ActionResult<MealSlotResponse>> UpdateMealSlot(int id, int slotId, [FromBody] UpdateMealSlotRequest request)
         {
-            if (slotId != mealSlot.MealSlotID || id != mealSlot.MealPlanID)
+            if (slotId != request.MealSlotID)
                 return BadRequest();
 
-            var updated = await _mediator.Send(new UpdateMealSlotCommand(mealSlot));
-            return Ok(updated);
+            var entity = request.ToEntity();
+            entity.MealPlanID = id;
+            var updated = await _mediator.Send(new UpdateMealSlotCommand(entity));
+            return Ok(MealSlotResponse.FromEntity(updated!));
         }
 
         [HttpDelete("plans/{id}/slots/{slotId}")]
@@ -106,18 +121,19 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("slots/{slotId}/items")]
-        public async Task<ActionResult<IReadOnlyList<MealSlotItem>>> GetMealSlotItems(int slotId)
+        public async Task<ActionResult<IReadOnlyList<MealSlotItemResponse>>> GetMealSlotItems(int slotId)
         {
             var items = await _mediator.Send(new GetMealSlotItemsBySlotIdQuery(slotId));
-            return Ok(items);
+            return Ok(items.Select(MealSlotItemResponse.FromEntity).ToList());
         }
 
         [HttpPost("slots/{slotId}/items")]
-        public async Task<ActionResult<MealSlotItem>> AddMealSlotItem(int slotId, [FromBody] MealSlotItem mealSlotItem)
+        public async Task<ActionResult<MealSlotItemResponse>> AddMealSlotItem(int slotId, [FromBody] CreateMealSlotItemRequest request)
         {
-            mealSlotItem.MealSlotID = slotId;
-            var created = await _mediator.Send(new CreateMealSlotItemCommand(mealSlotItem));
-            return Ok(created);
+            var entity = request.ToEntity();
+            entity.MealSlotID = slotId;
+            var created = await _mediator.Send(new CreateMealSlotItemCommand(entity));
+            return Ok(MealSlotItemResponse.FromEntity(created!));
         }
 
         [HttpDelete("slots/{slotId}/items/{mealSlotItemId}")]

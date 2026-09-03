@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
 using LENA.Domain.Entity.Wine;
+
 using MediatR;
 
 namespace LENA.Application.Features.Wine.Bottles.Queries

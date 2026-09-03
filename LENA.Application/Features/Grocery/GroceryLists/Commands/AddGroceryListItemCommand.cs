@@ -2,6 +2,7 @@ using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Common;
 using LENA.Domain.Entity.Grocery;
+
 using MediatR;
 
 namespace LENA.Application.Features.Grocery.GroceryLists.Commands

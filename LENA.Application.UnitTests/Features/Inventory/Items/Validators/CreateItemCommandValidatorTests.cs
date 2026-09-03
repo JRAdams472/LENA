@@ -1,7 +1,9 @@
 using FluentValidation;
+
 using LENA.Application.Features.Inventory.Items.Commands;
 using LENA.Application.Features.Inventory.Items.Validators;
 using LENA.Domain.Entity.Inventory;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Inventory.Items.Validators
@@ -15,7 +17,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.Items.Validators
         {
             var command = new CreateItemCommand(new Item { Name = "Test", Unit = "ea" });
             var result = _validator.Validate(command);
-Assert.True(            result.IsValid);
+            Assert.True(result.IsValid);
         }
 
         [Fact]
@@ -23,7 +25,7 @@ Assert.True(            result.IsValid);
         {
             var command = new CreateItemCommand(null!);
             var result = _validator.Validate(command);
-Assert.False(            result.IsValid);
+            Assert.False(result.IsValid);
         }
     }
 }

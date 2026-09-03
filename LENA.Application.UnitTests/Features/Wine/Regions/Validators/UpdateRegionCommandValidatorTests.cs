@@ -1,7 +1,9 @@
 using FluentValidation;
+
 using LENA.Application.Features.Wine.Regions.Commands;
 using LENA.Application.Features.Wine.Regions.Validators;
 using LENA.Domain.Entity.Wine;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Wine.Regions.Validators
@@ -15,7 +17,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Regions.Validators
         {
             var command = new UpdateRegionCommand(new Region { RegionName = "Test" });
             var result = _validator.Validate(command);
-Assert.True(            result.IsValid);
+            Assert.True(result.IsValid);
         }
 
         [Fact]
@@ -23,7 +25,7 @@ Assert.True(            result.IsValid);
         {
             var command = new UpdateRegionCommand(null!);
             var result = _validator.Validate(command);
-Assert.False(            result.IsValid);
+            Assert.False(result.IsValid);
         }
     }
 }

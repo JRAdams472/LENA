@@ -1,7 +1,9 @@
 using LENA.Application.Contracts.Persistence;
-using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
-using MediatR;
 using LENA.Application.Exceptions;
+
+using MediatR;
+
+using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 
 namespace LENA.Application.Features.MealPlan.MealPlans.Commands
 {

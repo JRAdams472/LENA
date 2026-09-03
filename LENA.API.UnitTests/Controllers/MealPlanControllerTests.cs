@@ -2,16 +2,23 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using LENA.API.Contracts.MealPlan;
 using LENA.API.Controllers;
+using LENA.Application.Exceptions;
 using LENA.Application.Features.MealPlan.MealPlans.Commands;
 using LENA.Application.Features.MealPlan.MealPlans.Queries;
 using LENA.Application.Features.MealPlan.Queries;
-using LENA.Application.Exceptions;
+using LENA.Application.Models;
 using LENA.Domain.Entity.MealPlan;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
+
 using Moq;
+
 using Xunit;
+
 using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 
 namespace LENA.API.UnitTests.Controllers
@@ -26,12 +33,14 @@ namespace LENA.API.UnitTests.Controllers
         [Fact]
         public async Task GetMealPlans_Should_Return_Ok()
         {
-            _mediator.Setup(m => m.Send(It.IsAny<GetMealPlansQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<MealPlanEntity>());
+            _mediator.Setup(m => m.Send(It.IsAny<GetMealPlansPagedQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PagedResult<MealPlanEntity> { Items = new List<MealPlanEntity>() });
 
+#pragma warning disable CS0618
             var result = await _sut.GetMealPlans();
+#pragma warning restore CS0618
 
-Assert.IsType<OkObjectResult>(            result.Result);
+            Assert.IsType<OkObjectResult>(result.Result);
         }
 
         [Fact]
@@ -50,17 +59,17 @@ Assert.IsType<OkObjectResult>(            result.Result);
             _mediator.Setup(m => m.Send(It.IsAny<CreateMealPlanCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(plan);
 
-            var result = await _sut.CreateMealPlan(plan);
+            var result = await _sut.CreateMealPlan(new CreateMealPlanRequest { PlanName = plan.PlanName });
 
-Assert.IsType<CreatedAtActionResult>(            result.Result);
+            Assert.IsType<CreatedAtActionResult>(result.Result);
         }
 
         [Fact]
         public async Task UpdateMealPlan_Should_Return_BadRequest_On_Id_Mismatch()
         {
-            var result = await _sut.UpdateMealPlan(2, new MealPlanEntity { MealPlanID = 1, PlanName = "Weekly" });
+            var result = await _sut.UpdateMealPlan(2, new UpdateMealPlanRequest { MealPlanID = 1, PlanName = "Weekly" });
 
-Assert.IsType<BadRequestResult>(            result.Result);
+            Assert.IsType<BadRequestResult>(result.Result);
             _mediator.Verify(m => m.Send(It.IsAny<UpdateMealPlanCommand>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
@@ -72,7 +81,7 @@ Assert.IsType<BadRequestResult>(            result.Result);
 
             var result = await _sut.GetMealPlanNutrition(1);
 
-Assert.IsType<OkObjectResult>(            result.Result);
+            Assert.IsType<OkObjectResult>(result.Result);
         }
     }
 }

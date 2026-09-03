@@ -1,6 +1,8 @@
 using Dapper;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Infrastructure.Persistence;
+
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 

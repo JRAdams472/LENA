@@ -6,8 +6,11 @@ using LENA.Application.Behaviors;
 using LENA.Application.Contracts.Auditing;
 using LENA.Domain.Entity.Common;
 using LENA.Domain.Entity.Inventory;
+
 using MediatR;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Behaviors
@@ -44,10 +47,10 @@ namespace LENA.Application.UnitTests.Behaviors
 
             await BehaviorFor<CreateStub>().Handle(request, _ => Task.FromResult(item), CancellationToken.None);
 
-Assert.Equal("tester",             item.CreatedBy);
-Assert.Equal(Now,             item.CreateDate);
-Assert.Null(            item.LastUpdatedBy);
-Assert.Null(            item.LastUpdatedDate);
+            Assert.Equal("tester", item.CreatedBy);
+            Assert.Equal(Now, item.CreateDate);
+            Assert.Null(item.LastUpdatedBy);
+            Assert.Null(item.LastUpdatedDate);
         }
 
         [Fact]
@@ -59,10 +62,10 @@ Assert.Null(            item.LastUpdatedDate);
 
             await BehaviorFor<UpdateStub>().Handle(request, _ => Task.FromResult(item), CancellationToken.None);
 
-Assert.Equal("original",             item.CreatedBy);
-Assert.Equal(created,             item.CreateDate);
-Assert.Equal("tester",             item.LastUpdatedBy);
-Assert.Equal(Now,             item.LastUpdatedDate);
+            Assert.Equal("original", item.CreatedBy);
+            Assert.Equal(created, item.CreateDate);
+            Assert.Equal("tester", item.LastUpdatedBy);
+            Assert.Equal(Now, item.LastUpdatedDate);
         }
 
         [Fact]
@@ -73,8 +76,8 @@ Assert.Equal(Now,             item.LastUpdatedDate);
 
             var result = await BehaviorFor<PlainStub>().Handle(request, _ => Task.FromResult(item), CancellationToken.None);
 
-Assert.Same(item,             result);
-Assert.Empty(            item.CreatedBy);
+            Assert.Same(item, result);
+            Assert.Empty(item.CreatedBy);
         }
 
         private sealed class FakeTimeProvider : TimeProvider

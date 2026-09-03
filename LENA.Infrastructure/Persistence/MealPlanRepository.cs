@@ -1,9 +1,12 @@
 using System.Linq;
+
 using Dapper;
+
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
 using LENA.Domain.Entity.MealPlan;
+
 using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 
 namespace LENA.Infrastructure.Persistence

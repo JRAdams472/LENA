@@ -1,9 +1,11 @@
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
+
+using MediatR;
+
 using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
 using RecipeItem = LENA.Domain.Entity.Recipe.RecipeItem;
 using RecipeStep = LENA.Domain.Entity.Recipe.RecipeStep;
-using MediatR;
-using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.Recipe.Recipes.Queries
 {

@@ -1,4 +1,5 @@
 using FluentValidation;
+
 using LENA.Application.Features.Inventory.FlavorProfiles.Commands;
 using LENA.Domain.Entity.Inventory;
 

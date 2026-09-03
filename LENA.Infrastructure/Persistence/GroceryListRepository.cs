@@ -1,10 +1,13 @@
+using System.Data;
+
 using Dapper;
+
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
 using LENA.Domain.Entity.Grocery;
+
 using Microsoft.Data.SqlClient;
-using System.Data;
 
 namespace LENA.Infrastructure.Persistence
 {

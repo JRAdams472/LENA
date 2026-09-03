@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LENA.Application.Behaviors;
 
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 using Xunit;

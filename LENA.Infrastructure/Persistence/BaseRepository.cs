@@ -1,6 +1,8 @@
 using System.Data;
 using System.Data.Common;
+
 using Dapper;
+
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
 using LENA.Application.Models;

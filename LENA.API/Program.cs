@@ -1,35 +1,23 @@
-using FluentValidation;
 using System.Text.Json.Serialization;
+
+using FluentValidation;
+
 using LENA.API.Middleware;
 using LENA.API.Services;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Infrastructure;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+
 using Serilog;
-using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
-    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
-    .Enrich.FromLogContext()
-    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-    .WriteTo.File(
-        new CompactJsonFormatter(),
-        "logs/log-.json",
-        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-        rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 31,
-        fileSizeLimitBytes: 10485760,
-        rollOnFileSizeLimit: true)
-    .CreateLogger();
-
-builder.Host.UseSerilog(Log.Logger, true);
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -60,6 +48,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
 builder.Services.AddProblemDetails();
@@ -103,6 +92,7 @@ builder.Services.AddValidatorsFromAssembly(typeof(LENA.Application.IApplicationA
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(LENA.Application.IApplicationAssemblyMarker).Assembly);
+    cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.CachingBehavior<,>));
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.LoggingBehavior<,>));
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.ValidationBehavior<,>));
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.AuditingBehavior<,>));

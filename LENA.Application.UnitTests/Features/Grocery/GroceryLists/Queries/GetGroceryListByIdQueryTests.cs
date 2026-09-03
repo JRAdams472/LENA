@@ -7,7 +7,9 @@ using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
 using LENA.Application.Features.Grocery.GroceryLists.Queries;
 using LENA.Domain.Entity.Grocery;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Grocery.GroceryLists.Queries
@@ -32,8 +34,8 @@ namespace LENA.Application.UnitTests.Features.Grocery.GroceryLists.Queries
             var handler = new GetGroceryListByIdQueryHandler(_repository.Object);
             var result = await handler.Handle(new GetGroceryListByIdQuery(1), CancellationToken.None);
 
-Assert.NotNull(            result);
-Assert.Equal(1,             result!.GroceryListID);
+            Assert.NotNull(result);
+            Assert.Equal(1, result!.GroceryListID);
         }
 
         [Fact]

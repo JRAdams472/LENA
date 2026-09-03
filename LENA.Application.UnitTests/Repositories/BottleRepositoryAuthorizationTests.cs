@@ -4,7 +4,9 @@ using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
 using LENA.Infrastructure.Persistence;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Repositories

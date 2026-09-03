@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+
 using LENA.Domain.Entity.Common;
 
 namespace LENA.Domain.Entity.Grocery

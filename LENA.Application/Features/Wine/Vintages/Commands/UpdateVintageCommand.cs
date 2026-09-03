@@ -1,8 +1,12 @@
 using LENA.Application.Contracts.Auditing;
+using LENA.Application.Contracts.Caching;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Common;
 using LENA.Domain.Entity.Wine;
+
 using MediatR;
+
+using Microsoft.Extensions.Caching.Memory;
 
 namespace LENA.Application.Features.Wine.Vintages.Commands
 {
@@ -14,8 +18,19 @@ namespace LENA.Application.Features.Wine.Vintages.Commands
     public class UpdateVintageCommandHandler : IRequestHandler<UpdateVintageCommand, Vintage>
     {
         private readonly IVintageRepository _vintageRepository;
-        public UpdateVintageCommandHandler(IVintageRepository vintageRepository) => _vintageRepository = vintageRepository;
+
+        private readonly IMemoryCache _cache;
+        public UpdateVintageCommandHandler(IVintageRepository vintageRepository, IMemoryCache cache)
+        {
+            _vintageRepository = vintageRepository;
+            _cache = cache;
+        }
         public async Task<Vintage> Handle(UpdateVintageCommand request, CancellationToken cancellationToken)
-            => await _vintageRepository.UpdateAsync(request.Vintage, cancellationToken);
+        {
+            var result = await _vintageRepository.UpdateAsync(request.Vintage, cancellationToken);
+            _cache.Remove(CacheKeys.Vintages);
+            _cache.Remove(CacheKeys.ActiveVintages);
+            return result;
+        }
     }
 }

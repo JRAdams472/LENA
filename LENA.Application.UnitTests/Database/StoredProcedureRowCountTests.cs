@@ -22,7 +22,7 @@ namespace LENA.Application.UnitTests.Database
                 directory = directory.Parent;
             }
 
-Assert.NotNull(            directory);
+            Assert.NotNull(directory);
             return directory!;
         }
 
@@ -51,7 +51,7 @@ Assert.NotNull(            directory);
                 "usp_*_Delete.sql",
                 SearchOption.AllDirectories);
 
-Assert.NotEmpty(            deleteProcedures);
+            Assert.NotEmpty(deleteProcedures);
 
             foreach (var path in deleteProcedures)
             {
@@ -68,7 +68,7 @@ Assert.NotEmpty(            deleteProcedures);
                 "usp_*_Update.sql",
                 SearchOption.AllDirectories);
 
-Assert.NotEmpty(            updateProcedures);
+            Assert.NotEmpty(updateProcedures);
 
             foreach (var path in updateProcedures)
             {

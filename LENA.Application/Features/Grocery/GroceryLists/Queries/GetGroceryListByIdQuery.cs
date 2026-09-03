@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
 using LENA.Domain.Entity.Grocery;
+
 using MediatR;
 
 namespace LENA.Application.Features.Grocery.GroceryLists.Queries

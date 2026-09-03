@@ -1,8 +1,10 @@
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Common;
-using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
+
 using MediatR;
+
+using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
 
 namespace LENA.Application.Features.Recipe.Recipes.Commands
 {

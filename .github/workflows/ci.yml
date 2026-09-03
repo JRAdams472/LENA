@@ -17,10 +17,13 @@ jobs:
           dotnet-version: "10.0.x"
       - name: Restore
         run: dotnet restore LENA.slnx
+      - name: Format
+        run: dotnet format --verify-no-changes LENA.slnx --no-restore
       - name: Build
         run: dotnet build LENA.slnx --no-restore --configuration Release
       - name: Test
-        run: dotnet test LENA.slnx --no-build --configuration Release --verbosity normal
+        # Integration tests need a SQL Server instance; run unit tests only in this job.
+        run: dotnet test LENA.slnx --no-build --configuration Release --filter "FullyQualifiedName!~IntegrationTests" --verbosity normal
 
   frontend:
     name: Frontend

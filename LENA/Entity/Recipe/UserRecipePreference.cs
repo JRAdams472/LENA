@@ -6,6 +6,6 @@ namespace LENA.Domain.Entity.Recipe
     {
         public int UserID { get; set; }
         public int RecipeID { get; set; }
-        public bool IsFavorite { get; set; } = false;
+        public bool IsFavorite { get; set; }
     }
 }

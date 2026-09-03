@@ -1,7 +1,8 @@
 using LENA.Application.Contracts.Persistence;
-using LENA.Domain.Entity.Inventory;
-using MediatR;
 using LENA.Application.Exceptions;
+using LENA.Domain.Entity.Inventory;
+
+using MediatR;
 
 namespace LENA.Application.Features.Inventory.FoodNutrients.Commands
 {

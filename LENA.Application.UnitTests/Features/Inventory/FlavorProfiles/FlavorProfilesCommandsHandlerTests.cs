@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Inventory.FlavorProfiles.Commands;
 using LENA.Domain.Entity.Inventory;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Inventory.FlavorProfiles
@@ -27,7 +29,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.FlavorProfiles
 
             // Assert
             mockRepo.Verify(r => r.CreateAsync(It.Is<FlavorProfile>(x => x == request.FlavorProfile)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -45,7 +47,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.DeleteAsync(It.IsAny<FlavorProfile>()), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -63,7 +65,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.UpdateAsync(It.Is<FlavorProfile>(x => x == request.FlavorProfile)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

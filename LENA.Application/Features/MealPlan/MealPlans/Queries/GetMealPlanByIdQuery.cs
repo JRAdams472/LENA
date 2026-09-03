@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
+
+using MediatR;
+
 using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 using MealSlot = LENA.Domain.Entity.MealPlan.MealSlot;
 using MealSlotItem = LENA.Domain.Entity.MealPlan.MealSlotItem;
-using MediatR;
-using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.MealPlan.MealPlans.Queries
 {

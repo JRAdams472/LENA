@@ -4,8 +4,11 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
 using LENA.Application.Features.Recipe.Recipes.Commands;
+
 using Moq;
+
 using Xunit;
+
 using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
 
 namespace LENA.Application.UnitTests.Features.Recipe.Recipes
@@ -23,7 +26,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
             var result = await new CreateRecipeCommandHandler(_repo.Object)
                 .Handle(new CreateRecipeCommand(recipe), CancellationToken.None);
 
-Assert.Same(recipe,             result);
+            Assert.Same(recipe, result);
             _repo.Verify(r => r.CreateAsync(recipe, It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -36,7 +39,7 @@ Assert.Same(recipe,             result);
             var result = await new UpdateRecipeCommandHandler(_repo.Object)
                 .Handle(new UpdateRecipeCommand(recipe), CancellationToken.None);
 
-Assert.Same(recipe,             result);
+            Assert.Same(recipe, result);
             _repo.Verify(r => r.UpdateAsync(recipe, It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -61,7 +64,7 @@ Assert.Same(recipe,             result);
             var result = await new DeleteRecipeCommandHandler(_repo.Object)
                 .Handle(new DeleteRecipeCommand(7), CancellationToken.None);
 
-Assert.Same(recipe,             result);
+            Assert.Same(recipe, result);
         }
     }
 }

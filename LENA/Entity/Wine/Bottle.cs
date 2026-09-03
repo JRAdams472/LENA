@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using LENA.Domain.Entity.Common;
 
 namespace LENA.Domain.Entity.Wine
@@ -27,7 +28,7 @@ namespace LENA.Domain.Entity.Wine
         public decimal? StorageTemp { get; set; }
         public string? Location { get; set; }
         public string? Notes { get; set; }
-        public bool IsFavorite { get; set; } = false;
+        public bool IsFavorite { get; set; }
 
         // Navigation properties
         public Type? Type { get; set; }

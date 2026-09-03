@@ -6,10 +6,13 @@ using LENA.API.Controllers;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Features.Identity.Users.Queries;
 using LENA.Domain.Entity.Identity;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.API.UnitTests.Controllers

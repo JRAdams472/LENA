@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Recipe.RecipeItems.Commands;
 using LENA.Domain.Entity.Recipe;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Recipe.RecipeItems
@@ -23,7 +25,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.RecipeItems
             var result = await new AddOrUpdateRecipeItemCommandHandler(_repo.Object)
                 .Handle(new AddOrUpdateRecipeItemCommand(input), CancellationToken.None);
 
-Assert.Same(persisted,             result);
+            Assert.Same(persisted, result);
         }
 
         [Fact]

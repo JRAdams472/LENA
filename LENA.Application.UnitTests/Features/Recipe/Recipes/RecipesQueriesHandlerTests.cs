@@ -1,4 +1,3 @@
-using LENA.Application.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,9 +5,13 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
 using LENA.Application.Features.Recipe.Recipes.Queries;
+using LENA.Application.Models;
 using LENA.Domain.Entity.Recipe;
+
 using Moq;
+
 using Xunit;
+
 using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
 
 namespace LENA.Application.UnitTests.Features.Recipe.Recipes

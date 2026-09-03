@@ -1,4 +1,5 @@
 using LENA.Application.Models;
+
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.Contracts.Persistence

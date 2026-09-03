@@ -1,5 +1,7 @@
 using System.Diagnostics;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace LENA.Application.Behaviors

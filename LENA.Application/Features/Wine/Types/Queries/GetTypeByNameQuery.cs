@@ -1,6 +1,8 @@
 using LENA.Application.Contracts.Persistence;
-using MediatR;
 using LENA.Application.Exceptions;
+
+using MediatR;
+
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.Features.Wine.Types.Queries

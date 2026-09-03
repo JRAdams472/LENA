@@ -1,4 +1,5 @@
 using System;
+
 using LENA.Domain.Entity.Common;
 
 namespace LENA.Domain.Entity.Inventory

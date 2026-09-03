@@ -1,10 +1,17 @@
+using LENA.Application.Contracts.Caching;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
+
 using MediatR;
 
 namespace LENA.Application.Features.Wine.Regions.Queries
 {
-    public record GetRegionsQuery : IRequest<IReadOnlyList<Region>>;
+    public record GetRegionsQuery : IRequest<IReadOnlyList<Region>>, ICacheableQuery<IReadOnlyList<Region>>
+    {
+        public string CacheKey => CacheKeys.Regions;
+
+        public TimeSpan CacheDuration => TimeSpan.FromMinutes(10);
+    }
 
     public class GetRegionsQueryHandler : IRequestHandler<GetRegionsQuery, IReadOnlyList<Region>>
     {

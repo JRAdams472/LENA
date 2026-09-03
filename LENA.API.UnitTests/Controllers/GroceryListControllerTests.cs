@@ -2,14 +2,20 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using LENA.API.Contracts.Grocery;
 using LENA.API.Controllers;
+using LENA.Application.Exceptions;
 using LENA.Application.Features.Grocery.GroceryLists.Commands;
 using LENA.Application.Features.Grocery.GroceryLists.Queries;
-using LENA.Application.Exceptions;
+using LENA.Application.Models;
 using LENA.Domain.Entity.Grocery;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.API.UnitTests.Controllers
@@ -24,12 +30,12 @@ namespace LENA.API.UnitTests.Controllers
         [Fact]
         public async Task GetGroceryLists_Should_Return_Ok()
         {
-            _mediator.Setup(m => m.Send(It.IsAny<GetGroceryListsQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<GroceryList>());
+            _mediator.Setup(m => m.Send(It.IsAny<GetGroceryListsPagedQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PagedResult<GroceryList> { Items = new List<GroceryList>() });
 
             var result = await _sut.GetGroceryLists();
 
-Assert.IsType<OkObjectResult>(            result.Result);
+            Assert.IsType<OkObjectResult>(result.Result);
         }
 
         [Fact]
@@ -50,7 +56,7 @@ Assert.IsType<OkObjectResult>(            result.Result);
 
             var result = await _sut.GenerateGroceryList(5);
 
-Assert.IsType<CreatedAtActionResult>(            result.Result);
+            Assert.IsType<CreatedAtActionResult>(result.Result);
         }
 
         [Fact]
@@ -61,11 +67,11 @@ Assert.IsType<CreatedAtActionResult>(            result.Result);
                 .Callback<object, CancellationToken>((c, _) => sent = ((AddGroceryListItemCommand)c).GroceryListItem)
                 .ReturnsAsync(new GroceryListItem { GroceryListItemID = 1 });
 
-            await _sut.AddGroceryListItem(1, new GroceryListItem { ManualItemName = "Eggs", QuantityNeeded = 12 });
+            await _sut.AddGroceryListItem(1, new CreateGroceryListItemRequest { ManualItemName = "Eggs", QuantityNeeded = 12 });
 
-Assert.NotNull(            sent);
-Assert.Equal(1,             sent!.GroceryListID);
-Assert.Equal("Manual",             sent.Source);
+            Assert.NotNull(sent);
+            Assert.Equal(1, sent!.GroceryListID);
+            Assert.Equal("Manual", sent.Source);
         }
 
         [Fact]
@@ -77,7 +83,7 @@ Assert.Equal("Manual",             sent.Source);
             var result = await _sut.ToggleGroceryItemChecked(1);
 
             _mediator.Verify(m => m.Send(It.Is<ToggleGroceryListItemCheckedCommand>(c => c.GroceryListItemId == 1), It.IsAny<CancellationToken>()), Times.Once);
-Assert.IsType<OkObjectResult>(            result.Result);
+            Assert.IsType<OkObjectResult>(result.Result);
         }
 
         [Fact]
@@ -86,7 +92,7 @@ Assert.IsType<OkObjectResult>(            result.Result);
             var result = await _sut.DeleteGroceryItem(1);
 
             _mediator.Verify(m => m.Send(It.Is<DeleteGroceryListItemCommand>(c => c.GroceryListItemId == 1), It.IsAny<CancellationToken>()), Times.Once);
-Assert.IsType<NoContentResult>(            result);
+            Assert.IsType<NoContentResult>(result);
         }
     }
 }
