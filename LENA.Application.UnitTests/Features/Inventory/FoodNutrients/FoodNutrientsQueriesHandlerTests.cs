@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Inventory.FoodNutrients.Queries;
 using LENA.Domain.Entity.Inventory;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Inventory.FoodNutrients
@@ -27,7 +29,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.FoodNutrients
 
             // Assert
             mockRepo.Verify(r => r.GetByFoodAndNutrientIdAsync(It.Is<int>(x => x == request.FoodId), It.Is<int>(x => x == request.NutrientId)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -45,7 +47,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.GetByIdAsync(It.Is<int>(x => x == request.FoodNutrientId)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

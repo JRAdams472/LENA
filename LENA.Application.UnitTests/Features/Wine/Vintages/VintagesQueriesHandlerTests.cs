@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Wine.Vintages.Queries;
 using LENA.Domain.Entity.Wine;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Wine.Vintages
@@ -27,7 +29,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Vintages
 
             // Assert
             mockRepo.Verify(r => r.GetByIdAsync(It.Is<int>(x => x == request.VintageId)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -45,7 +47,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.GetByYearAsync(It.Is<int>(x => x == request.Year)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

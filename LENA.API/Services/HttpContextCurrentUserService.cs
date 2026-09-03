@@ -29,12 +29,12 @@ namespace LENA.API.Services
             get
             {
                 var context = _httpContextAccessor.HttpContext;
-                if (context?.Items.TryGetValue("UserID", out var value) == true && value is int userId)
+                if (context?.Items.TryGetValue("UserID", out var value) == true && value is int userId && userId > 0)
                 {
                     return userId;
                 }
 
-                return 0;
+                throw new LENA.Application.Exceptions.UnauthenticatedUserException();
             }
         }
 

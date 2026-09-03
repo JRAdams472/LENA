@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Wine.Regions.Queries;
 using LENA.Domain.Entity.Wine;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Wine.Regions
@@ -27,7 +29,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Regions
 
             // Assert
             mockRepo.Verify(r => r.GetByIdAsync(It.Is<int>(x => x == request.RegionId)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -45,7 +47,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.GetByNameAndCountryIdAsync(It.Is<string>(x => x == request.Name), It.Is<int>(x => x == request.CountryId)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

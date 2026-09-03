@@ -1,5 +1,7 @@
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
 using LENA.Domain.Entity.Inventory;
+
 using MediatR;
 
 namespace LENA.Application.Features.Inventory.Items.Queries
@@ -11,6 +13,6 @@ namespace LENA.Application.Features.Inventory.Items.Queries
         private readonly IItemRepository _itemRepository;
         public GetItemByNameQueryHandler(IItemRepository itemRepository) => _itemRepository = itemRepository;
         public async Task<Item?> Handle(GetItemByNameQuery request, CancellationToken cancellationToken)
-            => await _itemRepository.GetByNameAsync(request.Name, cancellationToken);
+            => await _itemRepository.GetByNameAsync(request.Name, cancellationToken) ?? throw new NotFoundException(nameof(Item), request.Name);
     }
 }

@@ -1,5 +1,6 @@
-using LENA.Domain.Entity.Common;
 using LENA.Application.Contracts.Auditing;
+using LENA.Domain.Entity.Common;
+
 using MediatR;
 
 namespace LENA.Application.Behaviors

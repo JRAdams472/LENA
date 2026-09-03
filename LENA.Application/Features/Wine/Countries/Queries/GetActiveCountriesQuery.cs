@@ -1,10 +1,17 @@
+using LENA.Application.Contracts.Caching;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
+
 using MediatR;
 
 namespace LENA.Application.Features.Wine.Countries.Queries
 {
-    public record GetActiveCountriesQuery : IRequest<IReadOnlyList<Country>>;
+    public record GetActiveCountriesQuery : IRequest<IReadOnlyList<Country>>, ICacheableQuery<IReadOnlyList<Country>>
+    {
+        public string CacheKey => CacheKeys.ActiveCountries;
+
+        public TimeSpan CacheDuration => TimeSpan.FromMinutes(10);
+    }
 
     public class GetActiveCountriesQueryHandler : IRequestHandler<GetActiveCountriesQuery, IReadOnlyList<Country>>
     {

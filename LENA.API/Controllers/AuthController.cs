@@ -1,6 +1,8 @@
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Features.Identity.Users.Queries;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

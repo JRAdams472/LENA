@@ -1,7 +1,9 @@
 using FluentValidation;
+
 using LENA.Application.Features.Wine.Countries.Commands;
 using LENA.Application.Features.Wine.Countries.Validators;
 using LENA.Domain.Entity.Wine;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Wine.Countries.Validators
@@ -15,7 +17,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Countries.Validators
         {
             var command = new UpdateCountryCommand(new Country { CountryName = "Test", ISOCode = "XX" });
             var result = _validator.Validate(command);
-Assert.True(            result.IsValid);
+            Assert.True(result.IsValid);
         }
 
         [Fact]
@@ -23,7 +25,7 @@ Assert.True(            result.IsValid);
         {
             var command = new UpdateCountryCommand(null!);
             var result = _validator.Validate(command);
-Assert.False(            result.IsValid);
+            Assert.False(result.IsValid);
         }
     }
 }

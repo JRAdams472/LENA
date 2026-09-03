@@ -1,10 +1,17 @@
+using LENA.Application.Contracts.Caching;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
+
 using MediatR;
 
 namespace LENA.Application.Features.Wine.Vintages.Queries
 {
-    public record GetVintagesQuery : IRequest<IReadOnlyList<Vintage>>;
+    public record GetVintagesQuery : IRequest<IReadOnlyList<Vintage>>, ICacheableQuery<IReadOnlyList<Vintage>>
+    {
+        public string CacheKey => CacheKeys.Vintages;
+
+        public TimeSpan CacheDuration => TimeSpan.FromMinutes(10);
+    }
 
     public class GetVintagesQueryHandler : IRequestHandler<GetVintagesQuery, IReadOnlyList<Vintage>>
     {

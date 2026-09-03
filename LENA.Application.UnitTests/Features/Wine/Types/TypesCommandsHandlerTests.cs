@@ -5,8 +5,13 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Wine.Types.Commands;
 using LENA.Domain.Entity.Wine;
+
+using Microsoft.Extensions.Caching.Memory;
+
 using Moq;
+
 using Xunit;
+
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.UnitTests.Features.Wine.Types
@@ -21,14 +26,14 @@ namespace LENA.Application.UnitTests.Features.Wine.Types
             var mockRepo = new Mock<ITypeRepository>();
 
             mockRepo.Setup(r => r.CreateAsync(It.Is<TypeEntity>(x => x == request.Type))).ReturnsAsync(new TypeEntity { TypeName = "Test" });
-            var handler = new CreateTypeCommandHandler(mockRepo.Object);
+            var handler = new CreateTypeCommandHandler(mockRepo.Object, new Mock<IMemoryCache>().Object);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             mockRepo.Verify(r => r.CreateAsync(It.Is<TypeEntity>(x => x == request.Type)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -39,14 +44,14 @@ Assert.NotNull(            result);
             var mockRepo = new Mock<ITypeRepository>();
             mockRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new TypeEntity { TypeName = "Test" });
             mockRepo.Setup(r => r.DeleteAsync(It.IsAny<TypeEntity>())).ReturnsAsync(new TypeEntity { TypeName = "Test" });
-            var handler = new DeleteTypeCommandHandler(mockRepo.Object);
+            var handler = new DeleteTypeCommandHandler(mockRepo.Object, new Mock<IMemoryCache>().Object);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             mockRepo.Verify(r => r.DeleteAsync(It.IsAny<TypeEntity>()), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -57,14 +62,14 @@ Assert.NotNull(            result);
             var mockRepo = new Mock<ITypeRepository>();
 
             mockRepo.Setup(r => r.UpdateAsync(It.Is<TypeEntity>(x => x == request.Type))).ReturnsAsync(new TypeEntity { TypeName = "Test" });
-            var handler = new UpdateTypeCommandHandler(mockRepo.Object);
+            var handler = new UpdateTypeCommandHandler(mockRepo.Object, new Mock<IMemoryCache>().Object);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             mockRepo.Verify(r => r.UpdateAsync(It.Is<TypeEntity>(x => x == request.Type)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

@@ -3,15 +3,24 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Dapper;
+
 using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Dac;
+
 using Xunit;
 
 namespace LENA.IntegrationTests
 {
     public sealed class DatabaseFixture : IAsyncLifetime
     {
+        static DatabaseFixture()
+        {
+            // Required: LENA.Database uses snake_case columns; Dapper must map them to PascalCase properties.
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+        }
+
         private const string BaseConnectionString = "Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;TrustServerCertificate=true";
         private string _databaseName = $"LENA_Integration_{Guid.NewGuid():N}";
         private string _dacpacPath = string.Empty;

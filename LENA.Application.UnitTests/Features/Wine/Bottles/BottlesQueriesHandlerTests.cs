@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Wine.Bottles.Queries;
 using LENA.Domain.Entity.Wine;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Wine.Bottles
@@ -27,7 +29,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Bottles
 
             // Assert
             mockRepo.Verify(r => r.GetByIdAsync(It.Is<int>(x => x == request.BottleId)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -45,7 +47,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.GetTotalBottleCountAsync(), Times.Once);
-Assert.Equal(1,             result);
+            Assert.Equal(1, result);
         }
     }
 }

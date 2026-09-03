@@ -1,5 +1,7 @@
 using FluentValidation;
+
 using LENA.Application.Exceptions;
+
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -36,6 +38,12 @@ namespace LENA.API.ExceptionHandling
                 problemDetails.Status = StatusCodes.Status404NotFound;
                 problemDetails.Title = "Resource not found";
                 problemDetails.Detail = notFoundException.Message;
+            }
+            else if (exception is LENA.Application.Exceptions.UnauthenticatedUserException)
+            {
+                problemDetails.Status = StatusCodes.Status401Unauthorized;
+                problemDetails.Title = "Unauthenticated";
+                problemDetails.Detail = exception.Message;
             }
             else if (exception is ArgumentException)
             {

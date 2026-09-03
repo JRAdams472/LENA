@@ -1,5 +1,7 @@
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
 using LENA.Domain.Entity.Inventory;
+
 using MediatR;
 
 namespace LENA.Application.Features.Inventory.NutrientTypes.Queries
@@ -11,6 +13,6 @@ namespace LENA.Application.Features.Inventory.NutrientTypes.Queries
         private readonly INutrientTypeRepository _nutrientTypeRepository;
         public GetNutrientTypeByNameQueryHandler(INutrientTypeRepository nutrientTypeRepository) => _nutrientTypeRepository = nutrientTypeRepository;
         public async Task<NutrientType?> Handle(GetNutrientTypeByNameQuery request, CancellationToken cancellationToken)
-            => await _nutrientTypeRepository.GetByNameAsync(request.Name, cancellationToken);
+            => await _nutrientTypeRepository.GetByNameAsync(request.Name, cancellationToken) ?? throw new NotFoundException(nameof(NutrientType), request.Name);
     }
 }

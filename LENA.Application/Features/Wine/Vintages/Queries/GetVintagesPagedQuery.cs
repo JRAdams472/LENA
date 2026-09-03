@@ -1,5 +1,6 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
+
 using MediatR;
 
 namespace LENA.Application.Features.Wine.Vintages.Queries

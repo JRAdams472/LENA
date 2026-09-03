@@ -1,5 +1,8 @@
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
+
 using MediatR;
+
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.Features.Wine.Types.Queries
@@ -11,6 +14,6 @@ namespace LENA.Application.Features.Wine.Types.Queries
         private readonly ITypeRepository _typeRepository;
         public GetTypeByIdQueryHandler(ITypeRepository typeRepository) => _typeRepository = typeRepository;
         public async Task<TypeEntity?> Handle(GetTypeByIdQuery request, CancellationToken cancellationToken)
-            => await _typeRepository.GetByIdAsync(request.TypeId, cancellationToken);
+            => await _typeRepository.GetByIdAsync(request.TypeId, cancellationToken) ?? throw new NotFoundException(nameof(TypeEntity), request.TypeId);
     }
 }

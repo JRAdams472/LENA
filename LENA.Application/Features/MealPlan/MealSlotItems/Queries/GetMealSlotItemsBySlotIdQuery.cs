@@ -1,6 +1,8 @@
 using LENA.Application.Contracts.Persistence;
-using MealSlotItem = LENA.Domain.Entity.MealPlan.MealSlotItem;
+
 using MediatR;
+
+using MealSlotItem = LENA.Domain.Entity.MealPlan.MealSlotItem;
 
 namespace LENA.Application.Features.MealPlan.MealSlotItems.Queries
 {

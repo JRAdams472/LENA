@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Wine.Vintages.Commands;
 using LENA.Domain.Entity.Wine;
+
+using Microsoft.Extensions.Caching.Memory;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Wine.Vintages
@@ -20,14 +24,14 @@ namespace LENA.Application.UnitTests.Features.Wine.Vintages
             var mockRepo = new Mock<IVintageRepository>();
 
             mockRepo.Setup(r => r.CreateAsync(It.Is<Vintage>(x => x == request.Vintage))).ReturnsAsync(new Vintage());
-            var handler = new CreateVintageCommandHandler(mockRepo.Object);
+            var handler = new CreateVintageCommandHandler(mockRepo.Object, new Mock<IMemoryCache>().Object);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             mockRepo.Verify(r => r.CreateAsync(It.Is<Vintage>(x => x == request.Vintage)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -38,14 +42,14 @@ Assert.NotNull(            result);
             var mockRepo = new Mock<IVintageRepository>();
             mockRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new Vintage());
             mockRepo.Setup(r => r.DeleteAsync(It.IsAny<Vintage>())).ReturnsAsync(new Vintage());
-            var handler = new DeleteVintageCommandHandler(mockRepo.Object);
+            var handler = new DeleteVintageCommandHandler(mockRepo.Object, new Mock<IMemoryCache>().Object);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             mockRepo.Verify(r => r.DeleteAsync(It.IsAny<Vintage>()), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -56,14 +60,14 @@ Assert.NotNull(            result);
             var mockRepo = new Mock<IVintageRepository>();
 
             mockRepo.Setup(r => r.UpdateAsync(It.Is<Vintage>(x => x == request.Vintage))).ReturnsAsync(new Vintage());
-            var handler = new UpdateVintageCommandHandler(mockRepo.Object);
+            var handler = new UpdateVintageCommandHandler(mockRepo.Object, new Mock<IMemoryCache>().Object);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             mockRepo.Verify(r => r.UpdateAsync(It.Is<Vintage>(x => x == request.Vintage)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Grocery.GroceryLists.Commands;
 using LENA.Domain.Entity.Grocery;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Grocery.GroceryLists.Commands
@@ -33,7 +35,7 @@ namespace LENA.Application.UnitTests.Features.Grocery.GroceryLists.Commands
                     It.Is<GroceryList>(g => g.MealPlanID == 5),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
-Assert.Equal(1,             result.GroceryListID);
+            Assert.Equal(1, result.GroceryListID);
         }
 
         [Fact]
@@ -55,7 +57,7 @@ Assert.Equal(1,             result.GroceryListID);
                     It.Is<GroceryList>(g => g.MealPlanID == null),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
-Assert.Equal(2,             result.GroceryListID);
+            Assert.Equal(2, result.GroceryListID);
         }
     }
 }

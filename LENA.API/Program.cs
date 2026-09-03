@@ -1,34 +1,23 @@
-using FluentValidation;
 using System.Text.Json.Serialization;
+
+using FluentValidation;
+
 using LENA.API.Middleware;
 using LENA.API.Services;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
-using LENA.Application.Repositories;
+using LENA.Infrastructure;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+
 using Serilog;
-using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
-    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
-    .Enrich.FromLogContext()
-    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-    .WriteTo.File(
-        new CompactJsonFormatter(),
-        "logs/log-.json",
-        rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 31,
-        fileSizeLimitBytes: 10485760,
-        rollOnFileSizeLimit: true)
-    .CreateLogger();
-
-builder.Host.UseSerilog(Log.Logger, true);
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -48,8 +37,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowExternal", policy =>
     {
         policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+              .WithHeaders("Accept", "Authorization", "Content-Type")
+              .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
     });
 });
 builder.Services.AddControllers()
@@ -59,6 +48,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
 builder.Services.AddProblemDetails();
@@ -81,7 +71,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.Audience = googleClientId;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidIssuers = new[] { "https://accounts.google.com", "accounts.google.com" },
+            ValidIssuers = JwtConstants.ValidIssuers,
             ValidateAudience = true,
             ValidateIssuer = true,
             ValidateLifetime = true,
@@ -97,60 +87,24 @@ builder.Services.AddAuthorization(options =>
         .Build();
 });
 
-builder.Services.AddValidatorsFromAssembly(typeof(LENA.Application.Features.Wine.Bottles.Commands.CreateBottleCommand).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(LENA.Application.IApplicationAssemblyMarker).Assembly);
 
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(LENA.Application.Features.Wine.Bottles.Commands.CreateBottleCommand).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(LENA.Application.IApplicationAssemblyMarker).Assembly);
+    cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.CachingBehavior<,>));
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.LoggingBehavior<,>));
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.ValidationBehavior<,>));
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.AuditingBehavior<,>));
 });
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrWhiteSpace(connectionString))
-{
-    throw new InvalidOperationException(
-        "A 'DefaultConnection' connection string is required. " +
-        "Add it to LENA.API/appsettings.json or LENA.API/appsettings.Development.json.");
-}
-
-builder.Services.AddSingleton<IDbConnectionFactory>(new DbConnectionFactory(connectionString));
-
-builder.Services.AddScoped<IBottleRepository, BottleRepository>();
-builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
-builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();
-builder.Services.AddScoped<IGroceryListRepository, GroceryListRepository>();
-builder.Services.AddScoped<ICountryRepository, CountryRepository>();
-builder.Services.AddScoped<IRegionRepository, RegionRepository>();
-builder.Services.AddScoped<ITypeRepository, TypeRepository>();
-builder.Services.AddScoped<IVintageRepository, VintageRepository>();
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IItemRepository, ItemRepository>();
-builder.Services.AddScoped<IFoodFlavorRepository, FoodFlavorRepository>();
-builder.Services.AddScoped<IFoodNutrientRepository, FoodNutrientRepository>();
-builder.Services.AddScoped<INutrientTypeRepository, NutrientTypeRepository>();
-builder.Services.AddScoped<IFlavorProfileRepository, FlavorProfileRepository>();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// Swagger is always on in development; elsewhere it is opt-in via "Swagger:Enabled".
-// "Swagger:RoutePrefix" moves it behind a reverse proxy that only forwards a subpath.
-if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:Enabled"))
-{
-    var swaggerPrefix = (app.Configuration["Swagger:RoutePrefix"] ?? "swagger").Trim('/');
-
-    app.MapOpenApi();
-    app.UseSwagger(options => options.RouteTemplate = $"{swaggerPrefix}/{{documentName}}/swagger.json");
-    app.UseSwaggerUI(options =>
-    {
-        options.RoutePrefix = swaggerPrefix;
-        options.SwaggerEndpoint($"/{swaggerPrefix}/v1/swagger.json", "LENA API v1");
-    });
-}
-
+// Swagger is always on in development; it is opt-in via "Swagger:Enabled" outside development.
+// When enabled outside development, the Swagger UI and JSON endpoints require an authenticated user.
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
@@ -159,8 +113,42 @@ if (!app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 
 app.UseCors("AllowExternal");
-
 app.UseAuthentication();
+
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:Enabled"))
+{
+    var isDevelopment = app.Environment.IsDevelopment();
+    var swaggerPrefix = (app.Configuration["Swagger:RoutePrefix"] ?? "swagger").Trim('/');
+
+    app.MapOpenApi();
+
+    // Gate the Swagger UI and JSON to authenticated users outside development.
+    app.Use(async (context, next) =>
+    {
+        if (isDevelopment)
+        {
+            await next();
+            return;
+        }
+
+        if (context.Request.Path.StartsWithSegments($"/{swaggerPrefix}") &&
+            !(context.User.Identity?.IsAuthenticated ?? false))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return;
+        }
+
+        await next();
+    });
+
+    app.UseSwagger(options => options.RouteTemplate = $"{swaggerPrefix}/{{documentName}}/swagger.json");
+    app.UseSwaggerUI(options =>
+    {
+        options.RoutePrefix = swaggerPrefix;
+        options.SwaggerEndpoint($"/{swaggerPrefix}/v1/swagger.json", "LENA API v1");
+    });
+}
+
 app.UseMiddleware<UserResolutionMiddleware>();
 app.UseAuthorization();
 
@@ -169,3 +157,8 @@ app.UseSerilogRequestLogging();
 app.MapControllers();
 
 app.Run();
+
+file static class JwtConstants
+{
+    public static readonly string[] ValidIssuers = new[] { "https://accounts.google.com", "accounts.google.com" };
+}

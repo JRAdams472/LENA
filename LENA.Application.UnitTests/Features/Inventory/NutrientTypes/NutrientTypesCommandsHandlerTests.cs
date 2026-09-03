@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Inventory.NutrientTypes.Commands;
 using LENA.Domain.Entity.Inventory;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Inventory.NutrientTypes
@@ -27,7 +29,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.NutrientTypes
 
             // Assert
             mockRepo.Verify(r => r.CreateAsync(It.Is<NutrientType>(x => x == request.NutrientType)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -45,7 +47,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.DeleteAsync(It.IsAny<NutrientType>()), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -63,7 +65,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.UpdateAsync(It.Is<NutrientType>(x => x == request.NutrientType)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

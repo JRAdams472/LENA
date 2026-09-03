@@ -1,5 +1,7 @@
 using System.Diagnostics;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace LENA.Application.Behaviors
@@ -20,7 +22,8 @@ namespace LENA.Application.Behaviors
             CancellationToken cancellationToken)
         {
             var requestName = typeof(TRequest).Name;
-            _logger.LogInformation("Handling {RequestName} with request data: {@Request}", requestName, request);
+            _logger.LogInformation("Handling {RequestName}", requestName);
+            _logger.LogDebug("Handling {RequestName} with request data: {@Request}", requestName, request);
 
             var stopwatch = Stopwatch.StartNew();
             try

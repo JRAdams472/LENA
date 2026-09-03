@@ -1,4 +1,5 @@
 using FluentValidation;
+
 using LENA.Application.Features.MealPlan.MealSlotItems.Commands;
 
 namespace LENA.Application.Features.MealPlan.MealSlotItems.Validators

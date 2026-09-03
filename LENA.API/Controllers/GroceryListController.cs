@@ -1,7 +1,9 @@
+using LENA.API.Contracts.Grocery;
 using LENA.Application.Features.Grocery.GroceryLists.Commands;
 using LENA.Application.Features.Grocery.GroceryLists.Queries;
-using LENA.Domain.Entity.Grocery;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace LENA.API.Controllers
@@ -18,43 +20,50 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<GroceryList>>> GetGroceryLists()
+        public async Task<ActionResult<LENA.Application.Models.PagedResult<GroceryListResponse>>> GetGroceryLists([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 25)
         {
-            var lists = await _mediator.Send(new GetGroceryListsQuery());
-            return Ok(lists);
+            (pageNumber, pageSize) = LENA.Application.Models.PaginationRequest.Clamp(pageNumber, pageSize);
+            var paged = await _mediator.Send(new GetGroceryListsPagedQuery(pageNumber, pageSize));
+            return Ok(new LENA.Application.Models.PagedResult<GroceryListResponse>
+            {
+                Items = paged.Items.Select(GroceryListResponse.FromEntity).ToList(),
+                TotalCount = paged.TotalCount,
+                PageNumber = paged.PageNumber,
+                PageSize = paged.PageSize,
+            });
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<GroceryList?>> GetGroceryListById(int id)
+        public async Task<ActionResult<GroceryListResponse?>> GetGroceryListById(int id)
         {
             var list = await _mediator.Send(new GetGroceryListByIdQuery(id));
-            if (list == null)
-                return NotFound();
-
-            return Ok(list);
+            return Ok(GroceryListResponse.FromEntity(list!));
         }
 
         [HttpPost("generate")]
-        public async Task<ActionResult<GroceryList>> GenerateGroceryList([FromQuery] int? mealPlanId)
+        public async Task<ActionResult<GroceryListResponse>> GenerateGroceryList([FromQuery] int? mealPlanId)
         {
             var generated = await _mediator.Send(new GenerateGroceryListCommand(mealPlanId));
-            return CreatedAtAction(nameof(GetGroceryListById), new { id = generated.GroceryListID }, generated);
+            return CreatedAtAction(nameof(GetGroceryListById), new { id = generated.GroceryListID }, GroceryListResponse.FromEntity(generated!));
         }
 
         [HttpPost("{id}/items")]
-        public async Task<ActionResult<GroceryListItem>> AddGroceryListItem(int id, [FromBody] GroceryListItem item)
+        public async Task<ActionResult<GroceryListItemResponse>> AddGroceryListItem(int id, [FromBody] CreateGroceryListItemRequest request)
         {
-            item.GroceryListID = id;
-            item.Source = string.IsNullOrWhiteSpace(item.Source) ? "Manual" : item.Source;
-            var created = await _mediator.Send(new AddGroceryListItemCommand(item));
-            return Ok(created);
+            var entity = request.ToEntity();
+            entity.GroceryListID = id;
+            if (string.IsNullOrWhiteSpace(entity.Source))
+                entity.Source = "Manual";
+
+            var created = await _mediator.Send(new AddGroceryListItemCommand(entity));
+            return Ok(GroceryListItemResponse.FromEntity(created!));
         }
 
         [HttpPut("items/{groceryListItemId}/checked")]
-        public async Task<ActionResult<GroceryListItem>> ToggleGroceryItemChecked(int groceryListItemId)
+        public async Task<ActionResult<GroceryListItemResponse>> ToggleGroceryItemChecked(int groceryListItemId)
         {
             var updated = await _mediator.Send(new ToggleGroceryListItemCheckedCommand(groceryListItemId));
-            return Ok(updated);
+            return Ok(GroceryListItemResponse.FromEntity(updated!));
         }
 
         [HttpDelete("items/{groceryListItemId}")]

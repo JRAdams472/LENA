@@ -1,5 +1,6 @@
 using LENA.Application.Models;
 using LENA.Domain.Entity.MealPlan;
+
 using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 
 namespace LENA.Application.Contracts.Persistence

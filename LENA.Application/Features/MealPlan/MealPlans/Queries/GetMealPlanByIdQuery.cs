@@ -1,9 +1,13 @@
 using System.Collections.Generic;
+
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
+
+using MediatR;
+
 using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 using MealSlot = LENA.Domain.Entity.MealPlan.MealSlot;
 using MealSlotItem = LENA.Domain.Entity.MealPlan.MealSlotItem;
-using MediatR;
 
 namespace LENA.Application.Features.MealPlan.MealPlans.Queries
 {
@@ -20,9 +24,7 @@ namespace LENA.Application.Features.MealPlan.MealPlans.Queries
 
         public async Task<MealPlanEntity?> Handle(GetMealPlanByIdQuery request, CancellationToken cancellationToken)
         {
-            var mealPlan = await _mealPlanRepository.GetByIdAsync(request.MealPlanId, cancellationToken);
-            if (mealPlan == null)
-                return null;
+            var mealPlan = await _mealPlanRepository.GetByIdAsync(request.MealPlanId, cancellationToken) ?? throw new NotFoundException(nameof(MealPlanEntity), request.MealPlanId);
 
             var slots = await _mealPlanRepository.GetSlotsByMealPlanIdAsync(request.MealPlanId, cancellationToken);
             foreach (var slot in slots)

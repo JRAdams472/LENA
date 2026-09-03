@@ -1,12 +1,14 @@
-using LENA.Domain.Entity.Common;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Inventory.Items.Commands;
+using LENA.Domain.Entity.Common;
 using LENA.Domain.Entity.Inventory;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Inventory.Items
@@ -28,7 +30,7 @@ namespace LENA.Application.UnitTests.Features.Inventory.Items
 
             // Assert
             mockRepo.Verify(r => r.CreateAsync(It.Is<Item>(x => x == request.Item)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -46,7 +48,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.DeleteAsync(It.IsAny<Item>()), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -64,7 +66,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.UpdateAsync(It.Is<Item>(x => x == request.Item)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]

@@ -1,8 +1,12 @@
 using LENA.Application.Contracts.Auditing;
+using LENA.Application.Contracts.Caching;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Common;
 using LENA.Domain.Entity.Wine;
+
 using MediatR;
+
+using Microsoft.Extensions.Caching.Memory;
 
 namespace LENA.Application.Features.Wine.Countries.Commands
 {
@@ -15,14 +19,20 @@ namespace LENA.Application.Features.Wine.Countries.Commands
     {
         private readonly ICountryRepository _countryRepository;
 
-        public UpdateCountryCommandHandler(ICountryRepository countryRepository)
+        private readonly IMemoryCache _cache;
+
+        public UpdateCountryCommandHandler(ICountryRepository countryRepository, IMemoryCache cache)
         {
             _countryRepository = countryRepository;
+            _cache = cache;
         }
 
         public async Task<Country> Handle(UpdateCountryCommand request, CancellationToken cancellationToken)
         {
-            return await _countryRepository.UpdateAsync(request.Country, cancellationToken);
+            var result = await _countryRepository.UpdateAsync(request.Country, cancellationToken);
+            _cache.Remove(CacheKeys.Countries);
+            _cache.Remove(CacheKeys.ActiveCountries);
+            return result;
         }
     }
 }

@@ -1,13 +1,17 @@
-using LENA.Application.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
 using LENA.Application.Features.Recipe.Recipes.Queries;
+using LENA.Application.Models;
 using LENA.Domain.Entity.Recipe;
+
 using Moq;
+
 using Xunit;
+
 using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
 
 namespace LENA.Application.UnitTests.Features.Recipe.Recipes
@@ -19,7 +23,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
         [Fact]
         public async Task GetRecipesQuery_Should_Return_All_Recipes()
         {
-            IReadOnlyList<RecipeEntity> recipes = new List<RecipeEntity> { new() { RecipeName = "Soup" } };
+            List<RecipeEntity> recipes = new() { new() { RecipeName = "Soup" } };
             _repo.Setup(r => r.ListAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(recipes);
 
             var result = await new GetRecipesQueryHandler(_repo.Object)
@@ -32,7 +36,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
         [Fact]
         public async Task GetRecipesPagedQuery_Should_Return_PagedResult_And_Pass_Through_Page_And_Size()
         {
-            IReadOnlyList<RecipeEntity> recipes = new List<RecipeEntity> { new() { RecipeName = "Soup" } };
+            List<RecipeEntity> recipes = new() { new() { RecipeName = "Soup" } };
             _repo.Setup(r => r.ListPagedAsync(2, 10, It.IsAny<string?>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PagedResult<RecipeEntity> { Items = recipes, PageNumber = 2, PageSize = 10, TotalCount = 1 });
 
@@ -64,14 +68,13 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
         }
 
         [Fact]
-        public async Task GetRecipeByIdQuery_Should_Return_Null_When_Missing()
+        public async Task GetRecipeByIdQuery_Should_Throw_NotFound_When_Missing()
         {
             _repo.Setup(r => r.GetByIdAsync(9, It.IsAny<CancellationToken>())).ReturnsAsync((RecipeEntity?)null);
 
-            var result = await new GetRecipeByIdQueryHandler(_repo.Object)
-                .Handle(new GetRecipeByIdQuery(9), CancellationToken.None);
+            await Assert.ThrowsAsync<NotFoundException>(() => new GetRecipeByIdQueryHandler(_repo.Object)
+                .Handle(new GetRecipeByIdQuery(9), CancellationToken.None));
 
-Assert.Null(            result);
             _repo.Verify(r => r.GetItemsByRecipeIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }

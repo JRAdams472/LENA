@@ -20,10 +20,10 @@ namespace LENA.Application.UnitTests.Database
                 directory = directory.Parent;
             }
 
-Assert.NotNull(            directory);
+            Assert.NotNull(directory);
 
             var path = Path.Combine(directory!.FullName, "LENA.Database", Path.Combine(relativePath));
-Assert.True(            File.Exists(path));
+            Assert.True(File.Exists(path));
             return File.ReadAllText(path);
         }
 
@@ -45,22 +45,22 @@ Assert.True(            File.Exists(path));
             var updates = AdjustQuantity.Split("UPDATE [Inventory].[UserItem]", StringSplitOptions.RemoveEmptyEntries);
 
             // one leading segment (the header) plus one segment per UPDATE statement
-Assert.True(            updates.Length > 1);
-Assert.Contains("@LastUpdatedBy NVARCHAR(100)",             AdjustQuantity);
+            Assert.True(updates.Length > 1);
+            Assert.Contains("@LastUpdatedBy NVARCHAR(100)", AdjustQuantity);
 
             foreach (var update in updates[1..])
             {
-Assert.Contains("[CurrentQuantity] = @Quantity",                 update);
-Assert.Contains("[LastUpdatedDate] = SYSUTCDATETIME()",                 update);
-Assert.Contains("[LastUpdatedBy] = @LastUpdatedBy",                 update);
+                Assert.Contains("[CurrentQuantity] = @Quantity", update);
+                Assert.Contains("[LastUpdatedDate] = SYSUTCDATETIME()", update);
+                Assert.Contains("[LastUpdatedBy] = @LastUpdatedBy", update);
             }
         }
 
         [Fact]
         public void Generate_Should_Surface_Items_Depleted_Since_The_Previous_List()
         {
-Assert.Contains("DECLARE @LastGeneratedDate DATETIME2 = (SELECT MAX(GeneratedDate) FROM [MealPlan].[GroceryList] WHERE UserID = @UserID)",             GenerateFromMealPlan);
-Assert.Contains("'Depleted'",             GenerateFromMealPlan);
+            Assert.Contains("DECLARE @LastGeneratedDate DATETIME2 = (SELECT MAX(GeneratedDate) FROM [MealPlan].[GroceryList] WHERE UserID = @UserID)", GenerateFromMealPlan);
+            Assert.Contains("'Depleted'", GenerateFromMealPlan);
             Assert.Contains("WHERE COALESCE(ui.CurrentQuantity, 0) = 0 AND ui.LastUpdatedDate > ui.CreateDate AND (@LastGeneratedDate IS NULL OR ui.LastUpdatedDate > @LastGeneratedDate) AND ui.LastUpdatedDate > DATEADD(day, -10, @CreateDate)", GenerateFromMealPlan);
         }
 
@@ -68,8 +68,8 @@ Assert.Contains("'Depleted'",             GenerateFromMealPlan);
         public void Generate_Should_Net_On_Hand_Quantity_Only_Within_The_Inventory_Unit()
         {
             // every PlanItems branch keeps the line's own unit of measure in the grouping key
-Assert.Contains("GROUP BY ri.ItemID, ri.UnitOfMeasure",             GenerateFromMealPlan);
-Assert.Contains("GROUP BY msi.ItemID, msi.UnitOfMeasure",             GenerateFromMealPlan);
+            Assert.Contains("GROUP BY ri.ItemID, ri.UnitOfMeasure", GenerateFromMealPlan);
+            Assert.Contains("GROUP BY msi.ItemID, msi.UnitOfMeasure", GenerateFromMealPlan);
 
             // on-hand inventory is subtracted only from the group expressed in the item's own unit
             Assert.Contains("SUM(p.TotalNeeded) - CASE WHEN COALESCE(NULLIF(p.UnitOfMeasure, N''), i.Unit) = i.Unit THEN COALESCE(ui.CurrentQuantity, 0) ELSE 0 END AS QuantityNeeded", GenerateFromMealPlan);
@@ -89,9 +89,9 @@ Assert.Contains("GROUP BY msi.ItemID, msi.UnitOfMeasure",             GenerateFr
         {
             var sql = procedure == nameof(GenerateFromMealPlan) ? GenerateFromMealPlan : GetItemsByListId;
 
-Assert.Contains("i.Name AS ItemName",             sql);
-Assert.Contains("LEFT JOIN [Inventory].[Item] i ON gli.ItemID = i.ItemID",             sql);
-Assert.Contains("ORDER BY gli.Source, COALESCE(i.Name, gli.ManualItemName)",             sql);
+            Assert.Contains("i.Name AS ItemName", sql);
+            Assert.Contains("LEFT JOIN [Inventory].[Item] i ON gli.ItemID = i.ItemID", sql);
+            Assert.Contains("ORDER BY gli.Source, COALESCE(i.Name, gli.ManualItemName)", sql);
         }
     }
 }

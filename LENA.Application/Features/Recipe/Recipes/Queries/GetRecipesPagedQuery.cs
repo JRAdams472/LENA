@@ -1,6 +1,8 @@
 using LENA.Application.Contracts.Persistence;
-using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
+
 using MediatR;
+
+using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
 
 namespace LENA.Application.Features.Recipe.Recipes.Queries
 {

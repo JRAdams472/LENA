@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Dapper;
+
 using FluentAssertions;
+
 using Microsoft.Data.SqlClient;
+
 using Xunit;
 
 namespace LENA.IntegrationTests
@@ -27,7 +31,7 @@ namespace LENA.IntegrationTests
             return connection;
         }
 
-        private async Task ResetStateAsync(SqlConnection connection)
+        private static async Task ResetStateAsync(SqlConnection connection)
         {
             // Neutralize items left in a depleted state by earlier tests so they do not leak
             // into the current test's depleted-item checks. GroceryList rows are also cleared

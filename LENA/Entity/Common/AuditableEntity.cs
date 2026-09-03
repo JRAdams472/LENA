@@ -13,4 +13,3 @@ namespace LENA.Domain.Entity.Common
 
     }
 }
-

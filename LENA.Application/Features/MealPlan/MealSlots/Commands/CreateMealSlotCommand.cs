@@ -1,8 +1,10 @@
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Common;
-using MealSlot = LENA.Domain.Entity.MealPlan.MealSlot;
+
 using MediatR;
+
+using MealSlot = LENA.Domain.Entity.MealPlan.MealSlot;
 
 namespace LENA.Application.Features.MealPlan.MealSlots.Commands
 {

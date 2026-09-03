@@ -1,7 +1,7 @@
-using LENA.Domain.Entity.Common;
-
 using LENA.Application.Features.Grocery.GroceryLists.Commands;
 using LENA.Application.Features.Inventory.Items.Commands;
+using LENA.Domain.Entity.Common;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Behaviors
@@ -18,8 +18,8 @@ namespace LENA.Application.UnitTests.Behaviors
             var command = new GenerateGroceryListCommand(1);
             command.AuditableEntity.CreatedBy = "tester";
 
-Assert.Same(command.AuditableEntity,             command.AuditableEntity);
-Assert.Equal("tester",             command.AuditableEntity.CreatedBy);
+            Assert.Same(command.AuditableEntity, command.AuditableEntity);
+            Assert.Equal("tester", command.AuditableEntity.CreatedBy);
         }
 
         [Fact]
@@ -28,8 +28,8 @@ Assert.Equal("tester",             command.AuditableEntity.CreatedBy);
             var command = new ToggleGroceryListItemCheckedCommand(1);
             command.AuditableEntity.LastUpdatedBy = "tester";
 
-Assert.Same(command.AuditableEntity,             command.AuditableEntity);
-Assert.Equal("tester",             command.AuditableEntity.LastUpdatedBy);
+            Assert.Same(command.AuditableEntity, command.AuditableEntity);
+            Assert.Equal("tester", command.AuditableEntity.LastUpdatedBy);
         }
 
         [Fact]
@@ -38,8 +38,8 @@ Assert.Equal("tester",             command.AuditableEntity.LastUpdatedBy);
             var command = new AdjustItemQuantityCommand(1, 0m, null);
             command.AuditableEntity.LastUpdatedBy = "tester";
 
-Assert.Same(command.AuditableEntity,             command.AuditableEntity);
-Assert.Equal("tester",             command.AuditableEntity.LastUpdatedBy);
+            Assert.Same(command.AuditableEntity, command.AuditableEntity);
+            Assert.Equal("tester", command.AuditableEntity.LastUpdatedBy);
         }
     }
 }

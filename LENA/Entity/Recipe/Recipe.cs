@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+
 using LENA.Domain.Entity.Common;
 
 namespace LENA.Domain.Entity.Recipe
@@ -12,7 +13,7 @@ namespace LENA.Domain.Entity.Recipe
         public int? PrepTimeMinutes { get; set; }
         public int? CookTimeMinutes { get; set; }
         public bool IsActive { get; set; } = true;
-        public bool IsFavorite { get; set; } = false;
+        public bool IsFavorite { get; set; }
 
         public ICollection<RecipeItem>? RecipeItems { get; set; }
         public ICollection<RecipeStep>? RecipeSteps { get; set; }

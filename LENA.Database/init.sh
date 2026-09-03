@@ -9,11 +9,15 @@ DB_HOST="${DB_HOST:-db}"
 DB_USER="${DB_USER:-sa}"
 DB_PASSWORD="${MSSQL_SA_PASSWORD:-${SA_PASSWORD:-}}"
 DB_NAME="${DB_NAME:-LENA}"
-ROOT="${DB_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
-DOMAINS=(Identity Wine Inventory Recipe MealPlan)
+LENA_DB_PASSWORD="${LENA_DB_PASSWORD:-}"
 
 if [ -z "$DB_PASSWORD" ]; then
     echo "MSSQL_SA_PASSWORD (or SA_PASSWORD) must be set" >&2
+    exit 1
+fi
+
+if [ -z "$LENA_DB_PASSWORD" ]; then
+    echo "LENA_DB_PASSWORD must be set in .env or environment" >&2
     exit 1
 fi
 
@@ -159,6 +163,16 @@ for domain in "${DOMAINS[@]}"; do
             | "$SQLCMD" -C -b -S "$DB_HOST" -U "$DB_USER" -P "$DB_PASSWORD" -d "$DB_NAME"
     done
 done
+
+echo "Security (app login)..."
+security_file="$ROOT/Security/CreateAppLogin.sql"
+if [ -f "$security_file" ]; then
+    echo "  applying $(basename "$security_file")"
+    tmp_security=$(mktemp)
+    file_body "$security_file" > "$tmp_security"
+    "$SQLCMD" -C -b -S "$DB_HOST" -U "$DB_USER" -P "$DB_PASSWORD" -d master -v AppPassword="$LENA_DB_PASSWORD" -i "$tmp_security"
+    rm -f "$tmp_security"
+fi
 
 echo "Migrations (verification)..."
 for file in "$ROOT"/Migrations/*Verification*.sql; do

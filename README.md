@@ -101,7 +101,7 @@ dotnet run --project LENA.API
 
 By default the API listens on `http://localhost:5059` as configured in `LENA.API/Properties/launchSettings.json`. The HTTPS profile also exposes `https://localhost:7284`.
 
-The API includes Swagger UI in development at `http://localhost:5059/swagger`. Outside development it is off unless `Swagger:Enabled` is `true`; `Swagger:RoutePrefix` moves it behind a reverse proxy subpath (the Docker stack sets both, serving it at `http://localhost/api/swagger`).
+The API includes Swagger UI in development at `http://localhost:5059/swagger`. Outside development it is off unless `Swagger:Enabled` is `true`. When enabled, `Swagger:RoutePrefix` moves it behind a reverse proxy subpath.
 
 ### Configure Google Sign-In
 
@@ -159,20 +159,25 @@ The configured origins are read at startup and the app will fail to start if the
 
 ## Docker
 
-Run the entire stack from the repo root:
+Run the entire stack from the repo root. First copy `.env.example` to `.env` and set `GOOGLE_CLIENT_ID`, `MSSQL_SA_PASSWORD`, and `LENA_DB_PASSWORD`:
 
 ```bash
+cp .env.example .env
+# edit .env
 docker compose up --build
 ```
 
-The one-shot `db-init` service runs `LENA.Database/init.sh` against the `db` container: it waits for SQL Server, creates the `LENA` database if missing, and applies every `.sql` fragment (schemas → tables → indexes → seed data → stored procedures). The `api` service only starts once `db-init` has completed successfully.
+The one-shot `db-init` service runs `LENA.Database/init.sh` against the `db` container: it waits for SQL Server, creates the `LENA` database if missing, applies every `.sql` fragment (schemas → tables → indexes → seed data → stored procedures), and creates the least-privilege `lena_app` login used by the API. The `api` service only starts once `db-init` has completed successfully.
+
+The API connection string in Docker uses `TrustServerCertificate=True` for local development only. Real deployments must provision a trusted TLS certificate for SQL Server and remove this flag.
 
 Init is idempotent — existing schemas, tables, indexes and already-populated seed tables are skipped, and stored procedures are applied as `CREATE OR ALTER` — so re-running `docker compose up` against an existing `mssql_data` volume is safe. Use `docker compose down -v` to start from an empty database.
 
-Once the containers are healthy, the whole application is available on a single origin:
+Once the containers are healthy, the web app is available on a single origin:
 
 - **Web app**: http://localhost
-- **Swagger UI**: http://localhost/api/swagger
+
+Swagger UI is not exposed by default in Docker. Run the API locally in development or explicitly set `Swagger:Enabled` and protect the route to access it.
 
 ### Routing
 

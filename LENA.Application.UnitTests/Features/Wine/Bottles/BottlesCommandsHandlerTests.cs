@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Features.Wine.Bottles.Commands;
 using LENA.Domain.Entity.Wine;
+
 using Moq;
+
 using Xunit;
 
 namespace LENA.Application.UnitTests.Features.Wine.Bottles
@@ -27,7 +29,7 @@ namespace LENA.Application.UnitTests.Features.Wine.Bottles
 
             // Assert
             mockRepo.Verify(r => r.CreateAsync(It.Is<Bottle>(x => x == request.Bottle)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -45,7 +47,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.DeleteAsync(It.IsAny<Bottle>()), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -63,7 +65,7 @@ Assert.NotNull(            result);
 
             // Assert
             mockRepo.Verify(r => r.UpdateAsync(It.Is<Bottle>(x => x == request.Bottle)), Times.Once);
-Assert.NotNull(            result);
+            Assert.NotNull(result);
         }
     }
 }

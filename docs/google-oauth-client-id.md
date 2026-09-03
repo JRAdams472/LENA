@@ -50,14 +50,29 @@ For iOS, create an **iOS** client ID and use `GoogleService-Info.plist` in `mobi
 
 ## 6. Docker Compose
 
-For `docker compose up --build`, create a `.env` file in the repo root with the same Web client ID:
+For `docker compose up --build`, copy `.env.example` to `.env` in the repo root and set the values:
 
-```ini
-GOOGLE_CLIENT_ID=<your-web-client-id>
-NEXT_PUBLIC_API_BASE_URL=http://localhost
+```bash
+cp .env.example .env
 ```
 
-`docker-compose.yml` uses `GOOGLE_CLIENT_ID` for both the API `Authentication:Google:ClientId` and the `ui` build arg `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. The `.env` file is ignored by Git, so the secret stays local.
+```ini
+# Google OAuth Web client ID (public)
+GOOGLE_CLIENT_ID=<your-web-client-id>
+
+# Frontend API base URL (Docker uses 'http://localhost', local dev uses 'http://localhost:5059')
+NEXT_PUBLIC_API_BASE_URL=http://localhost
+
+# SQL Server 'sa' password for the local db container
+MSSQL_SA_PASSWORD=<your-strong-sql-sa-password>
+
+# Application SQL login password used by the API (least-privilege 'lena_app' user)
+LENA_DB_PASSWORD=<your-strong-app-password>
+```
+
+`docker-compose.yml` uses `GOOGLE_CLIENT_ID` for both the API `Authentication:Google:ClientId` and the `ui` build arg `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. `MSSQL_SA_PASSWORD` is used by the `db` and `db-init` services, and `LENA_DB_PASSWORD` is used to create the `lena_app` SQL login/user and as the API connection-string password. The `.env` file is ignored by Git, so secrets stay local.
+
+> **Note:** The API connection string in Docker uses `TrustServerCertificate=True` for local development only. Real deployments must provision a trusted TLS certificate for SQL Server and remove this flag.
 
 ## 7. Common error: `invalid_client`
 
