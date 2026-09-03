@@ -7,10 +7,12 @@ namespace LENA.Application.Repositories
     public class ItemRepository : BaseRepository<Item>, IItemRepository
     {
         private readonly ICurrentUserService _currentUser;
+        private readonly TimeProvider _timeProvider;
 
-        public ItemRepository(IDbConnectionFactory connectionFactory, ICurrentUserService currentUser) : base(connectionFactory)
+        public ItemRepository(IDbConnectionFactory connectionFactory, ICurrentUserService currentUser, TimeProvider? timeProvider = null) : base(connectionFactory)
         {
             _currentUser = currentUser;
+            _timeProvider = timeProvider ?? TimeProvider.System;
         }
 
         public override async Task<IReadOnlyList<Item>> ListAllAsync(CancellationToken cancellationToken = default)
@@ -98,7 +100,7 @@ namespace LENA.Application.Repositories
 
         public async Task SetFavoriteAsync(int itemId, bool isFavorite, CancellationToken cancellationToken = default)
         {
-            var now = DateTime.UtcNow;
+            var now = _timeProvider.GetUtcNow().UtcDateTime;
             await ExecuteCommandAsync("[Inventory].[usp_Item_SetFavorite]", new
             {
                 ItemID = itemId,

@@ -7,10 +7,12 @@ namespace LENA.Application.Repositories
     public class BottleRepository : BaseRepository<Bottle>, IBottleRepository
     {
         private readonly ICurrentUserService _currentUser;
+        private readonly TimeProvider _timeProvider;
 
-        public BottleRepository(IDbConnectionFactory connectionFactory, ICurrentUserService currentUser) : base(connectionFactory)
+        public BottleRepository(IDbConnectionFactory connectionFactory, ICurrentUserService currentUser, TimeProvider? timeProvider = null) : base(connectionFactory)
         {
             _currentUser = currentUser;
+            _timeProvider = timeProvider ?? TimeProvider.System;
         }
 
         public async Task<IReadOnlyList<Bottle>> GetAllByCountryIdAsync(int countryId, CancellationToken cancellationToken = default)
@@ -41,9 +43,9 @@ namespace LENA.Application.Repositories
                 BottleID = bottleId,
                 IsFavorite = isFavorite,
                 CreatedBy = _currentUser.UserName,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = _timeProvider.GetUtcNow().UtcDateTime,
                 LastUpdatedBy = _currentUser.UserName,
-                LastUpdatedDate = DateTime.UtcNow
+                LastUpdatedDate = _timeProvider.GetUtcNow().UtcDateTime
             }, cancellationToken);
 
         public override async Task<Bottle> CreateAsync(Bottle entity, CancellationToken cancellationToken = default)

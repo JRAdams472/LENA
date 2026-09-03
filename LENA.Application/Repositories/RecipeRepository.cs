@@ -7,10 +7,12 @@ namespace LENA.Application.Repositories
     public class RecipeRepository : BaseRepository<Recipe>, IRecipeRepository
     {
         private readonly ICurrentUserService _currentUser;
+        private readonly TimeProvider _timeProvider;
 
-        public RecipeRepository(IDbConnectionFactory connectionFactory, ICurrentUserService currentUser) : base(connectionFactory)
+        public RecipeRepository(IDbConnectionFactory connectionFactory, ICurrentUserService currentUser, TimeProvider? timeProvider = null) : base(connectionFactory)
         {
             _currentUser = currentUser;
+            _timeProvider = timeProvider ?? TimeProvider.System;
         }
 
         public override async Task<Recipe> CreateAsync(Recipe entity, CancellationToken cancellationToken = default)
@@ -72,7 +74,7 @@ namespace LENA.Application.Repositories
 
         public async Task SetFavoriteAsync(int recipeId, bool isFavorite, CancellationToken cancellationToken = default)
         {
-            var now = DateTime.UtcNow;
+            var now = _timeProvider.GetUtcNow().UtcDateTime;
             await ExecuteCommandAsync("[Recipe].[usp_UserRecipePreference_SetFavorite]", new
             {
                 UserID = _currentUser.UserID,
