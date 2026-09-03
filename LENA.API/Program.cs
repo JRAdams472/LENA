@@ -22,6 +22,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File(
         new CompactJsonFormatter(),
         "logs/log-.json",
+        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
         rollingInterval: RollingInterval.Day,
         retainedFileCountLimit: 31,
         fileSizeLimitBytes: 10485760,
