@@ -12,6 +12,12 @@ namespace LENA.IntegrationTests
 {
     public sealed class DatabaseFixture : IAsyncLifetime
     {
+        static DatabaseFixture()
+        {
+            // Required: LENA.Database uses snake_case columns; Dapper must map them to PascalCase properties.
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+        }
+
         private const string BaseConnectionString = "Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;TrustServerCertificate=true";
         private string _databaseName = $"LENA_Integration_{Guid.NewGuid():N}";
         private string _dacpacPath = string.Empty;

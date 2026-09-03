@@ -5,7 +5,7 @@ using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
 using LENA.Application.Models;
 
-namespace LENA.Application.Repositories
+namespace LENA.Infrastructure.Persistence
 {
     public abstract class BaseRepository<T> : IAsyncRepository<T> where T : class
     {

@@ -3,7 +3,7 @@ using Dapper;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Identity;
 
-namespace LENA.Application.Repositories
+namespace LENA.Infrastructure.Persistence
 {
     public class UserRepository : IUserRepository
     {

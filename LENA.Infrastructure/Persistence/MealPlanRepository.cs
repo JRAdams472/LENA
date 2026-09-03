@@ -5,7 +5,7 @@ using LENA.Application.Exceptions;
 using LENA.Domain.Entity.MealPlan;
 using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 
-namespace LENA.Application.Repositories
+namespace LENA.Infrastructure.Persistence
 {
     public class MealPlanRepository : BaseRepository<MealPlanEntity>, IMealPlanRepository
     {

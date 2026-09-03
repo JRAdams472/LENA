@@ -2,7 +2,7 @@ using LENA.Application.Contracts.Persistence;
 using LENA.Application.Models;
 using LENA.Domain.Entity.Inventory;
 
-namespace LENA.Application.Repositories
+namespace LENA.Infrastructure.Persistence
 {
     public class FlavorProfileRepository : BaseRepository<FlavorProfile>, IFlavorProfileRepository
     {

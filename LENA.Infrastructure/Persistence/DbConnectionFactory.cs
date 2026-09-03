@@ -3,7 +3,7 @@ using Dapper;
 using LENA.Application.Contracts.Persistence;
 using Microsoft.Data.SqlClient;
 
-namespace LENA.Application.Repositories
+namespace LENA.Infrastructure.Persistence
 {
     public class DbConnectionFactory : IDbConnectionFactory
     {

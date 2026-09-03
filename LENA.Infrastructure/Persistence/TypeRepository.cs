@@ -1,7 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
-namespace LENA.Application.Repositories
+namespace LENA.Infrastructure.Persistence
 {
     public class TypeRepository : BaseRepository<TypeEntity>, ITypeRepository
     {

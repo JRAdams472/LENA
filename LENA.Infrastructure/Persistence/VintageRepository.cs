@@ -1,7 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 
-namespace LENA.Application.Repositories
+namespace LENA.Infrastructure.Persistence
 {
     public class VintageRepository : BaseRepository<Vintage>, IVintageRepository
     {

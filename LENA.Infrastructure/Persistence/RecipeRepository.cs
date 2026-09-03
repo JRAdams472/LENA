@@ -2,7 +2,7 @@ using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Recipe;
 
-namespace LENA.Application.Repositories
+namespace LENA.Infrastructure.Persistence
 {
     public class RecipeRepository : BaseRepository<Recipe>, IRecipeRepository
     {

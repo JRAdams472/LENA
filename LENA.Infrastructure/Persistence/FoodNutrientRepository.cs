@@ -1,7 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 
-namespace LENA.Application.Repositories
+namespace LENA.Infrastructure.Persistence
 {
     public class FoodNutrientRepository : BaseRepository<FoodNutrient>, IFoodNutrientRepository
     {

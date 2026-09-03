@@ -6,7 +6,7 @@ using LENA.Domain.Entity.Grocery;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace LENA.Application.Repositories
+namespace LENA.Infrastructure.Persistence
 {
     public class GroceryListRepository : BaseRepository<GroceryList>, IGroceryListRepository
     {

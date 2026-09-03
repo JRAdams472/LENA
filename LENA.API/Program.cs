@@ -4,7 +4,7 @@ using LENA.API.Middleware;
 using LENA.API.Services;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
-using LENA.Application.Repositories;
+using LENA.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -98,41 +98,17 @@ builder.Services.AddAuthorization(options =>
         .Build();
 });
 
-builder.Services.AddValidatorsFromAssembly(typeof(LENA.Application.Features.Wine.Bottles.Commands.CreateBottleCommand).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(LENA.Application.IApplicationAssemblyMarker).Assembly);
 
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(LENA.Application.Features.Wine.Bottles.Commands.CreateBottleCommand).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(LENA.Application.IApplicationAssemblyMarker).Assembly);
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.LoggingBehavior<,>));
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.ValidationBehavior<,>));
     cfg.AddOpenBehavior(typeof(LENA.Application.Behaviors.AuditingBehavior<,>));
 });
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrWhiteSpace(connectionString))
-{
-    throw new InvalidOperationException(
-        "A 'DefaultConnection' connection string is required. " +
-        "Add it to LENA.API/appsettings.json or LENA.API/appsettings.Development.json.");
-}
-
-builder.Services.AddSingleton<IDbConnectionFactory>(new DbConnectionFactory(connectionString));
-
-builder.Services.AddScoped<IBottleRepository, BottleRepository>();
-builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
-builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();
-builder.Services.AddScoped<IGroceryListRepository, GroceryListRepository>();
-builder.Services.AddScoped<ICountryRepository, CountryRepository>();
-builder.Services.AddScoped<IRegionRepository, RegionRepository>();
-builder.Services.AddScoped<ITypeRepository, TypeRepository>();
-builder.Services.AddScoped<IVintageRepository, VintageRepository>();
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IItemRepository, ItemRepository>();
-builder.Services.AddScoped<IFoodFlavorRepository, FoodFlavorRepository>();
-builder.Services.AddScoped<IFoodNutrientRepository, FoodNutrientRepository>();
-builder.Services.AddScoped<INutrientTypeRepository, NutrientTypeRepository>();
-builder.Services.AddScoped<IFlavorProfileRepository, FlavorProfileRepository>();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 

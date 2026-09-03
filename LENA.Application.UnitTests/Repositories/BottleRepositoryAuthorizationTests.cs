@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
-using LENA.Application.Repositories;
+using LENA.Infrastructure.Persistence;
 using Moq;
 using Xunit;
 

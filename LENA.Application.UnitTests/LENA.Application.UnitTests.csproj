@@ -25,4 +25,7 @@
     <ProjectReference Include="..\LENA\LENA.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LENA.Infrastructure\LENA.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>
