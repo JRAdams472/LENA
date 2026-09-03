@@ -44,8 +44,6 @@ services:
       - "ConnectionStrings__DefaultConnection=Server=db;Database=LENA;User Id=lena_app;Password=${LENA_DB_PASSWORD:?LENA_DB_PASSWORD must be set in .env or environment};TrustServerCertificate=True;"
       - Cors__AllowedOrigins__0=http://localhost
       - Authentication__Google__ClientId=${GOOGLE_CLIENT_ID:?GOOGLE_CLIENT_ID must be set in .env or environment}
-      - Swagger__Enabled=true
-      - Swagger__RoutePrefix=api/swagger
     depends_on:
       db:
         condition: service_healthy

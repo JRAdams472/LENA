@@ -101,7 +101,7 @@ dotnet run --project LENA.API
 
 By default the API listens on `http://localhost:5059` as configured in `LENA.API/Properties/launchSettings.json`. The HTTPS profile also exposes `https://localhost:7284`.
 
-The API includes Swagger UI in development at `http://localhost:5059/swagger`. Outside development it is off unless `Swagger:Enabled` is `true`; `Swagger:RoutePrefix` moves it behind a reverse proxy subpath (the Docker stack sets both, serving it at `http://localhost/api/swagger`).
+The API includes Swagger UI in development at `http://localhost:5059/swagger`. Outside development it is off unless `Swagger:Enabled` is `true`. When enabled, `Swagger:RoutePrefix` moves it behind a reverse proxy subpath.
 
 ### Configure Google Sign-In
 
@@ -173,10 +173,11 @@ The API connection string in Docker uses `TrustServerCertificate=True` for local
 
 Init is idempotent — existing schemas, tables, indexes and already-populated seed tables are skipped, and stored procedures are applied as `CREATE OR ALTER` — so re-running `docker compose up` against an existing `mssql_data` volume is safe. Use `docker compose down -v` to start from an empty database.
 
-Once the containers are healthy, the whole application is available on a single origin:
+Once the containers are healthy, the web app is available on a single origin:
 
 - **Web app**: http://localhost
-- **Swagger UI**: http://localhost/api/swagger
+
+Swagger UI is not exposed by default in Docker. Run the API locally in development or explicitly set `Swagger:Enabled` and protect the route to access it.
 
 ### Routing
 

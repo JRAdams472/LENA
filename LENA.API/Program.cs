@@ -136,8 +136,8 @@ builder.Services.AddScoped<IFlavorProfileRepository, FlavorProfileRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// Swagger is always on in development; elsewhere it is opt-in via "Swagger:Enabled".
-// "Swagger:RoutePrefix" moves it behind a reverse proxy that only forwards a subpath.
+// Swagger is always on in development; it is opt-in via "Swagger:Enabled" outside development.
+// When enabled outside development, protect it from public access (e.g., restrict the reverse proxy or add authorization).
 if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {
     var swaggerPrefix = (app.Configuration["Swagger:RoutePrefix"] ?? "swagger").Trim('/');
