@@ -23,7 +23,6 @@ namespace LENA.Application.Behaviors
         {
             var requestName = typeof(TRequest).Name;
             _logger.LogInformation("Handling {RequestName}", requestName);
-            _logger.LogDebug("Handling {RequestName} with request data: {@Request}", requestName, request);
 
             var stopwatch = Stopwatch.StartNew();
             try

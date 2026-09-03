@@ -77,8 +77,12 @@ namespace LENA.Infrastructure.Persistence
         }
 
         /// <summary>
-        /// Runs a write procedure whose final statement is SELECT @@ROWCOUNT and throws when it matched no row.
+        /// Runs a write procedure whose final statement is <c>SELECT @@ROWCOUNT</c> and throws when it matched no row.
         /// </summary>
+        /// <remarks>
+        /// The called stored procedure must end with <c>SELECT @@ROWCOUNT</c> so the affected-row count is returned as a single integer.
+        /// If a procedure omits this final select, <c>QuerySingleAsync&lt;int&gt;</c> will fail fast rather than silently returning a false "no match".
+        /// </remarks>
         protected async Task ExecuteRequiringMatchAsync(string procedureName, object param, string entityName, object key, CancellationToken cancellationToken = default)
         {
             var affected = await QuerySingleAsync<int>(procedureName, param, cancellationToken);

@@ -28,7 +28,6 @@ namespace LENA.Application.Behaviors
             var failures = (await Task.WhenAll(
                     _validators.Select(v => v.ValidateAsync(context, cancellationToken))))
                 .SelectMany(r => r.Errors)
-                .Where(f => f != null)
                 .ToList();
 
             if (failures.Any())

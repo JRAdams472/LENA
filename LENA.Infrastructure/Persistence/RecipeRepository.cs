@@ -6,6 +6,10 @@ using LENA.Domain.Entity.Recipe;
 
 namespace LENA.Infrastructure.Persistence
 {
+    /// <summary>
+    /// Recipes are shared across users. Read queries filter by UserID so each user sees their own favorite status.
+    /// Create, update and delete are not user-scoped because the recipe catalog is global; only favorites are per-user.
+    /// </summary>
     public class RecipeRepository : BaseRepository<Recipe>, IRecipeRepository
     {
         private readonly ICurrentUserService _currentUser;
