@@ -1,4 +1,5 @@
 using System.Linq;
+using Dapper;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Application.Exceptions;
@@ -18,16 +19,7 @@ namespace LENA.Infrastructure.Persistence
 
         public override async Task<MealPlanEntity> CreateAsync(MealPlanEntity entity, CancellationToken cancellationToken = default)
         {
-            entity.MealPlanID = await QuerySingleAsync<int>("[MealPlan].[usp_MealPlan_Create]", new
-            {
-                entity.PlanName,
-                entity.WeekStartDate,
-                entity.WeekStartDayOfWeek,
-                entity.IsActive,
-                UserID = _currentUser.UserID,
-                entity.CreatedBy,
-                entity.CreateDate
-            }, cancellationToken);
+            entity.MealPlanID = await QuerySingleAsync<int>("[MealPlan].[usp_MealPlan_Create]", ToParameters(entity, false), cancellationToken);
             return entity;
         }
 
@@ -48,18 +40,32 @@ namespace LENA.Infrastructure.Persistence
 
         public override async Task<MealPlanEntity> UpdateAsync(MealPlanEntity entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteRequiringMatchAsync("[MealPlan].[usp_MealPlan_Update]", new
-            {
-                entity.MealPlanID,
-                entity.PlanName,
-                entity.WeekStartDate,
-                entity.WeekStartDayOfWeek,
-                entity.IsActive,
-                UserID = _currentUser.UserID,
-                entity.LastUpdatedBy,
-                entity.LastUpdatedDate
-            }, nameof(MealPlanEntity), entity.MealPlanID, cancellationToken);
+            await ExecuteRequiringMatchAsync("[MealPlan].[usp_MealPlan_Update]", ToParameters(entity, true), nameof(MealPlanEntity), entity.MealPlanID, cancellationToken);
             return entity;
+        }
+
+        private DynamicParameters ToParameters(MealPlanEntity entity, bool forUpdate)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("PlanName", entity.PlanName);
+            parameters.Add("WeekStartDate", entity.WeekStartDate);
+            parameters.Add("WeekStartDayOfWeek", entity.WeekStartDayOfWeek);
+            parameters.Add("IsActive", entity.IsActive);
+            parameters.Add("UserID", _currentUser.UserID);
+
+            if (forUpdate)
+            {
+                parameters.Add("MealPlanID", entity.MealPlanID);
+                parameters.Add("LastUpdatedBy", entity.LastUpdatedBy);
+                parameters.Add("LastUpdatedDate", entity.LastUpdatedDate);
+            }
+            else
+            {
+                parameters.Add("CreatedBy", entity.CreatedBy);
+                parameters.Add("CreateDate", entity.CreateDate);
+            }
+
+            return parameters;
         }
 
         public override async Task<MealPlanEntity> DeleteAsync(MealPlanEntity entity, CancellationToken cancellationToken = default)

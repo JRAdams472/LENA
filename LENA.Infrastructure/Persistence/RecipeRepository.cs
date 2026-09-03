@@ -1,3 +1,4 @@
+using Dapper;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Recipe;
@@ -17,17 +18,7 @@ namespace LENA.Infrastructure.Persistence
 
         public override async Task<Recipe> CreateAsync(Recipe entity, CancellationToken cancellationToken = default)
         {
-            entity.RecipeID = await QuerySingleAsync<int>("[Recipe].[usp_Recipe_Create]", new
-            {
-                entity.RecipeName,
-                entity.Description,
-                entity.Servings,
-                entity.PrepTimeMinutes,
-                entity.CookTimeMinutes,
-                entity.IsActive,
-                entity.CreatedBy,
-                entity.CreateDate
-            }, cancellationToken);
+            entity.RecipeID = await QuerySingleAsync<int>("[Recipe].[usp_Recipe_Create]", ToParameters(entity, false), cancellationToken);
 
             await SetFavoriteAsync(entity.RecipeID, entity.IsFavorite, cancellationToken);
 
@@ -48,22 +39,36 @@ namespace LENA.Infrastructure.Persistence
 
         public override async Task<Recipe> UpdateAsync(Recipe entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteRequiringMatchAsync("[Recipe].[usp_Recipe_Update]", new
-            {
-                entity.RecipeID,
-                entity.RecipeName,
-                entity.Description,
-                entity.Servings,
-                entity.PrepTimeMinutes,
-                entity.CookTimeMinutes,
-                entity.IsActive,
-                entity.LastUpdatedBy,
-                entity.LastUpdatedDate
-            }, nameof(Recipe), entity.RecipeID, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Recipe].[usp_Recipe_Update]", ToParameters(entity, true), nameof(Recipe), entity.RecipeID, cancellationToken);
 
             await SetFavoriteAsync(entity.RecipeID, entity.IsFavorite, cancellationToken);
 
             return entity;
+        }
+
+        private DynamicParameters ToParameters(Recipe entity, bool forUpdate)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("RecipeName", entity.RecipeName);
+            parameters.Add("Description", entity.Description);
+            parameters.Add("Servings", entity.Servings);
+            parameters.Add("PrepTimeMinutes", entity.PrepTimeMinutes);
+            parameters.Add("CookTimeMinutes", entity.CookTimeMinutes);
+            parameters.Add("IsActive", entity.IsActive);
+
+            if (forUpdate)
+            {
+                parameters.Add("RecipeID", entity.RecipeID);
+                parameters.Add("LastUpdatedBy", entity.LastUpdatedBy);
+                parameters.Add("LastUpdatedDate", entity.LastUpdatedDate);
+            }
+            else
+            {
+                parameters.Add("CreatedBy", entity.CreatedBy);
+                parameters.Add("CreateDate", entity.CreateDate);
+            }
+
+            return parameters;
         }
 
         public override async Task<Recipe> DeleteAsync(Recipe entity, CancellationToken cancellationToken = default)

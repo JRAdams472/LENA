@@ -1,3 +1,4 @@
+using Dapper;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
@@ -50,32 +51,7 @@ namespace LENA.Infrastructure.Persistence
 
         public override async Task<Bottle> CreateAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
-            entity.BottleID = await QuerySingleAsync<int>("[Wine].[usp_Bottle_Create]", new
-            {
-                UserID = _currentUser.UserID,
-                entity.BottleNumber,
-                entity.TypeID,
-                entity.CountryID,
-                entity.RegionID,
-                entity.VintageYear,
-                entity.Vineyard,
-                entity.ABV,
-                entity.Acidity,
-                entity.TanninLevel,
-                entity.Body,
-                entity.Sweetness,
-                entity.OakIntegration,
-                entity.BottleSize,
-                entity.Quantity,
-                entity.PurchaseDate,
-                entity.PurchasePrice,
-                entity.StorageTemp,
-                entity.Location,
-                entity.Notes,
-                entity.IsFavorite,
-                entity.CreatedBy,
-                entity.CreateDate
-            }, cancellationToken);
+            entity.BottleID = await QuerySingleAsync<int>("[Wine].[usp_Bottle_Create]", ToParameters(entity, false), cancellationToken);
             return entity;
         }
 
@@ -90,34 +66,48 @@ namespace LENA.Infrastructure.Persistence
 
         public override async Task<Bottle> UpdateAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteRequiringMatchAsync("[Wine].[usp_Bottle_Update]", new
-            {
-                UserID = _currentUser.UserID,
-                entity.BottleID,
-                entity.BottleNumber,
-                entity.TypeID,
-                entity.CountryID,
-                entity.RegionID,
-                entity.VintageYear,
-                entity.Vineyard,
-                entity.ABV,
-                entity.Acidity,
-                entity.TanninLevel,
-                entity.Body,
-                entity.Sweetness,
-                entity.OakIntegration,
-                entity.BottleSize,
-                entity.Quantity,
-                entity.PurchaseDate,
-                entity.PurchasePrice,
-                entity.StorageTemp,
-                entity.Location,
-                entity.Notes,
-                entity.IsFavorite,
-                entity.LastUpdatedBy,
-                entity.LastUpdatedDate
-            }, nameof(Bottle), entity.BottleID, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Wine].[usp_Bottle_Update]", ToParameters(entity, true), nameof(Bottle), entity.BottleID, cancellationToken);
             return entity;
+        }
+
+        private DynamicParameters ToParameters(Bottle entity, bool forUpdate)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("UserID", _currentUser.UserID);
+            parameters.Add("BottleNumber", entity.BottleNumber);
+            parameters.Add("TypeID", entity.TypeID);
+            parameters.Add("CountryID", entity.CountryID);
+            parameters.Add("RegionID", entity.RegionID);
+            parameters.Add("VintageYear", entity.VintageYear);
+            parameters.Add("Vineyard", entity.Vineyard);
+            parameters.Add("ABV", entity.ABV);
+            parameters.Add("Acidity", entity.Acidity);
+            parameters.Add("TanninLevel", entity.TanninLevel);
+            parameters.Add("Body", entity.Body);
+            parameters.Add("Sweetness", entity.Sweetness);
+            parameters.Add("OakIntegration", entity.OakIntegration);
+            parameters.Add("BottleSize", entity.BottleSize);
+            parameters.Add("Quantity", entity.Quantity);
+            parameters.Add("PurchaseDate", entity.PurchaseDate);
+            parameters.Add("PurchasePrice", entity.PurchasePrice);
+            parameters.Add("StorageTemp", entity.StorageTemp);
+            parameters.Add("Location", entity.Location);
+            parameters.Add("Notes", entity.Notes);
+            parameters.Add("IsFavorite", entity.IsFavorite);
+
+            if (forUpdate)
+            {
+                parameters.Add("BottleID", entity.BottleID);
+                parameters.Add("LastUpdatedBy", entity.LastUpdatedBy);
+                parameters.Add("LastUpdatedDate", entity.LastUpdatedDate);
+            }
+            else
+            {
+                parameters.Add("CreatedBy", entity.CreatedBy);
+                parameters.Add("CreateDate", entity.CreateDate);
+            }
+
+            return parameters;
         }
 
         public override async Task<Bottle> DeleteAsync(Bottle entity, CancellationToken cancellationToken = default)

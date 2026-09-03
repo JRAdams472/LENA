@@ -1,3 +1,4 @@
+using Dapper;
 using LENA.Application.Contracts.Auditing;
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
@@ -35,49 +36,46 @@ namespace LENA.Infrastructure.Persistence
 
         public override async Task<Item> CreateAsync(Item entity, CancellationToken cancellationToken = default)
         {
-            entity.ItemID = await QuerySingleAsync<int>("[Inventory].[usp_Item_Create]", new
-            {
-                entity.Name,
-                entity.Brand,
-                entity.UPC12,
-                entity.UPC14,
-                entity.CategoryID,
-                entity.Unit,
-                UserID = _currentUser.UserID,
-                entity.CurrentQuantity,
-                entity.MinQuantity,
-                entity.PurchaseDate,
-                entity.ExpiryDate,
-                entity.Notes,
-                entity.IsFavorite,
-                entity.CreatedBy,
-                entity.CreateDate
-            }, cancellationToken);
+            entity.ItemID = await QuerySingleAsync<int>("[Inventory].[usp_Item_Create]", ToParameters(entity, false), cancellationToken);
             return entity;
         }
 
         public override async Task<Item> UpdateAsync(Item entity, CancellationToken cancellationToken = default)
         {
-            await ExecuteRequiringMatchAsync("[Inventory].[usp_Item_Update]", new
-            {
-                entity.ItemID,
-                entity.Name,
-                entity.Brand,
-                entity.UPC12,
-                entity.UPC14,
-                entity.CategoryID,
-                entity.Unit,
-                UserID = _currentUser.UserID,
-                entity.CurrentQuantity,
-                entity.MinQuantity,
-                entity.PurchaseDate,
-                entity.ExpiryDate,
-                entity.Notes,
-                entity.IsFavorite,
-                entity.LastUpdatedBy,
-                entity.LastUpdatedDate
-            }, nameof(Item), entity.ItemID, cancellationToken);
+            await ExecuteRequiringMatchAsync("[Inventory].[usp_Item_Update]", ToParameters(entity, true), nameof(Item), entity.ItemID, cancellationToken);
             return entity;
+        }
+
+        private DynamicParameters ToParameters(Item entity, bool forUpdate)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Name", entity.Name);
+            parameters.Add("Brand", entity.Brand);
+            parameters.Add("UPC12", entity.UPC12);
+            parameters.Add("UPC14", entity.UPC14);
+            parameters.Add("CategoryID", entity.CategoryID);
+            parameters.Add("Unit", entity.Unit);
+            parameters.Add("UserID", _currentUser.UserID);
+            parameters.Add("CurrentQuantity", entity.CurrentQuantity);
+            parameters.Add("MinQuantity", entity.MinQuantity);
+            parameters.Add("PurchaseDate", entity.PurchaseDate);
+            parameters.Add("ExpiryDate", entity.ExpiryDate);
+            parameters.Add("Notes", entity.Notes);
+            parameters.Add("IsFavorite", entity.IsFavorite);
+
+            if (forUpdate)
+            {
+                parameters.Add("ItemID", entity.ItemID);
+                parameters.Add("LastUpdatedBy", entity.LastUpdatedBy);
+                parameters.Add("LastUpdatedDate", entity.LastUpdatedDate);
+            }
+            else
+            {
+                parameters.Add("CreatedBy", entity.CreatedBy);
+                parameters.Add("CreateDate", entity.CreateDate);
+            }
+
+            return parameters;
         }
 
         public override async Task<Item> DeleteAsync(Item entity, CancellationToken cancellationToken = default)
