@@ -51,6 +51,12 @@ namespace LENA.API.ExceptionHandling
                 problemDetails.Title = "Bad request";
                 problemDetails.Detail = exception.Message;
             }
+            else if ((exception is OperationCanceledException || exception is IOException) && httpContext.RequestAborted.IsCancellationRequested)
+            {
+                problemDetails.Status = StatusCodes.Status499ClientClosedRequest;
+                problemDetails.Title = "Request canceled";
+                problemDetails.Detail = "The client closed the request before a response could be sent.";
+            }
             else
             {
                 _logger.LogError(exception, "Unhandled exception at {Path}", httpContext.Request.Path);
