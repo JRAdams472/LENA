@@ -43,8 +43,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Country?>> GetCountryById(int id)
         {
             var country = await _mediator.Send(new GetCountryByIdQuery(id));
-            if (country == null)
-                return NotFound();
 
             return Ok(country);
         }
@@ -53,8 +51,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Country?>> GetCountryByISOCode(string isoCode)
         {
             var country = await _mediator.Send(new GetCountryByISOCodeQuery(isoCode));
-            if (country == null)
-                return NotFound();
 
             return Ok(country);
         }
@@ -80,8 +76,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Country?>> DeleteCountry(int id)
         {
             var deleted = await _mediator.Send(new DeleteCountryCommand(id));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }

@@ -40,8 +40,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Recipe?>> GetRecipeById(int id)
         {
             var recipe = await _mediator.Send(new GetRecipeByIdQuery(id));
-            if (recipe == null)
-                return NotFound();
 
             return Ok(recipe);
         }
@@ -67,8 +65,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Recipe?>> DeleteRecipe(int id)
         {
             var deleted = await _mediator.Send(new DeleteRecipeCommand(id));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }

@@ -37,8 +37,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<TypeEntity?>> GetTypeById(int id)
         {
             var type = await _mediator.Send(new GetTypeByIdQuery(id));
-            if (type == null)
-                return NotFound();
 
             return Ok(type);
         }
@@ -47,8 +45,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<TypeEntity?>> GetTypeByName(string name)
         {
             var type = await _mediator.Send(new GetTypeByNameQuery(name));
-            if (type == null)
-                return NotFound();
 
             return Ok(type);
         }
@@ -74,8 +70,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<TypeEntity?>> DeleteType(int id)
         {
             var deleted = await _mediator.Send(new DeleteTypeCommand(id));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }

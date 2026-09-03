@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using MealPlanEntity = LENA.Domain.Entity.MealPlan.MealPlan;
 using MediatR;
+using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.MealPlan.MealPlans.Commands
 {
@@ -17,9 +18,7 @@ namespace LENA.Application.Features.MealPlan.MealPlans.Commands
 
         public async Task<MealPlanEntity?> Handle(DeleteMealPlanCommand request, CancellationToken cancellationToken)
         {
-            var mealPlan = await _mealPlanRepository.GetByIdAsync(request.MealPlanId, cancellationToken);
-            if (mealPlan == null)
-                return null;
+            var mealPlan = await _mealPlanRepository.GetByIdAsync(request.MealPlanId, cancellationToken) ?? throw new NotFoundException(nameof(MealPlanEntity), request.MealPlanId);
 
             return await _mealPlanRepository.DeleteAsync(mealPlan, cancellationToken);
         }

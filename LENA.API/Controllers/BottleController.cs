@@ -36,8 +36,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Bottle?>> GetBottleById(int id)
         {
             var bottle = await _mediator.Send(new GetBottleByIdQuery(id));
-            if (bottle == null)
-                return NotFound();
 
             return Ok(bottle);
         }
@@ -119,8 +117,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Bottle?>> DeleteBottle(int id)
         {
             var deleted = await _mediator.Send(new DeleteBottleCommand(id));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }

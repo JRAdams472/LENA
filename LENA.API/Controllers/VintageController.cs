@@ -43,8 +43,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Vintage?>> GetVintageById(int id)
         {
             var vintage = await _mediator.Send(new GetVintageByIdQuery(id));
-            if (vintage == null)
-                return NotFound();
 
             return Ok(vintage);
         }
@@ -53,8 +51,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Vintage?>> GetVintageByYear(int year)
         {
             var vintage = await _mediator.Send(new GetVintageByYearQuery(year));
-            if (vintage == null)
-                return NotFound();
 
             return Ok(vintage);
         }
@@ -80,8 +76,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Vintage?>> DeleteVintage(int id)
         {
             var deleted = await _mediator.Send(new DeleteVintageCommand(id));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }

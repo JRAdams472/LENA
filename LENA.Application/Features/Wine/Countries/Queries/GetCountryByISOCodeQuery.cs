@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
+using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.Wine.Countries.Queries
 {
@@ -11,6 +12,6 @@ namespace LENA.Application.Features.Wine.Countries.Queries
         private readonly ICountryRepository _countryRepository;
         public GetCountryByISOCodeQueryHandler(ICountryRepository countryRepository) => _countryRepository = countryRepository;
         public async Task<Country?> Handle(GetCountryByISOCodeQuery request, CancellationToken cancellationToken)
-            => await _countryRepository.GetByISOCodeAsync(request.ISOCode, cancellationToken);
+            => await _countryRepository.GetByISOCodeAsync(request.ISOCode, cancellationToken) ?? throw new NotFoundException(nameof(Country), request.ISOCode);
     }
 }

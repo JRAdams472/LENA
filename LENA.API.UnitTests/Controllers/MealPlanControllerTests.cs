@@ -6,6 +6,7 @@ using LENA.API.Controllers;
 using LENA.Application.Features.MealPlan.MealPlans.Commands;
 using LENA.Application.Features.MealPlan.MealPlans.Queries;
 using LENA.Application.Features.MealPlan.Queries;
+using LENA.Application.Exceptions;
 using LENA.Domain.Entity.MealPlan;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -34,14 +35,12 @@ Assert.IsType<OkObjectResult>(            result.Result);
         }
 
         [Fact]
-        public async Task GetMealPlanById_Should_Return_NotFound_When_Missing()
+        public async Task GetMealPlanById_Should_Throw_NotFound_When_Missing()
         {
             _mediator.Setup(m => m.Send(It.IsAny<GetMealPlanByIdQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((MealPlanEntity?)null);
+                .ThrowsAsync(new NotFoundException(nameof(MealPlanEntity), 1));
 
-            var result = await _sut.GetMealPlanById(1);
-
-Assert.IsType<NotFoundResult>(            result.Result);
+            await Assert.ThrowsAsync<NotFoundException>(() => _sut.GetMealPlanById(1));
         }
 
         [Fact]

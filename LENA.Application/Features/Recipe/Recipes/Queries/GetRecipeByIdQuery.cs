@@ -3,6 +3,7 @@ using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
 using RecipeItem = LENA.Domain.Entity.Recipe.RecipeItem;
 using RecipeStep = LENA.Domain.Entity.Recipe.RecipeStep;
 using MediatR;
+using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.Recipe.Recipes.Queries
 {
@@ -19,9 +20,7 @@ namespace LENA.Application.Features.Recipe.Recipes.Queries
 
         public async Task<RecipeEntity?> Handle(GetRecipeByIdQuery request, CancellationToken cancellationToken)
         {
-            var recipe = await _recipeRepository.GetByIdAsync(request.RecipeId, cancellationToken);
-            if (recipe == null)
-                return null;
+            var recipe = await _recipeRepository.GetByIdAsync(request.RecipeId, cancellationToken) ?? throw new NotFoundException(nameof(RecipeEntity), request.RecipeId);
 
             var items = await _recipeRepository.GetItemsByRecipeIdAsync(request.RecipeId, cancellationToken);
             var steps = await _recipeRepository.GetStepsByRecipeIdAsync(request.RecipeId, cancellationToken);

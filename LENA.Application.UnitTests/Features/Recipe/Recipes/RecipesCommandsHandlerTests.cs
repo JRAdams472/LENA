@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
 using LENA.Application.Features.Recipe.Recipes.Commands;
 using Moq;
 using Xunit;
@@ -40,14 +41,13 @@ Assert.Same(recipe,             result);
         }
 
         [Fact]
-        public async Task DeleteRecipeCommand_Should_Return_Null_When_Missing()
+        public async Task DeleteRecipeCommand_Should_Throw_NotFound_When_Missing()
         {
             _repo.Setup(r => r.GetByIdAsync(7, It.IsAny<CancellationToken>())).ReturnsAsync((RecipeEntity?)null);
 
-            var result = await new DeleteRecipeCommandHandler(_repo.Object)
-                .Handle(new DeleteRecipeCommand(7), CancellationToken.None);
+            await Assert.ThrowsAsync<NotFoundException>(() => new DeleteRecipeCommandHandler(_repo.Object)
+                .Handle(new DeleteRecipeCommand(7), CancellationToken.None));
 
-Assert.Null(            result);
             _repo.Verify(r => r.DeleteAsync(It.IsAny<RecipeEntity>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 

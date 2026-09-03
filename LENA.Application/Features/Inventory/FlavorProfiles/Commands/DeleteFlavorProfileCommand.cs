@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
+using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.Inventory.FlavorProfiles.Commands
 {
@@ -12,9 +13,7 @@ namespace LENA.Application.Features.Inventory.FlavorProfiles.Commands
         public DeleteFlavorProfileCommandHandler(IFlavorProfileRepository flavorProfileRepository) => _flavorProfileRepository = flavorProfileRepository;
         public async Task<FlavorProfile?> Handle(DeleteFlavorProfileCommand request, CancellationToken cancellationToken)
         {
-            var flavorProfile = await _flavorProfileRepository.GetByIdAsync(request.FlavorId, cancellationToken);
-            if (flavorProfile == null)
-                return null;
+            var flavorProfile = await _flavorProfileRepository.GetByIdAsync(request.FlavorId, cancellationToken) ?? throw new NotFoundException(nameof(FlavorProfile), request.FlavorId);
 
             return await _flavorProfileRepository.DeleteAsync(flavorProfile, cancellationToken);
         }

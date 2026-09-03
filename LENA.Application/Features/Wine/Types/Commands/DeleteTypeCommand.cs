@@ -1,5 +1,6 @@
 using LENA.Application.Contracts.Persistence;
 using MediatR;
+using LENA.Application.Exceptions;
 using TypeEntity = LENA.Domain.Entity.Wine.Type;
 
 namespace LENA.Application.Features.Wine.Types.Commands
@@ -12,9 +13,7 @@ namespace LENA.Application.Features.Wine.Types.Commands
         public DeleteTypeCommandHandler(ITypeRepository typeRepository) => _typeRepository = typeRepository;
         public async Task<TypeEntity?> Handle(DeleteTypeCommand request, CancellationToken cancellationToken)
         {
-            var type = await _typeRepository.GetByIdAsync(request.TypeId, cancellationToken);
-            if (type == null)
-                return null;
+            var type = await _typeRepository.GetByIdAsync(request.TypeId, cancellationToken) ?? throw new NotFoundException(nameof(TypeEntity), request.TypeId);
 
             return await _typeRepository.DeleteAsync(type, cancellationToken);
         }

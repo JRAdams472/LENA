@@ -1,4 +1,5 @@
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
 using LENA.Domain.Entity.Grocery;
 using MediatR;
 
@@ -17,7 +18,7 @@ namespace LENA.Application.Features.Grocery.GroceryLists.Queries
 
         public async Task<GroceryList?> Handle(GetGroceryListByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _groceryListRepository.GetByIdAsync(request.GroceryListId, cancellationToken);
+            return await _groceryListRepository.GetByIdAsync(request.GroceryListId, cancellationToken) ?? throw new NotFoundException(nameof(GroceryList), request.GroceryListId);
         }
     }
 }

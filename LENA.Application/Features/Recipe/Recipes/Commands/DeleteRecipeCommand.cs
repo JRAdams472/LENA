@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using RecipeEntity = LENA.Domain.Entity.Recipe.Recipe;
 using MediatR;
+using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.Recipe.Recipes.Commands
 {
@@ -17,9 +18,7 @@ namespace LENA.Application.Features.Recipe.Recipes.Commands
 
         public async Task<RecipeEntity?> Handle(DeleteRecipeCommand request, CancellationToken cancellationToken)
         {
-            var recipe = await _recipeRepository.GetByIdAsync(request.RecipeId, cancellationToken);
-            if (recipe == null)
-                return null;
+            var recipe = await _recipeRepository.GetByIdAsync(request.RecipeId, cancellationToken) ?? throw new NotFoundException(nameof(RecipeEntity), request.RecipeId);
 
             return await _recipeRepository.DeleteAsync(recipe, cancellationToken);
         }

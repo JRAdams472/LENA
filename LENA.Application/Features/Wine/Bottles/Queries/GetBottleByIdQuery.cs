@@ -1,4 +1,5 @@
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
 using LENA.Domain.Entity.Wine;
 using MediatR;
 
@@ -17,7 +18,7 @@ namespace LENA.Application.Features.Wine.Bottles.Queries
 
         public async Task<Bottle?> Handle(GetBottleByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _bottleRepository.GetByIdAsync(request.BottleId, cancellationToken);
+            return await _bottleRepository.GetByIdAsync(request.BottleId, cancellationToken) ?? throw new NotFoundException(nameof(Bottle), request.BottleId);
         }
     }
 }

@@ -7,6 +7,7 @@ using LENA.Application.Features.Recipe.RecipeItems.Commands;
 using LENA.Application.Features.Recipe.Recipes.Commands;
 using LENA.Application.Features.Recipe.Recipes.Queries;
 using LENA.Application.Features.Recipe.RecipeSteps.Commands;
+using LENA.Application.Exceptions;
 using LENA.Domain.Entity.Recipe;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -35,14 +36,12 @@ Assert.IsType<OkObjectResult>(            result.Result);
         }
 
         [Fact]
-        public async Task GetRecipeById_Should_Return_NotFound_When_Missing()
+        public async Task GetRecipeById_Should_Throw_NotFound_When_Missing()
         {
             _mediator.Setup(m => m.Send(It.IsAny<GetRecipeByIdQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((RecipeEntity?)null);
+                .ThrowsAsync(new NotFoundException(nameof(RecipeEntity), 1));
 
-            var result = await _sut.GetRecipeById(1);
-
-Assert.IsType<NotFoundResult>(            result.Result);
+            await Assert.ThrowsAsync<NotFoundException>(() => _sut.GetRecipeById(1));
         }
 
         [Fact]

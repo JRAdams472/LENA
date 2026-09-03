@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
+using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.Wine.Vintages.Queries
 {
@@ -11,6 +12,6 @@ namespace LENA.Application.Features.Wine.Vintages.Queries
         private readonly IVintageRepository _vintageRepository;
         public GetVintageByYearQueryHandler(IVintageRepository vintageRepository) => _vintageRepository = vintageRepository;
         public async Task<Vintage?> Handle(GetVintageByYearQuery request, CancellationToken cancellationToken)
-            => await _vintageRepository.GetByYearAsync(request.Year, cancellationToken);
+            => await _vintageRepository.GetByYearAsync(request.Year, cancellationToken) ?? throw new NotFoundException(nameof(Vintage), request.Year);
     }
 }

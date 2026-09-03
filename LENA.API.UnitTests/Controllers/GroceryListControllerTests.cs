@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LENA.API.Controllers;
 using LENA.Application.Features.Grocery.GroceryLists.Commands;
 using LENA.Application.Features.Grocery.GroceryLists.Queries;
+using LENA.Application.Exceptions;
 using LENA.Domain.Entity.Grocery;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -32,14 +33,12 @@ Assert.IsType<OkObjectResult>(            result.Result);
         }
 
         [Fact]
-        public async Task GetGroceryListById_Should_Return_NotFound_When_Missing()
+        public async Task GetGroceryListById_Should_Throw_NotFound_When_Missing()
         {
             _mediator.Setup(m => m.Send(It.IsAny<GetGroceryListByIdQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((GroceryList?)null);
+                .ThrowsAsync(new NotFoundException(nameof(GroceryList), 1));
 
-            var result = await _sut.GetGroceryListById(1);
-
-Assert.IsType<NotFoundResult>(            result.Result);
+            await Assert.ThrowsAsync<NotFoundException>(() => _sut.GetGroceryListById(1));
         }
 
         [Fact]

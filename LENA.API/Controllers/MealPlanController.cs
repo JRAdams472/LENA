@@ -44,8 +44,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<MealPlanEntity?>> GetMealPlanById(int id)
         {
             var plan = await _mediator.Send(new GetMealPlanByIdQuery(id));
-            if (plan == null)
-                return NotFound();
 
             return Ok(plan);
         }
@@ -71,8 +69,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<MealPlanEntity?>> DeleteMealPlan(int id)
         {
             var deleted = await _mediator.Send(new DeleteMealPlanCommand(id));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }

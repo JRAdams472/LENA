@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
 using LENA.Application.Features.Recipe.Recipes.Queries;
 using LENA.Domain.Entity.Recipe;
 using Moq;
@@ -64,14 +65,13 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
         }
 
         [Fact]
-        public async Task GetRecipeByIdQuery_Should_Return_Null_When_Missing()
+        public async Task GetRecipeByIdQuery_Should_Throw_NotFound_When_Missing()
         {
             _repo.Setup(r => r.GetByIdAsync(9, It.IsAny<CancellationToken>())).ReturnsAsync((RecipeEntity?)null);
 
-            var result = await new GetRecipeByIdQueryHandler(_repo.Object)
-                .Handle(new GetRecipeByIdQuery(9), CancellationToken.None);
+            await Assert.ThrowsAsync<NotFoundException>(() => new GetRecipeByIdQueryHandler(_repo.Object)
+                .Handle(new GetRecipeByIdQuery(9), CancellationToken.None));
 
-Assert.Null(            result);
             _repo.Verify(r => r.GetItemsByRecipeIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }

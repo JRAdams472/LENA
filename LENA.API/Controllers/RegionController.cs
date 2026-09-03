@@ -43,8 +43,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Region?>> GetRegionById(int id)
         {
             var region = await _mediator.Send(new GetRegionByIdQuery(id));
-            if (region == null)
-                return NotFound();
 
             return Ok(region);
         }
@@ -53,8 +51,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Region?>> GetRegionByNameAndCountryId([FromQuery] string name, [FromQuery] int countryId)
         {
             var region = await _mediator.Send(new GetRegionByNameAndCountryIdQuery(name, countryId));
-            if (region == null)
-                return NotFound();
 
             return Ok(region);
         }
@@ -80,8 +76,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Region?>> DeleteRegion(int id)
         {
             var deleted = await _mediator.Send(new DeleteRegionCommand(id));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }

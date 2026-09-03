@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LENA.API.Controllers;
 using LENA.Application.Features.Inventory.Items.Commands;
 using LENA.Application.Features.Inventory.Items.Queries;
+using LENA.Application.Exceptions;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,15 @@ Assert.IsType<OkObjectResult>(            result.Result);
 
             _mediator.Verify(m => m.Send(It.Is<GetItemByIdQuery>(q => q.ItemId == 1), It.IsAny<CancellationToken>()), Times.Once);
 Assert.IsType<OkObjectResult>(            result.Result);
+        }
+
+        [Fact]
+        public async Task GetItemById_Should_Throw_NotFound_When_Missing()
+        {
+            _mediator.Setup(m => m.Send(It.IsAny<GetItemByIdQuery>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new NotFoundException(nameof(Item), 1));
+
+            await Assert.ThrowsAsync<NotFoundException>(() => _sut.GetItemById(1));
         }
 
         [Fact]

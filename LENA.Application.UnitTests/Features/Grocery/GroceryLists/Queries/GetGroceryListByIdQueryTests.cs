@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using LENA.Application.Contracts.Persistence;
+using LENA.Application.Exceptions;
 using LENA.Application.Features.Grocery.GroceryLists.Queries;
 using LENA.Domain.Entity.Grocery;
 using Moq;
@@ -71,16 +72,14 @@ Assert.Equal(1,             result!.GroceryListID);
         }
 
         [Fact]
-        public async Task Handle_Should_Return_Null_When_Not_Found()
+        public async Task Handle_Should_Throw_NotFound_When_Not_Found()
         {
             _repository
                 .Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((GroceryList?)null);
 
             var handler = new GetGroceryListByIdQueryHandler(_repository.Object);
-            var result = await handler.Handle(new GetGroceryListByIdQuery(1), CancellationToken.None);
-
-Assert.Null(            result);
+            await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(new GetGroceryListByIdQuery(1), CancellationToken.None));
         }
     }
 }

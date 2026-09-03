@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
+using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.Inventory.FlavorProfiles.Queries
 {
@@ -11,6 +12,6 @@ namespace LENA.Application.Features.Inventory.FlavorProfiles.Queries
         private readonly IFlavorProfileRepository _flavorProfileRepository;
         public GetFlavorProfileByNameQueryHandler(IFlavorProfileRepository flavorProfileRepository) => _flavorProfileRepository = flavorProfileRepository;
         public async Task<FlavorProfile?> Handle(GetFlavorProfileByNameQuery request, CancellationToken cancellationToken)
-            => await _flavorProfileRepository.GetByNameAsync(request.Name, cancellationToken);
+            => await _flavorProfileRepository.GetByNameAsync(request.Name, cancellationToken) ?? throw new NotFoundException(nameof(FlavorProfile), request.Name);
     }
 }

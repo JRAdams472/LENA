@@ -1,3 +1,4 @@
+using LENA.Application.Exceptions;
 using LENA.Application.Models;
 using System.Collections.Generic;
 using System.Threading;
@@ -67,6 +68,15 @@ Assert.IsType<OkObjectResult>(            result.Result);
 
             _mediator.Verify(m => m.Send(It.Is<GetBottleByIdQuery>(q => q.BottleId == 1), It.IsAny<CancellationToken>()), Times.Once);
 Assert.IsType<OkObjectResult>(            result.Result);
+        }
+
+        [Fact]
+        public async Task GetBottleById_Should_Throw_NotFound_When_Missing()
+        {
+            _mediator.Setup(m => m.Send(It.IsAny<GetBottleByIdQuery>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new NotFoundException(nameof(Bottle), 1));
+
+            await Assert.ThrowsAsync<NotFoundException>(() => _sut.GetBottleById(1));
         }
 
         [Fact]

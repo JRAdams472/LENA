@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
+using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.Wine.Bottles.Commands
 {
@@ -17,9 +18,7 @@ namespace LENA.Application.Features.Wine.Bottles.Commands
 
         public async Task<Bottle?> Handle(DeleteBottleCommand request, CancellationToken cancellationToken)
         {
-            var bottle = await _bottleRepository.GetByIdAsync(request.BottleId, cancellationToken);
-            if (bottle == null)
-                return null;
+            var bottle = await _bottleRepository.GetByIdAsync(request.BottleId, cancellationToken) ?? throw new NotFoundException(nameof(Bottle), request.BottleId);
 
             return await _bottleRepository.DeleteAsync(bottle, cancellationToken);
         }

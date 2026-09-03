@@ -68,8 +68,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Item?>> GetItemById(int id)
         {
             var item = await _mediator.Send(new GetItemByIdQuery(id));
-            if (item == null)
-                return NotFound();
 
             return Ok(item);
         }
@@ -78,8 +76,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Item?>> GetItemByName(string name)
         {
             var item = await _mediator.Send(new GetItemByNameQuery(name));
-            if (item == null)
-                return NotFound();
 
             return Ok(item);
         }
@@ -105,8 +101,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<Item?>> DeleteItem(int id)
         {
             var deleted = await _mediator.Send(new DeleteItemCommand(id));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }
@@ -158,8 +152,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<FoodFlavor?>> GetFoodFlavorById(int id)
         {
             var foodFlavor = await _mediator.Send(new GetFoodFlavorByIdQuery(id));
-            if (foodFlavor == null)
-                return NotFound();
 
             return Ok(foodFlavor);
         }
@@ -182,8 +174,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<FoodFlavor?>> GetFoodFlavorByFoodAndFlavorId(int foodId, int flavorId)
         {
             var foodFlavor = await _mediator.Send(new GetFoodFlavorByFoodAndFlavorIdQuery(foodId, flavorId));
-            if (foodFlavor == null)
-                return NotFound();
 
             return Ok(foodFlavor);
         }
@@ -209,8 +199,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<FoodFlavor?>> DeleteFoodFlavor(int foodId, int flavorId)
         {
             var deleted = await _mediator.Send(new DeleteFoodFlavorCommand(foodId, flavorId));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }
@@ -227,8 +215,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<FoodNutrient?>> GetFoodNutrientById(int id)
         {
             var foodNutrient = await _mediator.Send(new GetFoodNutrientByIdQuery(id));
-            if (foodNutrient == null)
-                return NotFound();
 
             return Ok(foodNutrient);
         }
@@ -251,8 +237,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<FoodNutrient?>> GetFoodNutrientByFoodAndNutrientId(int foodId, int nutrientId)
         {
             var foodNutrient = await _mediator.Send(new GetFoodNutrientByFoodAndNutrientIdQuery(foodId, nutrientId));
-            if (foodNutrient == null)
-                return NotFound();
 
             return Ok(foodNutrient);
         }
@@ -278,8 +262,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<FoodNutrient?>> DeleteFoodNutrient(int foodId, int nutrientId)
         {
             var deleted = await _mediator.Send(new DeleteFoodNutrientCommand(foodId, nutrientId));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }
@@ -296,8 +278,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<NutrientType?>> GetNutrientTypeById(int id)
         {
             var nutrientType = await _mediator.Send(new GetNutrientTypeByIdQuery(id));
-            if (nutrientType == null)
-                return NotFound();
 
             return Ok(nutrientType);
         }
@@ -306,8 +286,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<NutrientType?>> GetNutrientTypeByName(string name)
         {
             var nutrientType = await _mediator.Send(new GetNutrientTypeByNameQuery(name));
-            if (nutrientType == null)
-                return NotFound();
 
             return Ok(nutrientType);
         }
@@ -333,8 +311,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<NutrientType?>> DeleteNutrientType(int id)
         {
             var deleted = await _mediator.Send(new DeleteNutrientTypeCommand(id));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }
@@ -358,8 +334,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<FlavorProfile?>> GetFlavorProfileById(int id)
         {
             var flavorProfile = await _mediator.Send(new GetFlavorProfileByIdQuery(id));
-            if (flavorProfile == null)
-                return NotFound();
 
             return Ok(flavorProfile);
         }
@@ -368,8 +342,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<FlavorProfile?>> GetFlavorProfileByName(string name)
         {
             var flavorProfile = await _mediator.Send(new GetFlavorProfileByNameQuery(name));
-            if (flavorProfile == null)
-                return NotFound();
 
             return Ok(flavorProfile);
         }
@@ -395,8 +367,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<FlavorProfile?>> DeleteFlavorProfile(int id)
         {
             var deleted = await _mediator.Send(new DeleteFlavorProfileCommand(id));
-            if (deleted == null)
-                return NotFound();
 
             return Ok(deleted);
         }

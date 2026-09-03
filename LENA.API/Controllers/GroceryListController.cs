@@ -28,8 +28,6 @@ namespace LENA.API.Controllers
         public async Task<ActionResult<GroceryList?>> GetGroceryListById(int id)
         {
             var list = await _mediator.Send(new GetGroceryListByIdQuery(id));
-            if (list == null)
-                return NotFound();
 
             return Ok(list);
         }

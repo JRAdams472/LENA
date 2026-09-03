@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Wine;
 using MediatR;
+using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.Wine.Regions.Queries
 {
@@ -11,6 +12,6 @@ namespace LENA.Application.Features.Wine.Regions.Queries
         private readonly IRegionRepository _regionRepository;
         public GetRegionByIdQueryHandler(IRegionRepository regionRepository) => _regionRepository = regionRepository;
         public async Task<Region?> Handle(GetRegionByIdQuery request, CancellationToken cancellationToken)
-            => await _regionRepository.GetByIdAsync(request.RegionId, cancellationToken);
+            => await _regionRepository.GetByIdAsync(request.RegionId, cancellationToken) ?? throw new NotFoundException(nameof(Region), request.RegionId);
     }
 }

@@ -1,6 +1,7 @@
 using LENA.Application.Contracts.Persistence;
 using LENA.Domain.Entity.Inventory;
 using MediatR;
+using LENA.Application.Exceptions;
 
 namespace LENA.Application.Features.Inventory.FoodFlavors.Queries
 {
@@ -11,6 +12,6 @@ namespace LENA.Application.Features.Inventory.FoodFlavors.Queries
         private readonly IFoodFlavorRepository _foodFlavorRepository;
         public GetFoodFlavorByFoodAndFlavorIdQueryHandler(IFoodFlavorRepository foodFlavorRepository) => _foodFlavorRepository = foodFlavorRepository;
         public async Task<FoodFlavor?> Handle(GetFoodFlavorByFoodAndFlavorIdQuery request, CancellationToken cancellationToken)
-            => await _foodFlavorRepository.GetByFoodAndFlavorIdAsync(request.FoodId, request.FlavorId, cancellationToken);
+            => await _foodFlavorRepository.GetByFoodAndFlavorIdAsync(request.FoodId, request.FlavorId, cancellationToken) ?? throw new NotFoundException(nameof(FoodFlavor), ($"{request.FoodId}-{request.FlavorId}"));
     }
 }
