@@ -39,16 +39,19 @@ namespace LENA.Infrastructure.Persistence
             => await QuerySingleAsync<int>("[Wine].[usp_Bottle_GetTotalBottleCount]", new { UserID = _currentUser.UserID }, cancellationToken: cancellationToken);
 
         public async Task SetFavoriteAsync(int bottleId, bool isFavorite, CancellationToken cancellationToken = default)
-            => await ExecuteCommandAsync("[Wine].[usp_Bottle_SetFavorite]", new
+        {
+            var now = _timeProvider.GetUtcNow().UtcDateTime;
+            await ExecuteCommandAsync("[Wine].[usp_Bottle_SetFavorite]", new
             {
                 UserID = _currentUser.UserID,
                 BottleID = bottleId,
                 IsFavorite = isFavorite,
                 CreatedBy = _currentUser.UserName,
-                CreateDate = _timeProvider.GetUtcNow().UtcDateTime,
+                CreateDate = now,
                 LastUpdatedBy = _currentUser.UserName,
-                LastUpdatedDate = _timeProvider.GetUtcNow().UtcDateTime
+                LastUpdatedDate = now
             }, cancellationToken);
+        }
 
         public override async Task<Bottle> CreateAsync(Bottle entity, CancellationToken cancellationToken = default)
         {
