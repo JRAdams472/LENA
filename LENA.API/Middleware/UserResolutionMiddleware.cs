@@ -25,21 +25,21 @@ namespace LENA.API.Middleware
             if (!string.IsNullOrWhiteSpace(externalSubject) && !string.IsNullOrWhiteSpace(email))
             {
                 var cacheKey = $"user:{externalSubject}";
-                if (!cache.TryGetValue(cacheKey, out User? user) || user is null)
+                var user = await cache.GetOrCreateAsync(
+                    cacheKey,
+                    async _ =>
+                    {
+                        var displayName = context.User.FindFirst("name")?.Value;
+                        return await mediator.Send(
+                            new UpsertUserCommand(externalSubject, "google", email, displayName),
+                            context.RequestAborted);
+                    },
+                    new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10)));
+
+                if (user is not null)
                 {
-                    var displayName = context.User.FindFirst("name")?.Value;
-
-                    user = await mediator.Send(
-                        new UpsertUserCommand(externalSubject, "google", email, displayName),
-                        context.RequestAborted);
-
-                    cache.Set(
-                        cacheKey,
-                        user,
-                        new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10)));
+                    context.Items["UserID"] = user.UserID;
                 }
-
-                context.Items["UserID"] = user.UserID;
             }
 
             await _next(context);
