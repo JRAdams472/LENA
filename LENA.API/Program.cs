@@ -49,8 +49,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowExternal", policy =>
     {
         policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+              .WithHeaders("Accept", "Authorization", "Content-Type")
+              .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
     });
 });
 builder.Services.AddControllers()
