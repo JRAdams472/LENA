@@ -37,6 +37,12 @@ namespace LENA.API.ExceptionHandling
                 problemDetails.Title = "Resource not found";
                 problemDetails.Detail = notFoundException.Message;
             }
+            else if (exception is LENA.Application.Exceptions.UnauthenticatedUserException)
+            {
+                problemDetails.Status = StatusCodes.Status401Unauthorized;
+                problemDetails.Title = "Unauthenticated";
+                problemDetails.Detail = exception.Message;
+            }
             else if (exception is ArgumentException)
             {
                 problemDetails.Status = StatusCodes.Status400BadRequest;
