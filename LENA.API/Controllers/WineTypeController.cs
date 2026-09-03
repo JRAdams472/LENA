@@ -1,12 +1,11 @@
 using LENA.API.Contracts.Wine;
+using LENA.API.Filters;
 using LENA.Application.Features.Wine.Types.Commands;
 using LENA.Application.Features.Wine.Types.Queries;
 
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
-
-using LENA.API.Filters;
 
 namespace LENA.API.Controllers
 {
