@@ -23,11 +23,11 @@ namespace LENA.Infrastructure.Persistence
         public async Task<LENA.Application.Models.PagedResult<Item>> ListPagedAsync(int pageNumber, int pageSize, string? search = null, string? brand = null, bool inStock = false, bool isFavorite = false, CancellationToken ct = default)
             => await QueryPagedListAsync<Item>("[Inventory].[usp_Item_ListAllPaged]", pageNumber, pageSize, new { UserID = _currentUser.UserID, Search = search, Brand = brand, InStock = inStock, IsFavorite = isFavorite }, ct);
 
-        public async Task<IReadOnlyList<Item>> SearchAsync(string search, string? brand, int limit, CancellationToken cancellationToken = default)
-            => await QueryListAsync<Item>("[Inventory].[usp_Item_Search]", new { UserID = _currentUser.UserID, Search = search, Brand = brand, Limit = limit }, cancellationToken);
+        public async Task<IReadOnlyList<Item>> SearchAsync(string search, string? brand, int limit, CancellationToken ct = default)
+            => await QueryListAsync<Item>("[Inventory].[usp_Item_Search]", new { UserID = _currentUser.UserID, Search = search, Brand = brand, Limit = limit }, ct);
 
-        public async Task<IReadOnlyList<string>> GetBrandsAsync(string? search = null, CancellationToken cancellationToken = default)
-            => await QueryListAsync<string>("[Inventory].[usp_Item_GetBrands]", new { UserID = _currentUser.UserID, Search = search }, cancellationToken);
+        public async Task<IReadOnlyList<string>> GetBrandsAsync(string? search = null, CancellationToken ct = default)
+            => await QueryListAsync<string>("[Inventory].[usp_Item_GetBrands]", new { UserID = _currentUser.UserID, Search = search }, ct);
 
         public override async Task<Item?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
             => await QueryFirstAsync<Item>("[Inventory].[usp_Item_GetById]", new { Id = id, UserID = _currentUser.UserID }, cancellationToken);

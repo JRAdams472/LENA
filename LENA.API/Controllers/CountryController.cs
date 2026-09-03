@@ -6,6 +6,8 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
+using LENA.API.Filters;
+
 namespace LENA.API.Controllers
 {
     [ApiController]
@@ -20,7 +22,7 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("countries")]
-        [ResponseCache(Duration = 300)]
+        [CacheHeaders(300)]
         public async Task<ActionResult<IReadOnlyList<CountryResponse>>> GetCountries()
         {
             var countries = await _mediator.Send(new GetCountriesQuery());
@@ -42,7 +44,7 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("countries/active")]
-        [ResponseCache(Duration = 300)]
+        [CacheHeaders(300)]
         public async Task<ActionResult<IReadOnlyList<CountryResponse>>> GetActiveCountries()
         {
             var countries = await _mediator.Send(new GetActiveCountriesQuery());

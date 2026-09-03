@@ -47,7 +47,7 @@ namespace LENA.Infrastructure.Persistence
             return entity;
         }
 
-        private DynamicParameters ToParameters(Recipe entity, bool forUpdate)
+        private static DynamicParameters ToParameters(Recipe entity, bool forUpdate)
         {
             var parameters = new DynamicParameters();
             parameters.Add("RecipeName", entity.RecipeName);

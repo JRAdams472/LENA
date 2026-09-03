@@ -11,11 +11,11 @@ namespace LENA.Infrastructure.Persistence
 {
     public abstract class BaseRepository<T> : IAsyncRepository<T> where T : class
     {
-        protected readonly IDbConnectionFactory _connectionFactory;
+        protected IDbConnectionFactory ConnectionFactory { get; }
 
         protected BaseRepository(IDbConnectionFactory connectionFactory)
         {
-            _connectionFactory = connectionFactory;
+            ConnectionFactory = connectionFactory;
         }
 
         public abstract Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default);
@@ -26,7 +26,7 @@ namespace LENA.Infrastructure.Persistence
 
         protected async Task<IReadOnlyList<TResult>> QueryListAsync<TResult>(string procedureName, object? param = null, CancellationToken cancellationToken = default)
         {
-            await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+            await using var connection = await ConnectionFactory.CreateConnectionAsync(cancellationToken);
             var command = new CommandDefinition(procedureName, param, commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken);
             return new List<TResult>(await connection.QueryAsync<TResult>(command));
         }
@@ -41,7 +41,7 @@ namespace LENA.Infrastructure.Persistence
             parameters.Add("PageNumber", pageNumber);
             parameters.Add("PageSize", pageSize);
 
-            await using var connection = await _connectionFactory.CreateConnectionAsync(ct);
+            await using var connection = await ConnectionFactory.CreateConnectionAsync(ct);
             var command = new CommandDefinition(procedureName, parameters, commandType: CommandType.StoredProcedure, cancellationToken: ct);
             using var reader = await connection.QueryMultipleAsync(command);
             var items = (await reader.ReadAsync<TResult>()).ToList();
@@ -57,21 +57,21 @@ namespace LENA.Infrastructure.Persistence
 
         protected async Task<TResult?> QueryFirstAsync<TResult>(string procedureName, object? param = null, CancellationToken cancellationToken = default) where TResult : class
         {
-            await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+            await using var connection = await ConnectionFactory.CreateConnectionAsync(cancellationToken);
             var command = new CommandDefinition(procedureName, param, commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken);
             return await connection.QueryFirstOrDefaultAsync<TResult>(command);
         }
 
         protected async Task<TResult> QuerySingleAsync<TResult>(string procedureName, object? param = null, CancellationToken cancellationToken = default)
         {
-            await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+            await using var connection = await ConnectionFactory.CreateConnectionAsync(cancellationToken);
             var command = new CommandDefinition(procedureName, param, commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken);
             return await connection.QuerySingleAsync<TResult>(command);
         }
 
         protected async Task<int> ExecuteCommandAsync(string procedureName, object? param = null, CancellationToken cancellationToken = default)
         {
-            await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+            await using var connection = await ConnectionFactory.CreateConnectionAsync(cancellationToken);
             var command = new CommandDefinition(procedureName, param, commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken);
             return await connection.ExecuteAsync(command);
         }

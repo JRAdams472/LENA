@@ -393,3 +393,11 @@ dotnet_diagnostic.CA1848.severity = none
 dotnet_diagnostic.CA1873.severity = none
 dotnet_diagnostic.CA2016.severity = none
 dotnet_diagnostic.CA1860.severity = none
+
+# Test projects use BDD-style names with underscores
+[*Tests*.cs]
+dotnet_diagnostic.CA1707.severity = none
+
+# API contract records use explicit default initializers for clarity
+[LENA.API/Contracts/**/*.cs]
+dotnet_diagnostic.CA1805.severity = none

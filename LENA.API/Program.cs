@@ -71,7 +71,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.Audience = googleClientId;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidIssuers = new[] { "https://accounts.google.com", "accounts.google.com" },
+            ValidIssuers = JwtConstants.ValidIssuers,
             ValidateAudience = true,
             ValidateIssuer = true,
             ValidateLifetime = true,
@@ -104,20 +104,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 // Swagger is always on in development; it is opt-in via "Swagger:Enabled" outside development.
-// When enabled outside development, protect it from public access (e.g., restrict the reverse proxy or add authorization).
-if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:Enabled"))
-{
-    var swaggerPrefix = (app.Configuration["Swagger:RoutePrefix"] ?? "swagger").Trim('/');
-
-    app.MapOpenApi();
-    app.UseSwagger(options => options.RouteTemplate = $"{swaggerPrefix}/{{documentName}}/swagger.json");
-    app.UseSwaggerUI(options =>
-    {
-        options.RoutePrefix = swaggerPrefix;
-        options.SwaggerEndpoint($"/{swaggerPrefix}/v1/swagger.json", "LENA API v1");
-    });
-}
-
+// When enabled outside development, the Swagger UI and JSON endpoints require an authenticated user.
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
@@ -126,8 +113,42 @@ if (!app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 
 app.UseCors("AllowExternal");
-
 app.UseAuthentication();
+
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:Enabled"))
+{
+    var isDevelopment = app.Environment.IsDevelopment();
+    var swaggerPrefix = (app.Configuration["Swagger:RoutePrefix"] ?? "swagger").Trim('/');
+
+    app.MapOpenApi();
+
+    // Gate the Swagger UI and JSON to authenticated users outside development.
+    app.Use(async (context, next) =>
+    {
+        if (isDevelopment)
+        {
+            await next();
+            return;
+        }
+
+        if (context.Request.Path.StartsWithSegments($"/{swaggerPrefix}") &&
+            !(context.User.Identity?.IsAuthenticated ?? false))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return;
+        }
+
+        await next();
+    });
+
+    app.UseSwagger(options => options.RouteTemplate = $"{swaggerPrefix}/{{documentName}}/swagger.json");
+    app.UseSwaggerUI(options =>
+    {
+        options.RoutePrefix = swaggerPrefix;
+        options.SwaggerEndpoint($"/{swaggerPrefix}/v1/swagger.json", "LENA API v1");
+    });
+}
+
 app.UseMiddleware<UserResolutionMiddleware>();
 app.UseAuthorization();
 
@@ -136,3 +157,8 @@ app.UseSerilogRequestLogging();
 app.MapControllers();
 
 app.Run();
+
+file static class JwtConstants
+{
+    public static readonly string[] ValidIssuers = new[] { "https://accounts.google.com", "accounts.google.com" };
+}

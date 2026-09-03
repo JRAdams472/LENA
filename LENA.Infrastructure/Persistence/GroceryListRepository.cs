@@ -35,7 +35,7 @@ namespace LENA.Infrastructure.Persistence
 
         public override async Task<GroceryList?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+            await using var connection = await ConnectionFactory.CreateConnectionAsync(cancellationToken);
             var groceryList = await connection.QueryFirstOrDefaultAsync<GroceryList>(
                 "[MealPlan].[usp_GroceryList_GetById]",
                 new { GroceryListID = id, UserID = _currentUser.UserID },
@@ -68,7 +68,7 @@ namespace LENA.Infrastructure.Persistence
 
         public async Task<GroceryList> GenerateFromMealPlanAsync(GroceryList groceryList, CancellationToken cancellationToken = default)
         {
-            await using var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+            await using var connection = await ConnectionFactory.CreateConnectionAsync(cancellationToken);
             var command = new CommandDefinition(
                 "[MealPlan].[usp_GroceryList_GenerateFromMealPlan]",
                 new { groceryList.MealPlanID, UserID = _currentUser.UserID, groceryList.CreatedBy, groceryList.CreateDate },

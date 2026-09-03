@@ -6,6 +6,8 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
+using LENA.API.Filters;
+
 namespace LENA.API.Controllers
 {
     [ApiController]
@@ -20,7 +22,7 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("vintages")]
-        [ResponseCache(Duration = 300)]
+        [CacheHeaders(300)]
         public async Task<ActionResult<IReadOnlyList<VintageResponse>>> GetVintages()
         {
             var vintages = await _mediator.Send(new GetVintagesQuery());
@@ -41,7 +43,7 @@ namespace LENA.API.Controllers
             });
         }
 
-        [ResponseCache(Duration = 300)]
+        [CacheHeaders(300)]
         [HttpGet("vintages/active")]
         public async Task<ActionResult<IReadOnlyList<VintageResponse>>> GetActiveVintages()
         {

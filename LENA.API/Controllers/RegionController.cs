@@ -6,6 +6,8 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
+using LENA.API.Filters;
+
 namespace LENA.API.Controllers
 {
     [ApiController]
@@ -20,7 +22,7 @@ namespace LENA.API.Controllers
         }
 
         [HttpGet("regions")]
-        [ResponseCache(Duration = 300)]
+        [CacheHeaders(300)]
         public async Task<ActionResult<IReadOnlyList<RegionResponse>>> GetRegions()
         {
             var regions = await _mediator.Send(new GetRegionsQuery());

@@ -23,7 +23,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
         [Fact]
         public async Task GetRecipesQuery_Should_Return_All_Recipes()
         {
-            IReadOnlyList<RecipeEntity> recipes = new List<RecipeEntity> { new() { RecipeName = "Soup" } };
+            List<RecipeEntity> recipes = new() { new() { RecipeName = "Soup" } };
             _repo.Setup(r => r.ListAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(recipes);
 
             var result = await new GetRecipesQueryHandler(_repo.Object)
@@ -36,7 +36,7 @@ namespace LENA.Application.UnitTests.Features.Recipe.Recipes
         [Fact]
         public async Task GetRecipesPagedQuery_Should_Return_PagedResult_And_Pass_Through_Page_And_Size()
         {
-            IReadOnlyList<RecipeEntity> recipes = new List<RecipeEntity> { new() { RecipeName = "Soup" } };
+            List<RecipeEntity> recipes = new() { new() { RecipeName = "Soup" } };
             _repo.Setup(r => r.ListPagedAsync(2, 10, It.IsAny<string?>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PagedResult<RecipeEntity> { Items = recipes, PageNumber = 2, PageSize = 10, TotalCount = 1 });
 
