@@ -33,7 +33,7 @@ namespace LENA.Application.UnitTests.Behaviors
         }
 
         [Fact]
-        public async Task Handle_Logs_Name_At_Information_And_Body_At_Debug()
+        public async Task Handle_Logs_Name_Without_Sensitive_Data()
         {
             var logger = new CaptureLogger<LoggingBehavior<SensitiveCommand, Unit>>();
             var behavior = new LoggingBehavior<SensitiveCommand, Unit>(logger);
@@ -42,8 +42,8 @@ namespace LENA.Application.UnitTests.Behaviors
             await behavior.Handle(request, _ => Task.FromResult(Unit.Value), CancellationToken.None);
 
             Assert.Contains(logger.Calls, c => c.Level == LogLevel.Information && c.Message.Contains(nameof(SensitiveCommand)));
-            Assert.Contains(logger.Calls, c => c.Level == LogLevel.Debug && c.Message.Contains(request.Email));
-            Assert.All(logger.Calls.Where(c => c.Level == LogLevel.Information), c => Assert.DoesNotContain(request.Email, c.Message));
+            Assert.All(logger.Calls, c => Assert.DoesNotContain(request.Email, c.Message));
+            Assert.All(logger.Calls, c => Assert.DoesNotContain(request.Notes, c.Message));
         }
     }
 }
