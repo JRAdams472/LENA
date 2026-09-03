@@ -159,13 +159,17 @@ The configured origins are read at startup and the app will fail to start if the
 
 ## Docker
 
-Run the entire stack from the repo root:
+Run the entire stack from the repo root. First copy `.env.example` to `.env` and set `GOOGLE_CLIENT_ID`, `MSSQL_SA_PASSWORD`, and `LENA_DB_PASSWORD`:
 
 ```bash
+cp .env.example .env
+# edit .env
 docker compose up --build
 ```
 
-The one-shot `db-init` service runs `LENA.Database/init.sh` against the `db` container: it waits for SQL Server, creates the `LENA` database if missing, and applies every `.sql` fragment (schemas → tables → indexes → seed data → stored procedures). The `api` service only starts once `db-init` has completed successfully.
+The one-shot `db-init` service runs `LENA.Database/init.sh` against the `db` container: it waits for SQL Server, creates the `LENA` database if missing, applies every `.sql` fragment (schemas → tables → indexes → seed data → stored procedures), and creates the least-privilege `lena_app` login used by the API. The `api` service only starts once `db-init` has completed successfully.
+
+The API connection string in Docker uses `TrustServerCertificate=True` for local development only. Real deployments must provision a trusted TLS certificate for SQL Server and remove this flag.
 
 Init is idempotent — existing schemas, tables, indexes and already-populated seed tables are skipped, and stored procedures are applied as `CREATE OR ALTER` — so re-running `docker compose up` against an existing `mssql_data` volume is safe. Use `docker compose down -v` to start from an empty database.
 

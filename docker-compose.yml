@@ -4,7 +4,7 @@ services:
     container_name: lena-db
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "P@ssw0rd!"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD must be set in .env or environment}"
     volumes:
       - mssql_data:/var/opt/mssql
     ports:
@@ -13,7 +13,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'P@ssw0rd!' -Q 'SELECT 1'",
+          "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"${MSSQL_SA_PASSWORD}\" -Q 'SELECT 1'",
         ]
       interval: 10s
       timeout: 5s
@@ -25,7 +25,8 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: lena-db-init
     environment:
-      MSSQL_SA_PASSWORD: "P@ssw0rd!"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD must be set in .env or environment}"
+      LENA_DB_PASSWORD: "${LENA_DB_PASSWORD:?LENA_DB_PASSWORD must be set in .env or environment}"
     volumes:
       - ./LENA.Database:/database:ro
     entrypoint: ["bash", "/database/init.sh"]
@@ -40,7 +41,7 @@ services:
     container_name: lena-api
     environment:
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Server=db;Database=LENA;User Id=sa;Password=P@ssw0rd!;TrustServerCertificate=True;
+      - "ConnectionStrings__DefaultConnection=Server=db;Database=LENA;User Id=lena_app;Password=${LENA_DB_PASSWORD:?LENA_DB_PASSWORD must be set in .env or environment};TrustServerCertificate=True;"
       - Cors__AllowedOrigins__0=http://localhost
       - Authentication__Google__ClientId=${GOOGLE_CLIENT_ID:?GOOGLE_CLIENT_ID must be set in .env or environment}
       - Swagger__Enabled=true
